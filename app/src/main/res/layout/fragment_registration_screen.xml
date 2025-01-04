@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+        <!-- Back Button -->
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:contentDescription="Back Button"
+            android:src="@drawable/back_arrow"
+            tools:ignore="HardcodedText,RedundantDescriptionCheck" />
+        <!-- Subtitle -->
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Registration"
+            android:layout_weight="2"
+            android:textColor="#0f2b9f"
+            android:textStyle="bold"
+            android:layout_marginEnd="30dp"
+            android:textSize="16sp" />
+        </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp">
+            <!-- Card for Input Fields -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/registerCardView"
+                android:layout_width="match_parent"
+                android:layout_height="650dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:backgroundTint="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:boxBackgroundColor="@color/box_background"
+                            app:endIconMode="dropdown_menu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/userTypeDropdown"
+                                android:layout_width="match_parent"
+                                android:layout_height="55dp"
+                                android:dropDownHeight="wrap_content"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint="User Category*"
+                                android:inputType="none"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:textSize="12sp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <!-- Role Dropdown -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:boxBackgroundColor="@color/box_background"
+                            app:endIconMode="dropdown_menu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/roleDropdown"
+                                android:layout_width="match_parent"
+                                android:layout_height="55dp"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint="User Type*"
+                                android:inputType="none"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:textSize="12sp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <!-- Place your existing registration form here -->
+
+                    <LinearLayout
+                        android:id="@+id/registrationScreen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+                        <!-- First Row: First Name and Middle Name -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                app:boxBackgroundColor="@color/box_background">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/firstName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/icon5"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:hint="First Name*"
+                                    android:inputType="text"
+                                    android:textSize="11sp"
+                                    android:drawablePadding="4dp"
+                                    tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                app:boxBackgroundColor="@color/box_background">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/middleName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/icon5"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:hint="Middle Name"
+                                    android:inputType="text"
+                                    android:textSize="11sp"
+                                    android:drawablePadding="4dp"
+                                    tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Last Name -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            app:boxBackgroundColor="@color/box_background">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/lastName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/icon5"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint="Last Name*"
+                                android:inputType="text"
+                                android:textSize="11sp"
+                                android:drawablePadding="4dp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+
+                            <!-- Date Dropdown -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:boxBackgroundColor="@color/box_background"
+                                app:endIconDrawable="@drawable/icon6"
+                                app:endIconMode="custom">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/dateDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp"
+                                    android:dropDownHeight="wrap_content"
+                                    android:focusable="false"
+                                    android:focusableInTouchMode="true"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:hint="Date Of Birth*"
+                                    android:inputType="none"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textSize="12sp"
+                                    tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                            <!-- Gender Dropdown -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:boxBackgroundColor="@color/box_background"
+                                app:endIconMode="dropdown_menu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/genderDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp"
+                                    android:dropDownHeight="wrap_content"
+                                    android:focusable="true"
+                                    android:focusableInTouchMode="true"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:hint="Gender*"
+                                    android:inputType="none"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textSize="12sp"
+                                    tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
+
+                        <!-- Mobile Number -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            app:boxBackgroundColor="@color/box_background">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/mobileNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/icon4"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint="Mobile Number"
+                                android:inputType="phone"
+                                android:textSize="11sp"
+                                android:drawablePadding="4dp"
+                                android:maxLength="10"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <!-- Email Address -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            app:boxBackgroundColor="@color/box_background">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/emailAddress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/icon1"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint="Email"
+                                android:inputType="textEmailAddress"
+                                android:textSize="11sp"
+                                android:drawablePadding="4dp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/sendOtpButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="3dp"
+                            android:background="@drawable/rectangular_button"
+                            android:text="Send OTP" />
+
+                        <LinearLayout
+                            android:id="@+id/passwords_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                        <!-- Password -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/password_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:boxBackgroundColor="@color/box_background"
+                            app:passwordToggleEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/password"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint=" Password"
+                                android:inputType="textPassword"
+                                android:textSize="11sp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Confirm Password -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/confirmPasswordLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            app:boxBackgroundColor="@color/box_background"
+                            app:passwordToggleEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/confirmPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableEnd="@drawable/icon4"
+                                android:fontFamily="@font/poppins_regular"
+                                android:hint=" Confirm Password"
+                                android:inputType="textPassword"
+                                android:textSize="11sp"
+                                tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:orientation="horizontal">
+                            <CheckBox
+                                android:id="@+id/checkbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="5dp"
+                                android:text="I agree with the "
+                                android:textSize="12dp"
+                                tools:ignore="TextSizeCheck" />
+
+                            <TextView
+                                android:id="@+id/terms_and_conditions"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Terms and Conditions"
+                                android:textColor="#0000EE"
+                                android:textSize="12dp"
+                                tools:ignore="TextSizeCheck,TextSizeCheck" />
+                        </LinearLayout>
+                        <!-- Register Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/registerButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="3dp"
+                            android:background="@drawable/rectangular_button"
+                            android:fontFamily="@font/poppins_regular"
+                            android:minHeight="48dp"
+                            android:text="Register"
+                            android:textAllCaps="false"
+                            app:cornerRadius="8dp"
+                            tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

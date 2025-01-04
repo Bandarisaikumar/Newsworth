@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/welcomeScreen">
+    <fragment
+        android:id="@+id/loginScreen"
+        android:name="com.example.newsworth.ui.view.fragment.LoginScreen"
+        android:label="LoginScreen"
+        tools:layout="@layout/fragment_login_screen">
+        <action
+            android:id="@+id/action_loginScreen_to_userScreen"
+            app:destination="@id/userScreen" />
+        <action
+            android:id="@+id/action_loginScreen_to_welcomeScreen"
+            app:destination="@id/welcomeScreen" />
+        <action
+            android:id="@+id/action_loginScreen_to_registrationScreen"
+            app:destination="@id/registrationScreen" />
+        <action
+            android:id="@+id/action_loginScreen_to_forgotPasswordScreen"
+            app:destination="@id/forgotPasswordScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/welcomeScreen"
+        android:name="com.example.newsworth.ui.view.fragment.WelcomeScreen"
+        android:label="WelcomeScreen"
+        tools:layout="@layout/fragment_welcome_screen">
+        <action
+            android:id="@+id/action_welcomeScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_welcomeScreen_to_registrationScreen"
+            app:destination="@id/registrationScreen" />
+        <action
+            android:id="@+id/action_welcomeScreen_to_userScreen"
+            app:destination="@id/userScreen" />
+        <action
+            android:id="@+id/action_welcomeScreen_self"
+            app:destination="@id/welcomeScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationScreen"
+        android:name="com.example.newsworth.ui.view.fragment.RegistrationScreen"
+        android:label="RegistrationScreen"
+        tools:layout="@layout/fragment_registration_screen">
+<!--        <action-->
+<!--            android:id="@+id/action_registrationScreen_to_loginScreen"-->
+<!--            app:destination="@id/loginScreen" />-->
+        <action
+            android:id="@+id/action_registrationScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_registrationScreen_to_pdfViewerFragment"
+            app:destination="@id/pdfViewerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userScreen"
+        android:name="com.example.newsworth.ui.view.fragment.UserScreen"
+        android:label="UserScreen"
+        tools:layout="@layout/fragment_user_screen">
+        <action
+            android:id="@+id/action_userScreen_to_imagesFragment"
+            app:destination="@id/imagesFragment" />
+        <action
+            android:id="@+id/action_userScreen_to_mediaUploadFragment"
+            app:destination="@id/mediaUploadFragment" />
+        <action
+            android:id="@+id/action_userScreen_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_userScreen_self"
+            app:destination="@id/userScreen" />
+
+        <action
+            android:id="@+id/action_userScreen_to_videoFragment"
+            app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_userScreen_to_audiosFragment"
+            app:destination="@id/audiosFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/imagesFragment"
+        android:name="com.example.newsworth.ui.view.fragment.ImagesSection"
+        android:label="ImagesFragment"
+        tools:layout="@layout/fragment_images_section"/>
+    <fragment
+        android:id="@+id/mediaUploadFragment"
+        android:name="com.example.newsworth.ui.view.fragment.MediaUploadFragment"
+        android:label="MediaUploadFragment"
+        tools:layout="@layout/fragment_media_upload_screen">
+        <action
+            android:id="@+id/action_mediaUploadFragment_to_userScreen"
+            app:destination="@id/userScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.newsworth.ui.view.fragment.UserProfile"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <action
+            android:id="@+id/action_userProfileFragment_to_userScreen"
+            app:destination="@id/userScreen" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_welcomeScreen"
+            app:destination="@id/welcomeScreen" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_profileDetailsScreen"
+            app:destination="@id/profileDetailsScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="com.example.newsworth.ui.view.fragment.VideoSection"
+        android:label="VideoSection"
+        tools:layout="@layout/fragment_video_section"/>
+    <fragment
+        android:id="@+id/audiosFragment"
+        android:name="com.example.newsworth.ui.view.fragment.AudiosSection"
+        android:label="AudiosSection"
+        tools:layout="@layout/fragment_audios_section"/>
+    <fragment
+        android:id="@+id/forgotPasswordScreen"
+        android:name="com.example.newsworth.ui.view.fragment.ForgotPasswordScreen"
+        android:label="ForgotPasswordScreen"
+        tools:layout="@layout/fragment_forgot_password_screen">
+        <action
+            android:id="@+id/action_forgotPasswordScreen_to_resetPasswordScreen"
+            app:destination="@id/resetPasswordScreen" />
+        <action
+            android:id="@+id/action_forgotPasswordScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetPasswordScreen"
+        android:name="com.example.newsworth.ui.view.fragment.ResetPasswordScreen"
+        android:label="ResetPasswordScreen"
+        tools:layout="@layout/fragment_reset_password_screen">
+        <action
+            android:id="@+id/action_resetPasswordScreen_to_forgotPasswordScreen"
+            app:destination="@id/forgotPasswordScreen" />
+        <action
+            android:id="@+id/action_resetPasswordScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileDetailsScreen"
+        android:name="com.example.newsworth.ui.view.fragment.ProfileDetailsScreen"
+        android:label="fragment_profile_details_screen"
+        tools:layout="@layout/fragment_profile_details_screen" >
+        <action
+            android:id="@+id/action_profileDetailsScreen_to_editProfileScreen"
+            app:destination="@id/editProfileScreen" />
+        <action
+            android:id="@+id/action_profileDetailsScreen_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editProfileScreen"
+        android:name="com.example.newsworth.ui.view.fragment.EditProfileScreen"
+        android:label="fragment_edit_profile_screen"
+        tools:layout="@layout/fragment_edit_profile_screen" >
+        <action
+            android:id="@+id/action_editProfileScreen_to_profileDetailsScreen"
+            app:destination="@id/profileDetailsScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/pdfViewerFragment"
+        android:name="com.example.newsworth.ui.view.fragment.PdfViewerFragment"
+        android:label="fragment_pdf_viewer"
+        tools:layout="@layout/fragment_pdf_viewer" />
+</navigation>

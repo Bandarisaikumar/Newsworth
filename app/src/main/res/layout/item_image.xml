@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="5dp">
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        android:padding="6dp"
+        tools:ignore="TextSizeCheck">
+
+        <!-- Image -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+
+            <!-- Main ImageView -->
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/image_description"
+                android:scaleType="centerCrop" />
+
+            <!-- Overlay Icon -->
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                android:contentDescription="@string/icon_description"
+                android:src="@drawable/photoimage" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <TextView
+                android:id="@+id/price_section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="10dp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:weightSum="2">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/image_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/title_placeholder2"
+            android:textSize="14sp"
+            android:textColor="#0000EE"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/age_in_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="age_in_days"
+                    android:textSize="12dp"
+                    android:textColor="#DC553D"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    tools:ignore="TextSizeCheck" />
+
+                <TextView
+                    android:id="@+id/gps_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="gps_location"
+                    android:gravity="center"
+                    android:textSize="12dp"
+                    android:maxLines="1"
+                    tools:ignore="TextSizeCheck" />
+
+                <TextView
+                    android:id="@+id/uploaded_by"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="uploaded_by"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:textColor="#0000EE"
+                    android:maxLines="1"
+                    tools:ignore="TextSizeCheck" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/content_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/description_placeholder_text2"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:maxLines="1"
+            tools:ignore="TextContrastCheck" />
+
+<!--        &lt;!&ndash; Cart Icon &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/cart_icon"-->
+<!--            android:layout_width="25dp"-->
+<!--            android:layout_height="25dp"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:contentDescription="@string/cart_icon_description2"-->
+<!--            android:src="@drawable/icon11" />-->
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

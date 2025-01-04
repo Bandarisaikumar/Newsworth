@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="14dp"
+    android:backgroundTint="@color/white"
+    android:elevation="15dp"
+    app:cardCornerRadius="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_regular"
+            android:gravity="center"
+            android:text="@string/upload"
+            android:textColor="@color/blue"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_image"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rectangular_button"
+            android:backgroundTint="#D4EAFF"
+            android:fontFamily="@font/poppins_regular"
+            android:gravity="center"
+            android:paddingStart="85dp"
+            android:paddingEnd="90dp"
+            android:text="  Image"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/images_icon"
+            tools:ignore="HardcodedText,TextSizeCheck" />
+
+        <TextView
+            android:id="@+id/btn_video"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rectangular_button"
+            android:backgroundTint="#D4EAFF"
+            android:fontFamily="@font/poppins_regular"
+            android:gravity="center"
+            android:paddingStart="85dp"
+            android:paddingEnd="90dp"
+            android:text="  video"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/video_icon"
+            tools:ignore="HardcodedText,TextSizeCheck" />
+
+        <TextView
+            android:id="@+id/btn_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rectangular_button"
+            android:backgroundTint="#D4EAFF"
+            android:fontFamily="@font/poppins_regular"
+            android:gravity="center"
+            android:paddingStart="85dp"
+            android:paddingEnd="90dp"
+            android:text="  Audio"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/audio_icon2"
+            tools:ignore="HardcodedText,TextSizeCheck" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
