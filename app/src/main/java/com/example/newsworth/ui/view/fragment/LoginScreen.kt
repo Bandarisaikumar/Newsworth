@@ -30,7 +30,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class LoginScreen : Fragment() {
 
     private lateinit var loginViewModel: UserManagementViewModel
-    private lateinit var binding: FragmentLoginScreenBinding
+    private lateinit var binding : FragmentLoginScreenBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentLoginScreenBinding.inflate(inflater, container, false)
