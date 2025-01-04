@@ -40,6 +40,7 @@ class LoginScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         // Initialize Repository and ViewModel
         val apiService = context?.let { RetrofitClient.getApiService(it) }
         val repository = apiService?.let { UserManagementRepository(it) }
