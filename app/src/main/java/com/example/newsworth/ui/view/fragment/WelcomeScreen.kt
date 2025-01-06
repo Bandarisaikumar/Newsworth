@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.newsworth.R
@@ -71,7 +72,15 @@ class WelcomeScreen : Fragment() {
 
         // Start auto-scrolling
         handler.postDelayed(runnable, 3000)
-
+        // Handle the back gesture
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // If this is the first screen (welcome screen), close the app
+            if (findNavController().currentDestination?.id == R.id.welcomeScreen) {
+                requireActivity().finish() // Close the app
+            } else {
+                findNavController().navigateUp() // Navigate up if not on the welcome screen
+            }
+        }
         return binding.root
     }
 

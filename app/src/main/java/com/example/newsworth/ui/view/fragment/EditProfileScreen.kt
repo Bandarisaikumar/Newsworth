@@ -214,7 +214,7 @@ class EditProfileScreen : Fragment() {
             val profileRequest = EditProfileRequest(
                 user_id = userId,
                 first_name = binding.firstNameValue.text.toString(),
-                middle_name = binding.middleNameValue.text.toString().takeIf { it.isNotBlank() },
+                middle_name = binding.middleNameValue.text.toString(),
                 last_name = binding.lastNameValue.text.toString(),
                 gender = binding.genderValue.text.toString().takeIf { it.isNotBlank() },
                 user_email = userEmail,

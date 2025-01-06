@@ -21,6 +21,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -106,6 +107,17 @@ class UserScreen : Fragment() {
         setupButtonListeners()
         binding.homeImage.setColorFilter(ContextCompat.getColor(requireContext(), R.color.mehrun_color), android.graphics.PorterDuff.Mode.SRC_IN)
 
+
+        // Handle the back gesture
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // If this is the first screen, navigate to the previous screen (SecondScreen)
+            if (findNavController().currentDestination?.id == R.id.welcomeScreen) {
+                findNavController().navigateUp() // Navigate back in the navigation stack
+
+            } else {
+                findNavController().navigateUp() // Navigate back in the navigation stack
+            }
+        }
 
         return binding.root
     }
