@@ -346,8 +346,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="start"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal">
                             <CheckBox
                                 android:id="@+id/checkbox"
@@ -357,10 +356,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="1dp"
-                                android:layout_marginEnd="5dp"
                                 android:text="I agree with the "
                                 android:textSize="12dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginStart="-5dp"
                                 tools:ignore="TextSizeCheck" />
 
                             <TextView
@@ -368,7 +368,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="1dp"
-                                android:text="Terms and Conditions"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginEnd="0dp"                                android:text="Terms and Conditions"
                                 android:textColor="#0000EE"
                                 android:textSize="12dp"
                                 tools:ignore="TextSizeCheck,TextSizeCheck" />
