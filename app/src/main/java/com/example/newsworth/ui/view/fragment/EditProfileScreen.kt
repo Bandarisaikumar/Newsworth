@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Filter
@@ -121,7 +120,7 @@ class EditProfileScreen : Fragment() {
         }
 
         // Date of Birth Calendar Dialog
-        val dobField: AutoCompleteTextView = binding.dobValue
+        val dobField: AutoCompleteTextView= binding.dobData
         dobField.setOnClickListener {
             showDatePicker(dobField)
         }
@@ -161,7 +160,7 @@ class EditProfileScreen : Fragment() {
                     emailValue.setText(response.response_message.user_email)
                     mobileValue.setText(response.response_message.user_phone_number)
                     genderValue.setText(response.response_message.gender ?: "")
-                    dobValue.setText(response.response_message.date_of_birth)
+                    dobData.setText(response.response_message.date_of_birth)
                     pincodeValue.setText(response.response_message.pin_code?.toString() ?: "")
                     locationNameValue.setText(response.response_message.location_name ?: "")
                     districtNameValue.setText(response.response_message.district_name ?: "")
@@ -183,7 +182,7 @@ class EditProfileScreen : Fragment() {
         binding.saveButton.setOnClickListener {
             // Collect data from input fields
             val userEmail = binding.emailValue.text.toString()
-            val dateOfBirth = binding.dobValue.text.toString()
+            val dateOfBirth = binding.dobData.text.toString()
             val pinCodeString = binding.pincodeValue.text.toString()
 
             // Validate email only if entered

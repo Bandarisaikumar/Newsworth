@@ -181,18 +181,20 @@
             android:layout_weight="1">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dobValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxBackgroundColor="@color/box_background"
-                app:endIconMode="dropdown_menu">
+                app:endIconDrawable="@drawable/icon6"
+                app:endIconMode="custom">
 
                 <AutoCompleteTextView
-                    android:id="@+id/dobValue"
+                    android:id="@+id/dobData"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:hint="Date of Birth"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:fontFamily="@font/poppins_regular"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
