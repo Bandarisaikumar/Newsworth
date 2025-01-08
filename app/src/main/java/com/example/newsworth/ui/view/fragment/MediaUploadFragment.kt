@@ -59,6 +59,7 @@ class MediaUploadFragment : Fragment() {
     private lateinit var viewModel: NewsWorthCreatorViewModel
     private val LOCATION_PERMISSION_REQUEST_CODE = 1003
     private var contentId: Int = 0
+    private var mediaPlayer: MediaPlayer? = null
     private lateinit var sharedViewModel: SharedViewModel // SharedViewModel
 
 
@@ -152,7 +153,15 @@ class MediaUploadFragment : Fragment() {
 
 
         binding.btnUpload.setOnClickListener {
-
+            // Stop audio playback if it's playing
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.stop()
+                    it.release()
+                    mediaPlayer = null
+                    Toast.makeText(requireContext(), "Audio playback stopped", Toast.LENGTH_SHORT).show()
+                }
+            }
             // Get reference to the ProgressBar
             val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
             // Validate that all fields are filled
@@ -328,44 +337,39 @@ class MediaUploadFragment : Fragment() {
             binding.imageView.visibility = View.GONE
             binding.btnPlayAudio.visibility = View.VISIBLE
 
-            val mediaPlayer = MediaPlayer()
-
-            // Set up MediaPlayer with the audio URI
-            mediaPlayer.setDataSource(requireContext(), audioUri)
-            mediaPlayer.prepare()
-
-            // Handle play/pause functionality for the audio
-            // Handle play/pause functionality for the audio
-            binding.btnPlayAudio.setOnClickListener {
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.pause()
-                    binding.btnPlayAudio.setImageResource(R.drawable.play_button)
-                    Toast.makeText(requireContext(), "Audio Paused", Toast.LENGTH_SHORT).show()
-                } else {
-                    mediaPlayer.start()
-                    binding.btnPlayAudio.setImageResource(R.drawable.pause_button)
-                    Toast.makeText(requireContext(), "Audio Playing", Toast.LENGTH_SHORT).show()
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer()
+                mediaPlayer?.apply {
+                    setDataSource(requireContext(), audioUri)
+                    prepare()
                 }
             }
 
-            // Setup onCompletionListener for MediaPlayer
-            mediaPlayer.setOnCompletionListener {
-                Toast.makeText(requireContext(), "Audio Finished", Toast.LENGTH_SHORT).show()
-                binding.btnPlayAudio.setImageResource(R.drawable.play_button)
-                mediaPlayer.reset() // Reset to allow replay
-                mediaPlayer.setDataSource(requireContext(), audioUri)
-                mediaPlayer.prepare() // Prepare for the next play
+            binding.btnPlayAudio.setOnClickListener {
+                mediaPlayer?.let {
+                    if (it.isPlaying) {
+                        it.pause()
+                        binding.btnPlayAudio.setImageResource(R.drawable.play_button)
+                        Toast.makeText(requireContext(), "Audio Paused", Toast.LENGTH_SHORT).show()
+                    } else {
+                        it.start()
+                        binding.btnPlayAudio.setImageResource(R.drawable.pause_button)
+                        Toast.makeText(requireContext(), "Audio Playing", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
+            mediaPlayer?.setOnCompletionListener {
+                Toast.makeText(requireContext(), "Audio Finished", Toast.LENGTH_SHORT).show()
+                binding.btnPlayAudio.setImageResource(R.drawable.play_button)
+                mediaPlayer?.reset()
+                mediaPlayer?.setDataSource(requireContext(), audioUri)
+                mediaPlayer?.prepare()
+            }
         } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "Failed to play audio: ${e.message}",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(requireContext(), "Failed to play audio: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun getLocationDetails() {
         if (ContextCompat.checkSelfPermission(

@@ -491,39 +491,42 @@ class RegistrationScreen : Fragment() {
         }.show()
     }
     private fun validateFields(): Boolean {
+        // Trim whitespace from user inputs before validation
+        val firstName = binding.firstName.text.toString().trim()
+        val lastName = binding.lastName.text.toString().trim()
+        val mobileNumber = binding.mobileNumber.text.toString().trim()
+        val emailAddress = binding.emailAddress.text.toString().trim()
+
         when {
-            !isValidName(binding.firstName.text.toString()) -> {
+            !isValidName(firstName) -> {
                 binding.firstName.error = "First Name is required and cannot contain numbers or special characters"
                 return false
             }
-            // Optional field for middle name: You can add validation if needed.
-            !isValidName(binding.lastName.text.toString()) -> {
+            !isValidName(lastName) -> {
                 binding.lastName.error = "Last Name is required and cannot contain numbers or special characters"
                 return false
             }
 
-            binding.mobileNumber.text?.isNotBlank() == true &&
-                    !binding.mobileNumber.text.toString().matches(Regex("^\\d{10}\$")) -> {
+            mobileNumber.isNotBlank() && !mobileNumber.matches(Regex("^\\d{10}\$")) -> {
                 binding.mobileNumber.error = "Enter a valid 10-digit Mobile Number"
                 return false
             }
 
-            binding.emailAddress.text?.isNotBlank() == true &&
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(binding.emailAddress.text.toString())
-                        .matches() -> {
+            emailAddress.isNotBlank() &&
+                    !android.util.Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches() -> {
                 binding.emailAddress.error = "Enter a valid Email Address"
                 return false
             }
 
-            binding.mobileNumber.text.isNullOrBlank() && binding.emailAddress.text.isNullOrBlank() -> {
+            mobileNumber.isBlank() && emailAddress.isBlank() -> {
                 binding.mobileNumber.error = "Mobile Number or Email Address is required"
                 binding.emailAddress.error = "Mobile Number or Email Address is required"
                 return false
             }
         }
         return true
-
     }
+
     // Updated helper function for validating names
     private fun isValidName(name: String): Boolean {
         return when {

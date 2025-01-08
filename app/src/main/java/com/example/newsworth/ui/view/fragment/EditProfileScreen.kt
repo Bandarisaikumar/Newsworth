@@ -238,6 +238,8 @@ class EditProfileScreen : Fragment() {
         viewModel.editProfileResult.observe(viewLifecycleOwner) { response ->
             if (response.response == "success") {
                 Toast.makeText(requireContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_editProfileScreen_to_profileDetailsScreen)
+
             } else {
                 Toast.makeText(requireContext(), "Failed to update profile: ${response.response_message}", Toast.LENGTH_SHORT).show()
             }
