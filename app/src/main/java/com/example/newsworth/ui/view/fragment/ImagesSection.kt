@@ -38,6 +38,8 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
 
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
         val recyclerView = view.findViewById<RecyclerView>(R.id.full_images_recycler_view)
+        val swipeRefreshLayout = view.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
 
 //        // Set up RecyclerView with GridLayoutManager
 //        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
@@ -56,6 +58,8 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
             } else {
                 Toast.makeText(requireContext(), "No images found", Toast.LENGTH_SHORT).show()
             }
+            swipeRefreshLayout.isRefreshing = false // Stop refresh animation
+
         }
         // Initialize ViewModel with ApiService from RetrofitClient
         val apiService = RetrofitClient.getApiService(requireContext())
@@ -86,11 +90,18 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
                     Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT).show()
                     Log.e("UploadError", "API response: $response")
                 }
+                swipeRefreshLayout.isRefreshing = false // Stop refresh animation
+
             }
         }
         // Back Button Navigation
         backButton.setOnClickListener {
             findNavController().popBackStack()
+        }
+        // Set up SwipeRefreshLayout listener
+        swipeRefreshLayout.setOnRefreshListener {
+            // Refresh data when pulled
+            viewModel.fetchUploadedContent(userId)
         }
     }
 }

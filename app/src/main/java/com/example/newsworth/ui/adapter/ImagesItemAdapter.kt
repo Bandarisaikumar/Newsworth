@@ -60,6 +60,7 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
         Glide.with(holder.itemView.context)
             .load(item.Image_link)
             .into(holder.Image_link)
+
         if (item.Image_link.isNullOrBlank()) {
             // You can use a placeholder image or handle this case differently
             Glide.with(holder.itemView.context)
@@ -69,8 +70,9 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
             Glide.with(holder.itemView.context)
                 .load(item.Image_link)
                 .into(holder.Image_link)
+
         }
     }
-
     override fun getItemCount(): Int = imageList.size
+
 }

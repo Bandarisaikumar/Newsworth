@@ -100,6 +100,19 @@ class UserScreen : Fragment() {
                         .show()
                     Log.e("UploadError", "API response: $response")
                 }
+                binding.swipeRefreshLayout.isRefreshing = false // Stop the refresh animation
+
+            }
+        }
+        binding.scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            binding.swipeRefreshLayout.isEnabled = scrollY == 0
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (binding.scrollView.scrollY == 0) {
+                viewModel.fetchUploadedContent(userId)
+            } else {
+                binding.swipeRefreshLayout.isRefreshing = false
             }
         }
 

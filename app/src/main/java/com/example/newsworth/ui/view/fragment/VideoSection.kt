@@ -31,6 +31,8 @@ class VideoSection : Fragment(R.layout.fragment_video_section) {
 
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
         val recyclerView = view.findViewById<RecyclerView>(R.id.full_videos_recycler_view)
+        val swipeRefreshLayout = view.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
 
 //          Set up RecyclerView with GridLayoutManager
 //        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
@@ -48,6 +50,8 @@ class VideoSection : Fragment(R.layout.fragment_video_section) {
             } else {
                 Toast.makeText(requireContext(), "No videos found", Toast.LENGTH_SHORT).show()
             }
+            swipeRefreshLayout.isRefreshing = false // Stop refresh animation
+
         }
         // Initialize ViewModel with ApiService from RetrofitClient
         val apiService = RetrofitClient.getApiService(requireContext())
@@ -76,11 +80,18 @@ class VideoSection : Fragment(R.layout.fragment_video_section) {
                     Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT).show()
                     Log.e("UploadError", "API response: $response")
                 }
+                swipeRefreshLayout.isRefreshing = false // Stop refresh animation
+
             }
         }
         // Back Button Navigation
         backButton.setOnClickListener {
             findNavController().popBackStack()
+        }
+        // Set up SwipeRefreshLayout listener
+        swipeRefreshLayout.setOnRefreshListener {
+            // Refresh data when pulled
+            viewModel.fetchUploadedContent(userId)
         }
     }
 }

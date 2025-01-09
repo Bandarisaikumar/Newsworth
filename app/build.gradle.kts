@@ -92,6 +92,8 @@ dependencies {
     // FFmpeg
     implementation("com.arthenica:mobile-ffmpeg-full-gpl:4.4")
     implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
 
 
 }

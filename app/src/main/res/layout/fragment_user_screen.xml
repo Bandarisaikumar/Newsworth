@@ -5,6 +5,11 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,6 +82,7 @@
 
         <!-- Scrollable Content -->
         <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
@@ -706,6 +712,7 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
