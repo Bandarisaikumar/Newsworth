@@ -88,6 +88,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+
 
     // FFmpeg
     implementation("com.arthenica:mobile-ffmpeg-full-gpl:4.4")
