@@ -1,9 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.NewsWorth" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.NewsWorth" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="imageTint">#FFFFFFFF</item>
 
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <color name="black">#FFFFFFFF</color>
+    <color name="white">#FF000000</color>
+    <color name="gray">#A6AEBF</color>
+    <color name="blue">#19346F</color>
+    <color name="box_background">#FFFFFFFF</color>
+    <color name="sky_blue">#87ceeb</color>
+    <color name="tab_color">#a9a9a9</color>
+    <color name="mehrun_color">#DF1F5E</color>
+    <color name="box">#E0E0E0</color>
+
 </resources>

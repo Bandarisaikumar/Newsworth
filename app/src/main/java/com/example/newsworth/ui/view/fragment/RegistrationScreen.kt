@@ -451,7 +451,12 @@ class RegistrationScreen : Fragment() {
                     showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
                     binding.passwordsLayout.visibility = View.GONE
                 }
-            }        }
+                /*else if (response.response_message == "Both email and mobile Verified"){
+                    sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+
+                }*/
+            }
+        }
 
         return binding.root
     }

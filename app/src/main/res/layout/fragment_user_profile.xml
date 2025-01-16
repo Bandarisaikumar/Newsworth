@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_gravity="center"
+            app:tint="?attr/imageTint"
             android:src="@drawable/back_arrow"
             tools:ignore="ContentDescription" />
 
@@ -84,6 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="User Name"
+                android:textColor="@color/black"
                 android:layout_gravity="center"
                 android:gravity="center"/>
             <TextView
@@ -91,6 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="User ID"
+                android:textColor="@color/black"
                 android:layout_gravity="center"
                 android:gravity="center"/>
         </LinearLayout>
@@ -252,7 +255,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_regular"
                     android:text="@string/home3"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
@@ -278,7 +281,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_regular"
                     android:text="@string/profile"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/black" />
 
             </LinearLayout>
         </LinearLayout>

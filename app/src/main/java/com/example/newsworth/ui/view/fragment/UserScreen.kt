@@ -167,26 +167,43 @@ class UserScreen : Fragment() {
 //        audiosViewModel.audioList.observe(viewLifecycleOwner) {
 //            audiosRecyclerView.adapter = AudioAdapter(it, requireContext())
 //        }
+//        sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
+//            if (items.isNotEmpty()) {
+//                // Filter for items with Audio_link
+//                val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
+//                audiosRecyclerView.adapter = AudioAdapter(audios) // Set adapter with audios data
+//
+//            } else {
+//                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
+//            }
+//            // Handle audios
+//            val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
+//            if (audios.isNotEmpty()) {
+//                adapter = AudioAdapter(audios)
+//                audiosRecyclerView.adapter = adapter // Set adapter for audios
+//            } else {
+//                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
+//                adapter = AudioAdapter(emptyList()) // Set empty list if no audios
+//                audiosRecyclerView.adapter = adapter // Set empty adapter
+//            }
+//        }
         sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
             if (items.isNotEmpty()) {
                 // Filter for items with Audio_link
                 val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-                audiosRecyclerView.adapter = AudioAdapter(audios) // Set adapter with audios data
-
-            } else {
-                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
-            }
-            // Handle audios
-            val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-            if (audios.isNotEmpty()) {
-                adapter = AudioAdapter(audios)
-                audiosRecyclerView.adapter = adapter // Set adapter for audios
+                if (::adapter.isInitialized) {
+                    audiosRecyclerView.adapter = adapter // Set adapter if it's initialized
+                } else {
+                    adapter = AudioAdapter(audios)
+                    audiosRecyclerView.adapter = adapter // Initialize the adapter if not initialized
+                }
             } else {
                 Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
                 adapter = AudioAdapter(emptyList()) // Set empty list if no audios
                 audiosRecyclerView.adapter = adapter // Set empty adapter
             }
         }
+
 
 
     }
@@ -421,21 +438,24 @@ class UserScreen : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        adapter.releaseMediaPlayer()
-    }
     override fun onStop() {
         super.onStop()
         if (::adapter.isInitialized) {
-            adapter.releaseMediaPlayer() // Release resources only if adapter is initialized
+            adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
         }
     }
 
     override fun onResume() {
         super.onResume()
         if (::adapter.isInitialized) {
-            adapter.releaseMediaPlayer() // Release resources only if adapter is initialized
+            adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::adapter.isInitialized) {
+            adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
         }
     }
 

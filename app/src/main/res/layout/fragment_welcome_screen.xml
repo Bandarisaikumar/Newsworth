@@ -46,7 +46,7 @@
         android:fontFamily="@font/poppins_regular"
         android:layout_gravity="center"
         android:text="@string/sign_up"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/white" />
 
     <!-- Login Button -->
     <com.google.android.material.button.MaterialButton
@@ -59,7 +59,7 @@
         android:fontFamily="@font/poppins_regular"
         android:layout_gravity="center"
         android:text="@string/login"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/white"/>
 
 
     <TextView

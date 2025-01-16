@@ -112,12 +112,16 @@ class AudiosSection : Fragment(R.layout.fragment_audios_section) {
     }
     override fun onDestroy() {
         super.onDestroy()
-        adapter.releaseMediaPlayer()
+        if (::adapter.isInitialized) {
+            adapter.releaseMediaPlayer() // Release resources only if adapter is initialized
+        }
     }
+
     override fun onStop() {
         super.onStop()
         if (::adapter.isInitialized) {
             adapter.releaseMediaPlayer() // Release resources only if adapter is initialized
         }
     }
+
 }

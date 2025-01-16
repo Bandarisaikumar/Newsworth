@@ -25,6 +25,7 @@
             android:layout_marginStart="16dp"
             android:contentDescription="Back Button"
             android:src="@drawable/back_arrow"
+            app:tint="?attr/imageTint"
             tools:ignore="HardcodedText,RedundantDescriptionCheck" />
         <!-- Subtitle -->
         <TextView
@@ -52,7 +53,7 @@
                 android:layout_height="650dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginEnd="14dp"
-                android:backgroundTint="#FFFFFF"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="15dp">
 
@@ -71,7 +72,6 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxBackgroundColor="@color/box_background"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -95,7 +95,6 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxBackgroundColor="@color/box_background"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -135,8 +134,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
-                                android:layout_weight="1"
-                                app:boxBackgroundColor="@color/box_background">
+                                android:layout_weight="1">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/firstName"
@@ -155,8 +153,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
-                                android:layout_weight="1"
-                                app:boxBackgroundColor="@color/box_background">
+                                android:layout_weight="1">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/middleName"
@@ -176,8 +173,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp"
-                            app:boxBackgroundColor="@color/box_background">
+                            android:layout_marginTop="0dp">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/lastName"
@@ -202,7 +198,6 @@
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/box_background"
                                 app:endIconDrawable="@drawable/icon6"
                                 app:endIconMode="custom">
 
@@ -225,7 +220,6 @@
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:boxBackgroundColor="@color/box_background"
                                 app:endIconMode="dropdown_menu">
 
                                 <AutoCompleteTextView
@@ -251,8 +245,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp"
-                            app:boxBackgroundColor="@color/box_background">
+                            android:layout_marginTop="0dp">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/mobileNumber"
@@ -271,8 +264,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp"
-                            app:boxBackgroundColor="@color/box_background">
+                            android:layout_marginTop="0dp">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/emailAddress"
@@ -293,6 +285,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
                             android:layout_marginTop="3dp"
+                            android:textColor="@color/white"
                             android:background="@drawable/rectangular_button"
                             android:text="Send OTP" />
 
@@ -308,7 +301,6 @@
                             android:id="@+id/password_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxBackgroundColor="@color/box_background"
                             app:passwordToggleEnabled="true">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -328,7 +320,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
-                            app:boxBackgroundColor="@color/box_background"
                             app:passwordToggleEnabled="true">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -385,6 +376,7 @@
                             android:fontFamily="@font/poppins_regular"
                             android:minHeight="48dp"
                             android:text="Register"
+                            android:textColor="@color/white"
                             android:textAllCaps="false"
                             app:cornerRadius="8dp"
                             tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />

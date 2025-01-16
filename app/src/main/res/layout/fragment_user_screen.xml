@@ -252,7 +252,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_regular"
                         android:text="@string/home3"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/black" />
 
                 </LinearLayout>
 
@@ -278,7 +278,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_regular"
                         android:text="@string/profile"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/black" />
 
                 </LinearLayout>
             </LinearLayout>

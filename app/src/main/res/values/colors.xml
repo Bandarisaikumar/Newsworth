@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="gray">#A6AEBF</color>
-    <color name="blue">#19346F</color>
-    <color name="box_background">#F0EFFF</color>
-    <color name="sky_blue">#87ceeb</color>
-    <color name="tab_color">#a9a9a9</color>
-    <color name="mehrun_color">#DF1F5E</color>
+
 </resources>

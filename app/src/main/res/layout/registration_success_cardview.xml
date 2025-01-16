@@ -56,8 +56,8 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/rectangular_button"
                     android:fontFamily="@font/poppins_regular"
-                    android:text="Done"
                     android:textColor="@color/white"
+                    android:text="Done"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -2,9 +2,20 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.NewsWorth" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="imageTint">#FF000000</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.NewsWorth" parent="Base.Theme.NewsWorth" />
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#A6AEBF</color>
+    <color name="blue">#19346F</color>
+    <color name="box_background">#F0EFFF</color>
+    <color name="sky_blue">#87ceeb</color>
+    <color name="tab_color">#a9a9a9</color>
+    <color name="mehrun_color">#DF1F5E</color>
+    <color name="box">#E0E0E0</color>
 </resources>

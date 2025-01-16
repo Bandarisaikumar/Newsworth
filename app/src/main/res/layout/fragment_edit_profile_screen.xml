@@ -20,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            app:tint="?attr/imageTint"
             android:src="@drawable/back_arrow"
             tools:ignore="ContentDescription" />
 
@@ -184,7 +185,6 @@
                 android:id="@+id/dobValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/box_background"
                 app:endIconDrawable="@drawable/icon6"
                 app:endIconMode="custom">
 
@@ -214,7 +214,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/genderDropdownLayout"
                 android:layout_width="match_parent"
-                app:boxBackgroundColor="@color/box_background"
                 android:layout_height="wrap_content"
                 app:endIconMode="dropdown_menu">
 
@@ -337,7 +336,6 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/box_background"
                         app:hintEnabled="true">
 
                         <EditText
@@ -370,7 +368,6 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundColor="@color/box_background"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
@@ -403,7 +400,6 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/box_background"
                     app:endIconMode="dropdown_menu">
 
                     <AutoCompleteTextView
@@ -441,7 +437,6 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/box_background"
                     app:endIconMode="dropdown_menu">
 
                     <AutoCompleteTextView
@@ -469,7 +464,6 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundColor="@color/box_background"
                     app:endIconMode="dropdown_menu">
 
                     <AutoCompleteTextView
@@ -497,6 +491,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rectangular_button"
         android:layout_marginTop="20dp"
+        android:textColor="@color/white"
         android:text="Save"/>
         </LinearLayout>
     </ScrollView>

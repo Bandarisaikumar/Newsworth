@@ -36,8 +36,10 @@ import java.io.File
 
 class UserProfile : Fragment() {
 
-    private lateinit var binding: FragmentUserProfileBinding
-    private lateinit var profileViewModel: ProfileManagementViewmodel
+    private var _binding: FragmentUserProfileBinding? = null
+    private val binding get() = _binding!! // Non-null assertion for safe access
+    private var _profileViewModel: ProfileManagementViewmodel? = null
+    private val  profileViewModel get() = _profileViewModel!! // Non-null assertion for safe access
     private lateinit var userViewModel: UserManagementViewModel
 
 
@@ -51,14 +53,14 @@ class UserProfile : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUserProfileBinding.inflate(inflater, container, false)
+        _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         val isTinted = false
 
 
         val profileRepository =
             ProfileManagementRepository(RetrofitClient.getApiService(requireContext()))
         val profileFactory = ProfileManagementViewmodelFactory(profileRepository)
-        profileViewModel =
+        _profileViewModel =
             ViewModelProvider(this, profileFactory).get(ProfileManagementViewmodel::class.java)
 
         val userRepository =
@@ -140,15 +142,16 @@ class UserProfile : Fragment() {
         }
 
 
+
         // Trigger the dialog when "Change Password" section is clicked
         binding.changePasswordBtn.setOnClickListener {
             showChangePasswordDialog()
         }
 
 
+
         return binding.root
     }
-
     private fun navigateToUserScreenForUpload() {
         val bundle = Bundle().apply {
             putBoolean("continueUpload", true) // Flag to continue the upload process
@@ -421,7 +424,12 @@ class UserProfile : Fragment() {
         }
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Clean up binding
+        // Make sure to clean up other resources if needed (like ViewModel, adapters, etc.)
+        _profileViewModel = null // Make sure your ViewModel is also cleaned up if necessary
+    }
 
 
 
