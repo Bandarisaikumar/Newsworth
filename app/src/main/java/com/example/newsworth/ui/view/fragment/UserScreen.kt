@@ -458,6 +458,15 @@ class UserScreen : Fragment() {
             adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
         }
     }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        mediaRecorder?.release()
+//        mediaRecorder = null
+//        if (::adapter.isInitialized) {
+//            adapter.releaseMediaPlayer()
+//        }
+//    }
+
 
 
     @Deprecated("Deprecated in Java")
