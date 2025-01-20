@@ -61,7 +61,11 @@ class UserScreen : Fragment() {
     private var mediaRecorder: MediaRecorder? = null
     private var audioFileName: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentUserScreenBinding.inflate(inflater, container, false)
 
         arguments?.getBoolean("continueUpload")?.let { continueUpload ->
@@ -71,7 +75,10 @@ class UserScreen : Fragment() {
         // Initialize ViewModel with ApiService from RetrofitClient
         val apiService = RetrofitClient.getApiService(requireContext())
         val repository = NewsWorthCreatorRepository(apiService)
-        viewModel = ViewModelProvider(this, NewsWorthCreatorViewModelFactory(repository))[NewsWorthCreatorViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            NewsWorthCreatorViewModelFactory(repository)
+        )[NewsWorthCreatorViewModel::class.java]
         val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
         viewModel.fetchUploadedContent(userId)
         viewModel.uploadedContent.observe(viewLifecycleOwner) { response ->
@@ -91,7 +98,8 @@ class UserScreen : Fragment() {
                             discount = imageResponse.discount,
                             Image_link = imageResponse.Image_link,
                             Audio_link = imageResponse.Audio_link,
-                            Video_link = imageResponse.Video_link)
+                            Video_link = imageResponse.Video_link
+                        )
                     }
 
                     sharedViewModel.setImagesList(imagesList) // Share the data with the ImagesFragment
@@ -118,7 +126,12 @@ class UserScreen : Fragment() {
 
         setupRecyclerViews()
         setupButtonListeners()
-        binding.homeImage.setColorFilter(ContextCompat.getColor(requireContext(), R.color.mehrun_color), android.graphics.PorterDuff.Mode.SRC_IN)
+        binding.homeImage.setColorFilter(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.mehrun_color
+            ), android.graphics.PorterDuff.Mode.SRC_IN
+        )
 
 
         // Handle the back gesture
@@ -167,43 +180,42 @@ class UserScreen : Fragment() {
 //        audiosViewModel.audioList.observe(viewLifecycleOwner) {
 //            audiosRecyclerView.adapter = AudioAdapter(it, requireContext())
 //        }
-//        sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
-//            if (items.isNotEmpty()) {
-//                // Filter for items with Audio_link
-//                val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-//                audiosRecyclerView.adapter = AudioAdapter(audios) // Set adapter with audios data
-//
-//            } else {
-//                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
-//            }
-//            // Handle audios
-//            val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-//            if (audios.isNotEmpty()) {
-//                adapter = AudioAdapter(audios)
-//                audiosRecyclerView.adapter = adapter // Set adapter for audios
-//            } else {
-//                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
-//                adapter = AudioAdapter(emptyList()) // Set empty list if no audios
-//                audiosRecyclerView.adapter = adapter // Set empty adapter
-//            }
-//        }
         sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
             if (items.isNotEmpty()) {
                 // Filter for items with Audio_link
                 val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-                if (::adapter.isInitialized) {
-                    audiosRecyclerView.adapter = adapter // Set adapter if it's initialized
-                } else {
-                    adapter = AudioAdapter(audios)
-                    audiosRecyclerView.adapter = adapter // Initialize the adapter if not initialized
-                }
+                audiosRecyclerView.adapter = AudioAdapter(audios) // Set adapter with audios data
+
+            } else {
+                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
+            }
+            // Handle audios
+            val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
+            if (audios.isNotEmpty()) {
+                adapter = AudioAdapter(audios)
+                audiosRecyclerView.adapter = adapter // Set adapter for audios
             } else {
                 Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
                 adapter = AudioAdapter(emptyList()) // Set empty list if no audios
                 audiosRecyclerView.adapter = adapter // Set empty adapter
             }
         }
-
+//        sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
+//            if (items.isNotEmpty()) {
+//                // Filter for items with Audio_link
+//                val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
+//                if (::adapter.isInitialized) {
+//                    audiosRecyclerView.adapter = adapter // Set adapter if it's initialized
+//                } else {
+//                    adapter = AudioAdapter(audios)
+//                    audiosRecyclerView.adapter = adapter // Initialize the adapter if not initialized
+//                }
+//            } else {
+//                Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
+//                adapter = AudioAdapter(emptyList()) // Set empty list if no audios
+//                audiosRecyclerView.adapter = adapter // Set empty adapter
+//            }
+//        }
 
 
     }
@@ -225,7 +237,10 @@ class UserScreen : Fragment() {
                 homeImage.clearColorFilter() // Remove tint
                 isTinted = false
             } else {
-                homeImage.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), android.graphics.PorterDuff.Mode.SRC_IN)
+                homeImage.setColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.black),
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
                 isTinted = true
             }
         }
@@ -241,13 +256,22 @@ class UserScreen : Fragment() {
         createDialog(R.layout.popup_screen_for_upload) { dialog ->
             with(dialog) {
                 setClick(R.id.btn_image) {
-                    handlePermission(android.Manifest.permission.CAMERA, CAMERA_PERMISSION_REQUEST_CODE) { launchCameraForImage() }
+                    handlePermission(
+                        android.Manifest.permission.CAMERA,
+                        CAMERA_PERMISSION_REQUEST_CODE
+                    ) { launchCameraForImage() }
                 }
                 setClick(R.id.btn_video) {
-                    handlePermission(android.Manifest.permission.CAMERA, CAMERA_PERMISSION_REQUEST_CODE) { launchCameraForVideo() }
+                    handlePermission(
+                        android.Manifest.permission.CAMERA,
+                        CAMERA_PERMISSION_REQUEST_CODE
+                    ) { launchCameraForVideo() }
                 }
                 setClick(R.id.btn_audio) {
-                    handlePermission(android.Manifest.permission.RECORD_AUDIO, AUDIO_PERMISSION_REQUEST_CODE) { showAudioRecordingDialog() }
+                    handlePermission(
+                        android.Manifest.permission.RECORD_AUDIO,
+                        AUDIO_PERMISSION_REQUEST_CODE
+                    ) { showAudioRecordingDialog() }
                 }
             }
         }
@@ -257,7 +281,10 @@ class UserScreen : Fragment() {
         val dialog = Dialog(requireContext()).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(layout)
-            window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+            window?.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
             setOnDismissListener { binding.drawerLayout.visibility = View.VISIBLE }
         }
         binding.drawerLayout.visibility = View.INVISIBLE
@@ -273,7 +300,11 @@ class UserScreen : Fragment() {
     }
 
     private fun handlePermission(permission: String, requestCode: Int, action: () -> Unit) {
-        if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestPermissions(arrayOf(permission), requestCode)
         } else action()
     }
@@ -296,7 +327,8 @@ class UserScreen : Fragment() {
                     isRecording = !isRecording
                     button.text = if (isRecording) "Stop Recording" else "Start Recording"
                 } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT)
+                        .show()
                     Log.e("AudioRecording", "Error: ${e.message}")
                 }
             }
@@ -381,7 +413,6 @@ class UserScreen : Fragment() {
 
     private fun navigateToMediaUpload(mediaType: String, media: Any) {
         val sharedPrefs = requireContext().getSharedPreferences("MediaPrefs", Context.MODE_PRIVATE)
-
         val bundle = Bundle().apply {
             putString("mediaType", mediaType)
             when (mediaType) {
@@ -389,20 +420,20 @@ class UserScreen : Fragment() {
                     val imagePath = saveBitmapToFile(media as Bitmap).absolutePath
                     val base64Image = encodeFileToBase64(imagePath)
                     putString("base64Data", base64Image)
-
                 }
+
                 "Video" -> {
-                    val videoPath = media as String  // The absolute path of the video
+                    val videoPath = media as String
                     // Save the video path to SharedPreferences
                     sharedPrefs.edit().putString("videoPathKey", videoPath).apply()
                     // Pass the key in the Bundle
                     putString("pathKey", "videoPathKey")
                 }
-
             }
         }
         findNavController().navigate(R.id.action_userScreen_to_mediaUploadFragment, bundle)
     }
+
 
     private fun encodeFileToBase64(filePath: String): String {
         val file = File(filePath)
@@ -421,22 +452,27 @@ class UserScreen : Fragment() {
         }
         return file
     }
+
     // Function to save video to a temporary file and get its absolute path
     private fun saveVideoToFile(uri: Uri): String? {
-        try {
+        return try {
             val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val tempFile = File.createTempFile("video", ".mp4", requireContext().cacheDir)
+            val tempFile = File(
+                requireContext().cacheDir,
+                "video_${System.currentTimeMillis()}.mp4" // Unique file name with timestamp
+            )
             inputStream?.use { input ->
                 tempFile.outputStream().use { output ->
                     input.copyTo(output)
                 }
             }
-            return tempFile.absolutePath // Return the absolute path
+            tempFile.absolutePath // Return the absolute path of the new file
         } catch (e: Exception) {
             Log.e("VideoSaveError", "Failed to save video: ${e.message}")
-            return null
+            null
         }
     }
+
 
     override fun onStop() {
         super.onStop()
@@ -458,7 +494,8 @@ class UserScreen : Fragment() {
             adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
         }
     }
-//    override fun onDestroy() {
+
+    //    override fun onDestroy() {
 //        super.onDestroy()
 //        mediaRecorder?.release()
 //        mediaRecorder = null
@@ -466,21 +503,36 @@ class UserScreen : Fragment() {
 //            adapter.releaseMediaPlayer()
 //        }
 //    }
-
-
-
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                REQUEST_IMAGE_CAPTURE -> (data?.extras?.get("data") as? Bitmap)?.let { navigateToMediaUpload("Image",it)
+                REQUEST_IMAGE_CAPTURE -> {
+                    (data?.extras?.get("data") as? Bitmap)?.let {
+                        navigateToMediaUpload(
+                            "Image",
+                            it
+                        )
+                    }
                 }
 
-                REQUEST_VIDEO_CAPTURE -> data?.data?.let { videoUri ->
-                    val videoFilePath = saveVideoToFile(videoUri) // Get the absolute path of the video
-                    videoFilePath?.let { filePath ->
-                        navigateToMediaUpload("Video", filePath) // Pass the absolute path to MediaUploadFragment
+                REQUEST_VIDEO_CAPTURE -> {
+                    data?.data?.let { videoUri ->
+                        val videoFilePath = saveVideoToFile(videoUri) // Save new video
+                        if (videoFilePath != null) {
+                            Log.d(
+                                "VideoFilePath",
+                                "Saved video file path: $videoFilePath"
+                            ) // Log the file path
+                            navigateToMediaUpload("Video", videoFilePath) // Use the new file path
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Failed to save video file",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }
@@ -490,7 +542,11 @@ class UserScreen : Fragment() {
     private fun navigate(actionId: Int) = findNavController().navigate(actionId)
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {

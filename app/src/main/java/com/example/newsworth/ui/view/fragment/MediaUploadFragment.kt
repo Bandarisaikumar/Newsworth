@@ -159,7 +159,8 @@ class MediaUploadFragment : Fragment() {
                     it.stop()
                     it.release()
                     mediaPlayer = null
-                    Toast.makeText(requireContext(), "Audio playback stopped", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Audio playback stopped", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             // Get reference to the ProgressBar
@@ -242,15 +243,18 @@ class MediaUploadFragment : Fragment() {
                 progressBar?.visibility = View.GONE
 
                 response?.let {
-                    Toast.makeText(requireContext(), response.response_message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), response.response_message, Toast.LENGTH_SHORT)
+                        .show()
                     try {
                         findNavController().navigate(R.id.action_mediaUploadFragment_to_userScreen)
                     } catch (e: Exception) {
                         Log.e("NavigationError", "Error during navigation: ${e.localizedMessage}")
-                        Toast.makeText(requireContext(), "Navigation failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Navigation failed", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } ?: run {
-                    Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT)
+                        .show()
                     Log.e("UploadError", "API response: $response")
                 }
             }
@@ -367,7 +371,11 @@ class MediaUploadFragment : Fragment() {
                 mediaPlayer?.prepare()
             }
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Failed to play audio: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Failed to play audio: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -584,14 +592,14 @@ class MediaUploadFragment : Fragment() {
                 val sharedPrefs =
                     requireContext().getSharedPreferences("MediaPrefs", Context.MODE_PRIVATE)
 
-                return if (pathKey == "videoPathKey") {
+                if (pathKey == "videoPathKey") {
                     // Retrieve the video path from SharedPreferences
                     val videoPath = sharedPrefs.getString("videoPathKey", null)
                     videoPath?.let {
                         // Convert the file path string into a File object
                         val videoFile = File(it)
 
-                        // Call encodeFileToBase64 with the File object
+                        // Call compress and encode video
                         compressVideoAndEncode(videoFile)
                     }
                 } else {
@@ -602,18 +610,19 @@ class MediaUploadFragment : Fragment() {
 
             "Audio" -> {
                 val base64Audio = arguments?.getString("audioBase64")
-                // Return the Base64 string for audio
-                base64Audio ?: ""
+                base64Audio ?: "" // Return the Base64 string for audio
             }
 
             else -> null // Return null for unsupported media types
         }
     }
 
+
     fun encodeFileToBase64(file: File): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         val buffer = ByteArray(1024 * 8)  // 8KB buffer for chunking
         var inputStream: InputStream? = null
+
         try {
             inputStream = FileInputStream(file)
             var bytesRead: Int
@@ -634,25 +643,39 @@ class MediaUploadFragment : Fragment() {
         return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
     }
 
+
     fun compressVideoAndEncode(file: File): String {
         // Define the output file path for the compressed video
-        val outputFile = File(requireContext().cacheDir, "compressed_video.mp4")
+        val outputFile = File(
+            requireContext().cacheDir,
+            "compressed_video_${System.currentTimeMillis()}.mp4"
+        ) // Unique file name
 
-        // Run FFmpeg command to compress the video (lower resolution and bitrate)
+        // FFmpeg command for video compression
         val command = arrayOf(
             "-i", file.absolutePath,       // Input file
             "-vcodec", "libx264",           // Video codec
             "-crf", "28",                   // Quality setting (lower means higher quality)
             "-preset", "fast",              // Speed of compression
             "-s", "1280x720",               // Reduce resolution to 1280x720
+            "-y",                           // Overwrite the output file without asking
             outputFile.absolutePath        // Output file
         )
 
-        // Execute the FFmpeg command
-        FFmpeg.execute(command)
+        // Execute FFmpeg command and check if it was successful
+        val result = FFmpeg.execute(command)
+        if (result != 0) {
+            Log.e("VideoCompression", "Video compression failed with result code: $result")
+            return "" // Return empty string if compression failed
+        }
 
-        // Convert the compressed video to Base64
-        return encodeFileToBase64(outputFile)  // Use your previous chunking method here
+        // Check if the compressed video file exists
+        return if (outputFile.exists()) {
+            encodeFileToBase64(outputFile)  // Convert the compressed video to Base64
+        } else {
+            Log.e("VideoCompression", "Compressed video file does not exist.")
+            ""
+        }
     }
 
 
