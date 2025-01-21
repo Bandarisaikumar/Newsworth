@@ -165,6 +165,7 @@ class MediaUploadFragment : Fragment() {
             }
             // Get reference to the ProgressBar
             val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
+            progressBar?.visibility = View.VISIBLE
             // Validate that all fields are filled
             val title = binding.etTitle.text.toString()
             val description = binding.etDescription.text.toString()

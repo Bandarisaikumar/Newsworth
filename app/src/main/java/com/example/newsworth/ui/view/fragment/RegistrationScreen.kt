@@ -159,14 +159,8 @@ class RegistrationScreen : Fragment() {
                 startActivity(intent)
             }
         }
-
-
-
         binding.sendOtpButton.setOnClickListener {
             if (validateDropdownSelections() && validateFields()) {
-//                binding.registerCardView.visibility = View.GONE
-                // Disable the input fields to make them non-editable
-//                disableFields()
                 val request = RegistrationModels.SendOtpRequest(
                     first_name = binding.firstName.text.toString(),
                     mobile = binding.mobileNumber.text.toString(),
@@ -175,159 +169,10 @@ class RegistrationScreen : Fragment() {
                 viewModel.sendOtp(request)
 
 
-                viewModel.otpResponse.observe(viewLifecycleOwner) { response ->
-                    when (response.response) {
-                        "success" -> {
-                            Toast.makeText(
-                                requireContext(),
-                                response.response_message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            when (response.response_message) {
-                                "Mobile is already registered. Please log in or use a different mobile number." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-                            when (response.response_message) {
-                                "OTP successfully sent to your email." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-                            when (response.response_message) {
-                                "OTP successfully sent to Mobile." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-                            when (response.response_message) {
-                                "OTP successfully sent to both email and mobile." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-
-                            when (response.response_message) {
-                                "Mobile is already registered. Please verify your mobile to proceed." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
-                                    binding.passwordsLayout.visibility = View.VISIBLE
-                                }
-                            }
-                            when(response.response_message) {
-                                "Please verify your email to proceed." ->{
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
-                                }
-                            }
-                            when(response.response_message) {
-                                "Please complete your registration and activate your account." ->{
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.VISIBLE
-                                }
-                            }
-
-                        }
-                        "failure" -> {
-                            binding.passwordsLayout.visibility = View.GONE
-                            when (response.response_message) {
-                                "Email is already registered. Please log in or use a different email." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-                            when (response.response_message) {
-                                "Both email and mobile number are already registered. Please use different credentials." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-                            when (response.response_message) {
-                                "Both mobile and email are already registered. Please use different credentials." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.GONE
-                                }
-                            }
-
-                            when (response.response_message) {
-                                "Please complete your registration and activate your account." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    binding.passwordsLayout.visibility = View.VISIBLE
-                                }
-                            }
-                            when (response.response_message) {
-                                "Mobile is already registered. Please use a different Mobile Number." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                            when (response.response_message) {
-                                "Email is already registered. Please use a different email address." -> {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        response.response_message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-
-                    }
-
-                }
             }
         }
+
+
         // Observe LiveData
         viewModel.registrationResponse.observe(viewLifecycleOwner) { response ->
             if (response.response == "success") {
@@ -457,9 +302,93 @@ class RegistrationScreen : Fragment() {
                 }*/
             }
         }
+        viewModel.otpResponse.observe(viewLifecycleOwner) { response ->
+            response?.let {
+                handleOtpResponse(it)
+            }
+        }
 
         return binding.root
     }
+
+    private fun handleOtpResponse(response: RegistrationModels.SendOtpResponse ) {
+        when (response.response) {
+            "success" -> {
+                handleSuccessResponse(response.response_message)
+            }
+            "failure" -> {
+                handleFailureResponse(response.response_message)
+            }
+        }
+    }
+    // Declare a global variable for the current Toast
+    private var currentToast: Toast? = null
+
+    private fun showToast(message: String) {
+        // Cancel the current toast if it exists
+        currentToast?.cancel()
+
+        // Create and show a new toast
+        currentToast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+        currentToast?.show()
+    }
+
+    private fun handleSuccessResponse(message: String) {
+        // Use the showToast function to display the message
+        showToast(message)
+
+        when (message) {
+            "Mobile is already registered. Please log in or use a different mobile number." -> {
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "OTP successfully sent to your email." -> {
+                showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "OTP successfully sent to Mobile." -> {
+                showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "OTP successfully sent to both email and mobile." -> {
+                showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "Mobile is already registered. Please verify your mobile to proceed." -> {
+                showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
+//                binding.passwordsLayout.visibility = View.VISIBLE
+            }
+            "Please verify your email to proceed." -> {
+                showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
+            }
+            "Please complete your registration and activate your account." -> {
+                binding.passwordsLayout.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun handleFailureResponse(message: String) {
+        // Use the showToast function to display the message
+        showToast(message)
+
+        when (message) {
+            "Email is already registered. Please log in or use a different email." -> {
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "Both email and mobile number are already registered. Please use different credentials." -> {
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "Please complete your registration and activate your account." -> {
+                binding.passwordsLayout.visibility = View.VISIBLE
+            }
+            "Mobile is already registered. Please use a different Mobile Number." -> {
+                // No additional UI updates
+            }
+            "Email is already registered. Please use a different email address." -> {
+                // No additional UI updates
+            }
+        }
+    }
+
 
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
