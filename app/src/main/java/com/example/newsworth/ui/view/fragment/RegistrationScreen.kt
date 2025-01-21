@@ -302,6 +302,7 @@ class RegistrationScreen : Fragment() {
                 }*/
             }
         }
+
         viewModel.otpResponse.observe(viewLifecycleOwner) { response ->
             response?.let {
                 handleOtpResponse(it)
