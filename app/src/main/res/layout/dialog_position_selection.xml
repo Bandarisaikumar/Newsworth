@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="Select Slide Bar Position"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="2">
+
+        <ImageView
+            android:id="@+id/topLeftImage"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/rectangular_button2"
+            android:scaleType="fitCenter"
+            android:backgroundTint="@color/blacks"
+            android:src="@drawable/topleft" />
+
+        <ImageView
+            android:id="@+id/topRightImage"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/rectangular_button2"
+            android:scaleType="fitCenter"
+            android:backgroundTint="@color/blacks"
+            android:src="@drawable/topright" />
+
+        <ImageView
+            android:id="@+id/bottomLeftImage"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/rectangular_button2"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/blacks"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bottomleft" />
+
+        <ImageView
+            android:id="@+id/bottomRightImage"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/rectangular_button2"
+            android:scaleType="fitCenter"
+            android:backgroundTint="@color/blacks"
+            android:src="@drawable/bottomright" />
+
+    </GridLayout>
+
+</LinearLayout>

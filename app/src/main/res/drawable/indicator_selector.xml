@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/selected_indicator_color" />
+            <size android:width="1dp" android:height="1dp" />  <corners android:radius="1dp" /> </shape>
+    </item>
+    <item android:state_selected="false">
+        <shape android:shape="oval">
+            <solid android:color="@color/unselected_indicator_color" />
+            <size android:width="1dp" android:height="1dp" />  <corners android:radius="1dp" />  </shape>
+    </item>
+</selector>
