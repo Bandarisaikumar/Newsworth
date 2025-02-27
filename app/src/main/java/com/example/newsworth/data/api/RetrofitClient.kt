@@ -18,8 +18,8 @@ object RetrofitClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AuthInterceptor(context))
-            .readTimeout(10, TimeUnit.MINUTES)
-            .connectTimeout(10, TimeUnit.MINUTES)
+            .readTimeout(20, TimeUnit.MINUTES)
+            .connectTimeout(20, TimeUnit.MINUTES)
             .build()
     }
 

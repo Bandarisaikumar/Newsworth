@@ -55,49 +55,49 @@
                 android:layout_margin="8dp"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <!-- Name Field -->
+                    <TextView
+                        android:id="@+id/nameLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/rectangular_button2"
-                        android:orientation="vertical"
-                        android:padding="5dp">
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
 
-                            <!-- Name Field -->
-                            <TextView
-                                android:id="@+id/nameLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Name"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
-                                android:textSize="17dp"
-                                android:textStyle="bold" />
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/usericon" />
 
+                        <TextView
+                            android:id="@+id/nameValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Name"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:background="@drawable/name_label_background"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:layout_gravity="center_vertical"
-                                android:src="@drawable/usericon" />
-
-                            <TextView
-                                android:id="@+id/nameValue"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_weight="1"
-                                android:text="Name"
-                                android:layout_marginStart="5dp"
-                                android:textAppearance="?attr/textAppearanceBodyLarge"
-                                android:textSize="16dp"
-                                tools:ignore="TextSizeCheck" />
-
-                        </LinearLayout>
+                    </LinearLayout>
 
 
                 </LinearLayout>
@@ -327,7 +327,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/name_label_background"
                         android:orientation="horizontal">
 
@@ -375,7 +375,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/name_label_background"
                         android:orientation="horizontal">
 
@@ -509,6 +509,7 @@
                     android:layout_marginEnd="5dp"
                     android:layout_weight="2"
                     android:background="@drawable/rectangular_button2"
+                    android:baselineAligned="false"
                     android:orientation="horizontal"
                     android:padding="5dp"
                     android:weightSum="2">
@@ -534,7 +535,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/name_label_background"
-                            android:text="Telangana"
+                            android:text="TELANGANA"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
