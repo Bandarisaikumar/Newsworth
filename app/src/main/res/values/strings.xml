@@ -116,6 +116,10 @@
     <string name="notification_icon2">notification icon</string>
     <string name="menu_image">menu image</string>
     <string name="menu_icon">menu icon</string>
+    <string name="title_home">Home</string>
+    <string name="title_chat">Chat</string>
+    <string name="title_user">My Files</string>
+    <string name="title_other">Account</string>
 
 
 </resources>

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+<color name="selected_indicator_color">#FBA518</color>
+    <color name="unselected_indicator_color">#D6C0B3</color>
+    <color name="blacks">#1A4785B2</color>
+    <style name="CircleImageViewStyle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>  </style>
 </resources>

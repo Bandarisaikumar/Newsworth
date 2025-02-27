@@ -4,7 +4,6 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.StrikethroughSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +33,8 @@ class VideosItemAdapter(private val videoList: List<ImageModel>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_vedio_card, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_vedio_card, parent, false)
         return VideoViewHolder(view)
     }
 
@@ -46,8 +46,9 @@ class VideosItemAdapter(private val videoList: List<ImageModel>) :
         holder.uploaded_by.text = item.uploaded_by
         holder.gps_location.text = item.gps_location
 
-        val originalPrice = item.price
-        val discountPercentage = item.discount
+        // Calculate discounted price
+        val originalPrice = item.price.toDoubleOrNull() ?: 0.0
+        val discountPercentage = item.discount.toDoubleOrNull() ?: 0.0
 
         val originalPriceText = SpannableString("₹${originalPrice}")
         originalPriceText.setSpan(
@@ -57,14 +58,16 @@ class VideosItemAdapter(private val videoList: List<ImageModel>) :
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
-        // Calculate discounted price
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-        // Combine discounted price, original price (with strike-through), and discount percentage
+// Format the discount percentage to remove the decimal
+        val formattedDiscount = discountPercentage.toInt().toString() + "%"
+
+// Combine discounted price, original price (with strike-through), and discount percentage
         val finalText = TextUtils.concat(
             "Price ₹${discountedPrice.toInt()} ",
             originalPriceText,
-            " at Discount ${discountPercentage}%"
+            " at Discount $formattedDiscount" // Use the formattedDiscount here
         )
 
         // Create the formatted text
@@ -79,31 +82,31 @@ class VideosItemAdapter(private val videoList: List<ImageModel>) :
             handleVideoPlay(holder.Video_link, holder.playIcon)
         }
     }
-        private fun handleVideoPlay(videoView: VideoView, playIcon: ImageView) {
-            if (currentlyPlaying == videoView) {
-                // Toggle play/pause for the same video
-                if (videoView.isPlaying) {
-                    videoView.pause()
-                    playIcon.visibility = View.VISIBLE
-                } else {
-                    videoView.start()
-                    playIcon.visibility = View.GONE
-                }
-            } else {
-                // Stop the previously playing video
-                currentlyPlaying?.pause()
-                currentPlayIcon?.visibility = View.VISIBLE
 
-                // Start the new video
+    private fun handleVideoPlay(videoView: VideoView, playIcon: ImageView) {
+        if (currentlyPlaying == videoView) {
+            // Toggle play/pause for the same video
+            if (videoView.isPlaying) {
+                videoView.pause()
+                playIcon.visibility = View.VISIBLE
+            } else {
                 videoView.start()
                 playIcon.visibility = View.GONE
-
-                // Update the currently playing video references
-                currentlyPlaying = videoView
-                currentPlayIcon = playIcon
             }
-        }
+        } else {
+            // Stop the previously playing video
+            currentlyPlaying?.pause()
+            currentPlayIcon?.visibility = View.VISIBLE
 
+            // Start the new video
+            videoView.start()
+            playIcon.visibility = View.GONE
+
+            // Update the currently playing video references
+            currentlyPlaying = videoView
+            currentPlayIcon = playIcon
+        }
+    }
 
 
     override fun getItemCount(): Int = videoList.size

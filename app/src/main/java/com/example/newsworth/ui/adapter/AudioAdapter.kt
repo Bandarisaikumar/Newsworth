@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newsworth.R
 import com.example.newsworth.data.model.ImageModel
 
-class AudioAdapter(private val audioList: List<ImageModel>) :
+class AudioAdapter(private var audioList: List<ImageModel>) :
     RecyclerView.Adapter<AudioAdapter.AudioViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
@@ -175,5 +175,9 @@ class AudioAdapter(private val audioList: List<ImageModel>) :
 
     fun releaseMediaPlayer() {
         stopAndResetMediaPlayer()
+    }
+    fun updateAudios(newAudiosList: List<ImageModel>) {
+        this.audioList = newAudiosList
+        notifyDataSetChanged()
     }
 }

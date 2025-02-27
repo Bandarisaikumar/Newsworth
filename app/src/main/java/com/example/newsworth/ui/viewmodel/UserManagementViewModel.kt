@@ -21,7 +21,6 @@ import okhttp3.RequestBody
 import retrofit2.Response
 import android.content.Context
 import com.example.newsworth.data.model.ErrorResponse
-import com.google.gson.Gson
 
 
 class UserManagementViewModel(private val repository: UserManagementRepository) : ViewModel() {
@@ -31,16 +30,17 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
     val userId = MutableLiveData<Int?>()
 
 
-
     private val _registrationResponse = MutableLiveData<RegistrationModels.RegistrationResponse>()
-    val registrationResponse: LiveData<RegistrationModels.RegistrationResponse> = _registrationResponse
+    val registrationResponse: LiveData<RegistrationModels.RegistrationResponse> =
+        _registrationResponse
 
     private val _otpResponse = MutableLiveData<RegistrationModels.SendOtpResponse>()
     val otpResponse: LiveData<RegistrationModels.SendOtpResponse> = _otpResponse
 
-    private val _verificationResponse = MutableLiveData<RegistrationModels.SignupVerificationResponse>()
-    val verificationResponse: LiveData<RegistrationModels.SignupVerificationResponse> = _verificationResponse
-
+    private val _verificationResponse =
+        MutableLiveData<RegistrationModels.SignupVerificationResponse>()
+    val verificationResponse: LiveData<RegistrationModels.SignupVerificationResponse> =
+        _verificationResponse
 
 
     private val _logoutResponse = MutableLiveData<LogoutResponse>()
@@ -55,8 +55,8 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
     private val _resetPasswordResponse = MutableLiveData<Response<ResetPasswordResponse>>()
     val resetPasswordResponse: LiveData<Response<ResetPasswordResponse>> = _resetPasswordResponse
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: MutableLiveData<String?> get() = _errorMessage
 
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -143,14 +143,14 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
         }
     }
 
-    fun forgotPassword(request: ForgotPasswordRequest,context: Context) {
+    fun forgotPassword(request: ForgotPasswordRequest, context: Context) {
         viewModelScope.launch {
             val response = repository.forgotPassword(request)
             _forgotPasswordResponse.postValue(response)
             val userIdValue = response?.data?.firstOrNull()?.userId
             Log.d("ForgotPassword", "Extracted user_id: $userIdValue")
             // Save user_id to SharedPreferences
-            SharedPrefModule.provideTokenManager(context).userId2  = userIdValue.toString()
+            SharedPrefModule.provideTokenManager(context).userId2 = userIdValue.toString()
             userId.postValue(userIdValue) // Post the extracted user_id
         }
     }
@@ -161,5 +161,9 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
             val response = repository.resetPassword(request)
             _resetPasswordResponse.postValue(response)
         }
+    }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = null // Set to null to clear the error
     }
 }

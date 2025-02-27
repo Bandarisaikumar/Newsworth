@@ -1,5 +1,6 @@
 package com.example.newsworth.ui.view.fragment
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
@@ -9,6 +10,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.media.MediaPlayer
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,18 +22,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.example.newsworth.R
 import com.example.newsworth.data.api.RetrofitClient
-import com.example.newsworth.data.model.ContentUploadRequestBody
 import com.example.newsworth.data.model.ImageModel
 import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.databinding.FragmentMediaUploadScreenBinding
@@ -62,13 +67,28 @@ class MediaUploadFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var sharedViewModel: SharedViewModel // SharedViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.showHomeContentTab()
+            }
+        })
+    }
 
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMediaUploadScreenBinding.inflate(inflater, container, false)
+        binding.root.setOnTouchListener { _, _ ->
+            hideKeyboard()
+            false
+        }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         // Initialize ViewModel with ApiService from RetrofitClient
@@ -147,8 +167,8 @@ class MediaUploadFragment : Fragment() {
 
 
         binding.backButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaUploadFragment_to_userScreen)
-
+            val homeScreen = parentFragment as? HomeScreen
+            homeScreen?.showHomeContentTab()
         }
 
 
@@ -163,9 +183,11 @@ class MediaUploadFragment : Fragment() {
                         .show()
                 }
             }
-            // Get reference to the ProgressBar
-            val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
-            progressBar?.visibility = View.VISIBLE
+            if (!isInternetAvailable()) {  // Check internet *before* proceeding
+                showNoInternetToast() // Or a more specific message
+                return@setOnClickListener // Stop execution if no internet
+            }
+
             // Validate that all fields are filled
             val title = binding.etTitle.text.toString()
             val description = binding.etDescription.text.toString()
@@ -173,11 +195,15 @@ class MediaUploadFragment : Fragment() {
             val discountText = binding.etDiscount.text.toString()
             val tags = binding.etTags.text.toString()
 
-            if (title.isEmpty() || description.isEmpty() || priceText.isEmpty() || discountText.isEmpty() || tags.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT)
+            if (title.isEmpty() || tags.isEmpty()) {
+                Toast.makeText(requireContext(), "Please fill all the required fields", Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
             }
+
+            // Get reference to the ProgressBar
+            val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
+            progressBar?.visibility = View.VISIBLE
 
             // Validate price as a valid float
             val price = priceText.toFloatOrNull()
@@ -247,7 +273,8 @@ class MediaUploadFragment : Fragment() {
                     Toast.makeText(requireContext(), response.response_message, Toast.LENGTH_SHORT)
                         .show()
                     try {
-                        findNavController().navigate(R.id.action_mediaUploadFragment_to_userScreen)
+                        val homeScreenFragment = parentFragment as? HomeScreen
+                        homeScreenFragment?.showMyFilesTab()
                     } catch (e: Exception) {
                         Log.e("NavigationError", "Error during navigation: ${e.localizedMessage}")
                         Toast.makeText(requireContext(), "Navigation failed", Toast.LENGTH_SHORT)
@@ -263,6 +290,15 @@ class MediaUploadFragment : Fragment() {
         }
 
         return binding.root
+    }
+    private fun showNoInternetToast() {
+        Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+    }
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService<ConnectivityManager>()
+        val network = connectivityManager?.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun decodeBase64ToFile(base64String: String, fileName: String): File {
@@ -512,14 +548,22 @@ class MediaUploadFragment : Fragment() {
         val manufacturer = Build.MANUFACTURER // Device manufacturer
         return "$manufacturer $model" // Concatenate manufacturer and model
     }
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus
+        view?.let {
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
+            it.clearFocus()
+        }
+    }
 
     private fun observeMetadataResponse() {
         viewModel.metadataResult.observe(viewLifecycleOwner) { response ->
             response?.let {
                 contentId = it.content_id
-
-                Toast.makeText(requireContext(), "Metadata insertion success", Toast.LENGTH_SHORT)
-                    .show()
+//
+//                Toast.makeText(requireContext(), "Metadata insertion success", Toast.LENGTH_SHORT)
+//                    .show()
             } ?: run {
                 Toast.makeText(requireContext(), "Metadata insertion failed", Toast.LENGTH_SHORT)
                     .show()
@@ -678,25 +722,6 @@ class MediaUploadFragment : Fragment() {
             ""
         }
     }
-
-
-//    private fun showContentRequestDialog(contentRequest: ContentUploadRequestBody) {
-//        // Format the data into a readable string
-//        val message = """
-//        File: ${contentRequest.file}
-//        Tags: ${contentRequest.tags}
-//    """.trimIndent()
-//
-//        // Create and show the dialog
-//        AlertDialog.Builder(requireContext())
-//            .setTitle("Content Upload Details")
-//            .setMessage(message)
-//            .setPositiveButton("OK") { dialog, _ ->
-//                dialog.dismiss() // Close the dialog
-//            }
-//            .create()
-//            .show()
-//    }
 
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(

@@ -6,9 +6,9 @@ data class ImageModel(
     val content_description: String ? = null,
     val gps_location: String,
     val age_in_days: String,
-    val price: Float,
-    val discount: Int,
+    val price: String,
+    val discount: String,
     val Image_link: String?=null,
     val Audio_link: String?=null,
-    val Video_link:String?=null
+    val Video_link:String?=null,
 )

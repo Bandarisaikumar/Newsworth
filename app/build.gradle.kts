@@ -11,7 +11,7 @@ android {
         applicationId = "com.narmtech.newsworth"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
+        versionCode = 9
         versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

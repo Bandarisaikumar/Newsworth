@@ -18,4 +18,6 @@
     <color name="tab_color">#a9a9a9</color>
     <color name="mehrun_color">#DF1F5E</color>
     <color name="box">#E0E0E0</color>
+    <color name="button">#1D61E7</color>
+    <color name="button2">#3156A1</color>
 </resources>

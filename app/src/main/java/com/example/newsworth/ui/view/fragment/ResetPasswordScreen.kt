@@ -1,12 +1,16 @@
 package com.example.newsworth.ui.view.fragment
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -31,8 +35,23 @@ class ResetPasswordScreen : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentResetPasswordScreenBinding.inflate(inflater, container, false)
         return binding.root    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.action_resetPasswordScreen_to_forgotPasswordScreen)
+            }
+        })
+    }
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.setOnTouchListener { _, _ ->
+            hideKeyboard()
+            false
+        }
 
         // Initialize Repository and ViewModel
         val apiService = context?.let { RetrofitClient.getApiService(it) }
@@ -104,6 +123,15 @@ class ResetPasswordScreen : Fragment() {
         }
 
 }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus
+        view?.let {
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
+            it.clearFocus()
+        }
+    }
 
     private fun validatePassword(password: String): String? {
         if (password.length < 8) {

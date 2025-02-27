@@ -1,5 +1,6 @@
 package com.example.newsworth.ui.adapter
 
+import android.media.MediaPlayer
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextUtils
@@ -14,8 +15,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newsworth.R
 import com.example.newsworth.data.model.ImageModel
 
-class VideosAdapter(private val videosList: List<ImageModel>) :
+class VideosAdapter(private var videosList: List<ImageModel>) :
     RecyclerView.Adapter<VideosAdapter.VideoViewHolder>() {
+
+    private var mediaPlayer: MediaPlayer? = null
+
 
     private var currentlyPlaying: VideoView? = null
     private var currentPlayIcon: ImageView? = null
@@ -35,6 +39,10 @@ class VideosAdapter(private val videosList: List<ImageModel>) :
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_videos, parent, false)
         return VideoViewHolder(view)
     }
+    fun releaseMediaPlayer() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val video = videosList[position]
@@ -45,18 +53,24 @@ class VideosAdapter(private val videosList: List<ImageModel>) :
         holder.age_in_days.text = video.age_in_days
         holder.gps_location.text = video.gps_location
 
-        val originalPrice = video.price
-        val discountPercentage = video.discount
+        // Calculate discounted price
+        val originalPrice = video.price.toDoubleOrNull() ?: 0.0
+        val discountPercentage = video.discount.toDoubleOrNull() ?: 0.0
 
         val originalPriceText = SpannableString("₹${originalPrice}")
         originalPriceText.setSpan(StrikethroughSpan(), 0, originalPriceText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        // Calculate discounted price
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-        // Combine discounted price, original price (with strike-through), and discount percentage
-        val finalText = TextUtils.concat("Price ₹${discountedPrice.toInt()} ", originalPriceText, " at Discount ${discountPercentage}%")
+// Format the discount percentage to remove the decimal
+        val formattedDiscount = discountPercentage.toInt().toString() + "%"
 
+// Combine discounted price, original price (with strike-through), and discount percentage
+        val finalText = TextUtils.concat(
+            "Price ₹${discountedPrice.toInt()} ",
+            originalPriceText,
+            " at Discount $formattedDiscount" // Use the formattedDiscount here
+        )
         holder.price_section.text = finalText
 
         val videoLink = video.Video_link
@@ -95,4 +109,8 @@ class VideosAdapter(private val videosList: List<ImageModel>) :
     }
 
     override fun getItemCount(): Int = videosList.size
+    fun updateVideos(newVideosList: List<ImageModel>) {
+        this.videosList = newVideosList
+        notifyDataSetChanged()
+    }
 }

@@ -14,7 +14,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="39dp"
             android:orientation="horizontal"
             android:weightSum="2">
         <!-- Back Button -->
@@ -28,41 +28,53 @@
             app:tint="?attr/imageTint"
             tools:ignore="HardcodedText,RedundantDescriptionCheck" />
         <!-- Subtitle -->
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Registration"
-            android:layout_weight="2"
-            android:textColor="#0f2b9f"
-            android:textStyle="bold"
-            android:layout_marginEnd="30dp"
-            android:textSize="16sp" />
+
         </LinearLayout>
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="16dp">
+
             <!-- Card for Input Fields -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/registerCardView"
                 android:layout_width="match_parent"
-                android:layout_height="650dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginEnd="14dp"
-                app:cardBackgroundColor="@color/white"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="15dp">
+                app:cardBackgroundColor="@color/blacks">
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_margin="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:fontFamily="@font/poppins_regular"
+                        android:text="Registration"
+                        android:layout_weight="2"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:textSize="24sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Create an account to continue!"
+                        android:textColor="@color/black"
+                        android:textSize="12dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"/>
+
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -72,6 +84,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:hintTextColor="@color/black"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -85,6 +98,8 @@
                                 android:hint="User Category*"
                                 android:inputType="none"
                                 android:paddingStart="8dp"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
                                 android:paddingEnd="8dp"
                                 android:textSize="12sp"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
@@ -95,6 +110,8 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:hintTextColor="@color/black"
+                            android:layout_marginBottom="5dp"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -106,6 +123,8 @@
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint="User Type*"
                                 android:inputType="none"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="8dp"
                                 android:textSize="12sp"
@@ -127,45 +146,76 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:baselineAligned="false"
+                            android:layout_gravity="center"
+                            android:gravity="center"
                             android:orientation="horizontal"
                             android:weightSum="2">
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="6dp"
+                                app:hintTextColor="@color/black"
+                                android:layout_margin="3dp"
                                 android:layout_weight="1">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/firstName"
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:drawableStart="@drawable/icon5"
-                                    android:fontFamily="@font/poppins_regular"
-                                    android:hint="First Name*"
-                                    android:inputType="text"
-                                    android:textSize="11sp"
-                                    android:drawablePadding="4dp"
-                                    tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                                    android:background="@drawable/rectangular_button"
+                                    android:backgroundTint="@color/white"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:layout_width="25dp"
+                                        android:layout_height="25dp"
+                                        android:layout_gravity="center"
+                                        android:layout_marginStart="5dp"
+                                        android:src="@drawable/usericon"/>
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/firstName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/poppins_regular"
+                                        android:hint="First Name*"
+                                        android:inputType="text"
+                                        android:textSize="11sp"
+                                        tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                                </LinearLayout>
                             </com.google.android.material.textfield.TextInputLayout>
+
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                app:hintTextColor="@color/black"
                                 android:layout_marginStart="6dp"
                                 android:layout_weight="1">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/rectangular_button"
+                                    android:backgroundTint="@color/white"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:src="@drawable/usericon"/>
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/middleName"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:drawableStart="@drawable/icon5"
                                     android:fontFamily="@font/poppins_regular"
                                     android:hint="Middle Name"
                                     android:inputType="text"
                                     android:textSize="11sp"
-                                    android:drawablePadding="4dp"
                                     tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                                </LinearLayout>
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
@@ -173,19 +223,37 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp">
+                            app:hintTextColor="@color/black"
+                            android:layout_marginTop="2dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="5dp"
+                                android:src="@drawable/usericon"/>
+
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/lastName"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableStart="@drawable/icon5"
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint="Last Name*"
                                 android:inputType="text"
+
                                 android:textSize="11sp"
                                 android:drawablePadding="4dp"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                            </LinearLayout>
+
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <LinearLayout
@@ -199,6 +267,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 app:endIconDrawable="@drawable/icon6"
+                                app:hintTextColor="@color/black"
                                 app:endIconMode="custom">
 
                                 <AutoCompleteTextView
@@ -211,15 +280,20 @@
                                     android:fontFamily="@font/poppins_regular"
                                     android:hint="Date Of Birth*"
                                     android:inputType="none"
+                                    android:background="@drawable/rectangular_button"
+                                    android:backgroundTint="@color/white"
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp"
                                     android:textSize="12sp"
                                     tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
                             </com.google.android.material.textfield.TextInputLayout>
+
+
                             <!-- Gender Dropdown -->
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                app:hintTextColor="@color/black"
                                 app:endIconMode="dropdown_menu">
 
                                 <AutoCompleteTextView
@@ -231,6 +305,8 @@
                                     android:focusableInTouchMode="true"
                                     android:fontFamily="@font/poppins_regular"
                                     android:hint="Gender*"
+                                    android:background="@drawable/rectangular_button"
+                                    android:backgroundTint="@color/white"
                                     android:inputType="none"
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp"
@@ -245,13 +321,27 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp">
+                            app:hintTextColor="@color/black"
+                            android:layout_marginTop="5dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="5dp"
+                                android:src="@drawable/mobileiconn"/>
+
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/mobileNumber"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableStart="@drawable/icon4"
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint="Mobile Number"
                                 android:inputType="phone"
@@ -259,36 +349,66 @@
                                 android:drawablePadding="4dp"
                                 android:maxLength="10"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                            </LinearLayout>
                         </com.google.android.material.textfield.TextInputLayout>
                         <!-- Email Address -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp">
+                            app:hintTextColor="@color/black"
+                            android:layout_marginTop="6dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
+                                android:layout_gravity="center"
+                                android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="5dp"
+                                android:src="@drawable/emailicon"/>
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/emailAddress"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableStart="@drawable/icon1"
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint="Email"
                                 android:inputType="textEmailAddress"
                                 android:textSize="11sp"
                                 android:drawablePadding="4dp"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
+                            </LinearLayout>
                         </com.google.android.material.textfield.TextInputLayout>
-
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:layout_gravity="center_horizontal">
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/sendOtpButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
                             android:layout_marginTop="3dp"
+                            app:backgroundTint="#1D61E7"
                             android:textColor="@color/white"
                             android:background="@drawable/rectangular_button"
                             android:text="Send OTP" />
-
+                            <!-- ProgressBar -->
+                            <ProgressBar
+                                android:id="@+id/progressBar2"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_gravity="end"
+                                android:visibility="gone"
+                                android:layout_marginEnd="35dp"
+                                android:indeterminateTint="@color/white"
+                            style="?android:attr/progressBarStyleLarge" />
+                        </FrameLayout>
                         <LinearLayout
                             android:id="@+id/passwords_layout"
                             android:layout_width="match_parent"
@@ -301,6 +421,7 @@
                             android:id="@+id/password_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:hintTextColor="@color/black"
                             app:passwordToggleEnabled="true">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -310,6 +431,8 @@
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint=" Password"
                                 android:inputType="textPassword"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
                                 android:textSize="11sp"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -319,6 +442,7 @@
                             android:id="@+id/confirmPasswordLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:hintTextColor="@color/black"
                             android:layout_marginTop="0dp"
                             app:passwordToggleEnabled="true">
 
@@ -330,6 +454,8 @@
                                 android:fontFamily="@font/poppins_regular"
                                 android:hint=" Confirm Password"
                                 android:inputType="textPassword"
+                                android:background="@drawable/rectangular_button"
+                                android:backgroundTint="@color/white"
                                 android:textSize="11sp"
                                 tools:ignore="HardcodedText,TextContrastCheck,VisualLintTextFieldSize" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -365,26 +491,47 @@
                                 android:textSize="12dp"
                                 tools:ignore="TextSizeCheck,TextSizeCheck" />
                         </LinearLayout>
-                        <!-- Register Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/registerButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="3dp"
-                            android:background="@drawable/rectangular_button"
-                            android:fontFamily="@font/poppins_regular"
-                            android:minHeight="48dp"
-                            android:text="Register"
-                            android:textColor="@color/white"
-                            android:textAllCaps="false"
-                            app:cornerRadius="8dp"
-                            tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_gravity="center_horizontal">
+
+                                <!-- Register Button -->
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/registerButton"
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/rectangular_button"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:minHeight="48dp"
+                                    android:layout_gravity="center"
+                                    android:text="Register"
+                                    android:textColor="@color/white"
+                                    app:backgroundTint="#1D61E7"
+                                    android:textAllCaps="false"
+                                    app:cornerRadius="8dp"
+                                    tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
+
+                                <!-- ProgressBar -->
+                                <ProgressBar
+                                    android:id="@+id/progressBar"
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_gravity="center"
+                                    android:visibility="gone"
+                                    android:indeterminateTint="@color/white"
+                                style="?android:attr/progressBarStyleLarge" />
+
+                            </FrameLayout>
+
+
                         </LinearLayout>
                     </LinearLayout>
 
                 </LinearLayout>
+                </ScrollView>
             </com.google.android.material.card.MaterialCardView>
-        </ScrollView>
     </LinearLayout>
 </FrameLayout>

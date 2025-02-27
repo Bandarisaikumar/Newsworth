@@ -1,25 +1,25 @@
 package com.example.newsworth.ui.view.fragment
 
+import android.app.AlertDialog
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.content.getSystemService
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.newsworth.R
 import com.example.newsworth.data.api.RetrofitClient
 import com.example.newsworth.data.model.ImageModel
 import com.example.newsworth.repository.NewsWorthCreatorRepository
-import com.example.newsworth.ui.adapter.ImagesAdapter
 import com.example.newsworth.ui.adapter.ImagesItemAdapter
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModel
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModelFactory
@@ -29,51 +29,104 @@ import com.example.newsworth.utils.SharedPrefModule
 class ImagesSection : Fragment(R.layout.fragment_images_section) {
 
     private lateinit var viewModel: NewsWorthCreatorViewModel
-    private val sharedViewModel: SharedViewModel by activityViewModels() // Use shared ViewModel
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private var isInternetAvailable: Boolean = true
+    private var isViewCreated: Boolean = false  // Track if onViewCreated has been called
 
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.showUserScreen()
+            }
+        })
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isViewCreated = true // Set the flag when onViewCreated is called
+
 
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
         val recyclerView = view.findViewById<RecyclerView>(R.id.full_images_recycler_view)
-        val swipeRefreshLayout = view.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
 
-
-//        // Set up RecyclerView with GridLayoutManager
-//        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
-//        recyclerView.layoutManager = gridLayoutManager
         val linearLayoutManager = LinearLayoutManager(requireContext())
         recyclerView.layoutManager = linearLayoutManager
 
-        // Observe data from ViewModel
-        // Observe the images data from the SharedViewModel
+        checkInternetAndSetup()
+
         sharedViewModel.imagesList.observe(viewLifecycleOwner) { items ->
             if (items.isNotEmpty()) {
-                // Filter for items with Image_link
                 val images = items.filter { !it.Image_link.isNullOrBlank() }
-                recyclerView.adapter = ImagesItemAdapter(images) // Set adapter with images data
-
+                recyclerView.adapter = ImagesItemAdapter(images)
             } else {
                 Toast.makeText(requireContext(), "No images found", Toast.LENGTH_SHORT).show()
             }
-            swipeRefreshLayout.isRefreshing = false // Stop refresh animation
-
+            swipeRefreshLayout.isRefreshing = false
         }
-        // Initialize ViewModel with ApiService from RetrofitClient
-        val apiService = RetrofitClient.getApiService(requireContext())
-        val repository = NewsWorthCreatorRepository(apiService)
-        viewModel = ViewModelProvider(this, NewsWorthCreatorViewModelFactory(repository))[NewsWorthCreatorViewModel::class.java]
+
+        swipeRefreshLayout.setOnRefreshListener {
+            if (isInternetAvailable) {
+                fetchData()
+            } else {
+                swipeRefreshLayout.isRefreshing = false
+                showNoInternetDialog()
+            }
+        }
+
+        backButton.setOnClickListener {
+            val homeScreen = parentFragment as? HomeScreen
+            homeScreen?.showUserScreen()
+        }
+    }
+
+    private fun checkInternetAndSetup() {
+        isInternetAvailable = isInternetAvailable()
+        if (isInternetAvailable) {
+            fetchData()
+            enableSwipeRefresh() // Call this helper function
+        } else {
+            showNoInternetDialog()
+            disableSwipeRefresh() // Call this helper function
+        }
+    }
+
+    private fun enableSwipeRefresh() {
+        if (isViewCreated) { // Only enable if view is created
+            swipeRefreshLayout.isEnabled = true
+        } else {
+            // If view is not created yet, post a Runnable to enable it later
+            view?.post { swipeRefreshLayout.isEnabled = true }
+        }
+    }
+
+    private fun disableSwipeRefresh() {
+        if (isViewCreated) { // Only disable if view is created
+            swipeRefreshLayout.isEnabled = false
+        } else {
+            // If view is not created yet, post a Runnable to disable it later
+            view?.post { swipeRefreshLayout.isEnabled = false }
+        }
+    }
+
+
+    private fun fetchData() {
         val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+
+        if (!::viewModel.isInitialized) {
+            val apiService = RetrofitClient.getApiService(requireContext())
+            val repository = NewsWorthCreatorRepository(apiService)
+            viewModel = ViewModelProvider(this, NewsWorthCreatorViewModelFactory(repository))[NewsWorthCreatorViewModel::class.java]
+        }
+
         viewModel.fetchUploadedContent(userId)
         viewModel.uploadedContent.observe(viewLifecycleOwner) { response ->
             response.let {
-                if (response != null) {
-                    Toast.makeText(requireContext(), response.response, Toast.LENGTH_SHORT)
-                        .show()
-                    // Set the image data in SharedViewModel after fetching content
-                    val imagesList = response.response_message.map { imageResponse ->
+                if (it != null) {
+                    val imagesList = it.response_message.map { imageResponse ->
                         ImageModel(
                             content_title = imageResponse.content_title,
                             age_in_days = imageResponse.age_in_days,
@@ -82,26 +135,43 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
                             content_description = imageResponse.content_description,
                             price = imageResponse.price,
                             discount = imageResponse.discount,
-                            Image_link = imageResponse.Image_link)
+                            Image_link = imageResponse.Image_link
+                        )
                     }
-
-                    sharedViewModel.setImagesList(imagesList) // Share the data with the ImagesFragment
+                    sharedViewModel.setImagesList(imagesList)
                 } else {
                     Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT).show()
                     Log.e("UploadError", "API response: $response")
                 }
-                swipeRefreshLayout.isRefreshing = false // Stop refresh animation
-
+                swipeRefreshLayout.isRefreshing = false
             }
         }
-        // Back Button Navigation
-        backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
-        // Set up SwipeRefreshLayout listener
-        swipeRefreshLayout.setOnRefreshListener {
-            // Refresh data when pulled
-            viewModel.fetchUploadedContent(userId)
-        }
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService<ConnectivityManager>()
+        val network = connectivityManager?.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun showNoInternetDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("No Internet Connection")
+            .setMessage("Please turn on your internet connection to continue.")
+            .setCancelable(false)
+            .setPositiveButton("OK") { _, _ -> } // You can add an action here if needed
+        val alert = builder.create()
+        alert.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkInternetAndSetup()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        isViewCreated = false // Reset the flag when the view is destroyed
     }
 }

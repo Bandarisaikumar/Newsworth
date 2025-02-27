@@ -33,6 +33,9 @@ object SharedPrefModule {
         fun SharedPreferences.Editor.putDouble(key: String, value: Double) {
             putFloat(key, value.toFloat())
         }
+        fun clearTokens() {
+            sharedPreferences.edit().remove("access_token").remove("user_id").apply()
+        }
     }
 }
 

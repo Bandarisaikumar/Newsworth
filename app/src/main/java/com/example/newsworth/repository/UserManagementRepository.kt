@@ -21,65 +21,46 @@ class UserManagementRepository(private val apiService: ApiService) {
     suspend fun login(request: LoginRequest): LoginResponse? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.login(request).execute() // Retrofit synchronous call
+                val response = apiService.login(request).execute()
                 if (response.isSuccessful) {
-                    response.body() // Extract the body if the response is successful
+                    response.body()
 
                 } else {
-                    null // Handle failure case
+                    null
                 }
             } catch (e: Exception) {
-                // Log or handle the exception as required
                 null
             }
         }
     }
-//
-//    suspend fun getAccessToken(request: RequestBody): TokenResponse? {
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                val response = apiService.getAccessToken(request).execute()
-//                if (response.isSuccessful) {
-//                    response.body() // Return the token response if successful
-//                } else {
-//                    // Return a TokenResponse with the error message if the request fails
-//                    TokenResponse(detail = "Incorrect email/mobile number or password")
-//                }
-//            } catch (e: Exception) {
-//                // Handle the exception and return a TokenResponse with a generic error message
-//                TokenResponse(detail = "An error occurred. Please try again.")
-//            }
-//        }
-//    }
-suspend fun getAccessToken(request: RequestBody): TokenResponse? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val response = apiService.getAccessToken(request).execute()
-            if (response.isSuccessful) {
-                response.body() // Return the token response if successful
-            } else {
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = parseErrorDetail(errorBody)
-                TokenResponse(detail = errorMessage ?: "An unexpected error occurred.")
+
+    suspend fun getAccessToken(request: RequestBody): TokenResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAccessToken(request).execute()
+                if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = parseErrorDetail(errorBody)
+                    TokenResponse(detail = errorMessage ?: "An unexpected error occurred.")
+                }
+            } catch (e: Exception) {
+                TokenResponse(detail = "An error occurred. Please try again.")
             }
-        } catch (e: Exception) {
-            // Handle the exception and return a TokenResponse with a generic error message
-            TokenResponse(detail = "An error occurred. Please try again.")
         }
     }
-}
 
-    // Helper function to parse the error response and extract the detail message
     private fun parseErrorDetail(errorBody: String?): String? {
         return try {
             if (!errorBody.isNullOrEmpty()) {
                 val jsonObject = JSONObject(errorBody)
-                jsonObject.optString("detail") // Extract the "detail" field
+                jsonObject.optString("detail")
             } else {
                 null
             }
         } catch (e: JSONException) {
-            null // Return null if parsing fails
+            null
         }
     }
 
@@ -95,20 +76,21 @@ suspend fun getAccessToken(request: RequestBody): TokenResponse? {
     suspend fun verifySignup(request: RegistrationModels.SignupVerificationRequest): Response<RegistrationModels.SignupVerificationResponse> {
         return apiService.verifySignup(request)
     }
+
     suspend fun logoutUser(userId: Int): Response<LogoutResponse> {
         return apiService.logoutUser(mapOf("user_id" to userId))
     }
+
     suspend fun forgotPassword(request: ForgotPasswordRequest): ForgotPasswordResponse? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.forgotPassword(request) // Retrofit call
+                val response = apiService.forgotPassword(request)
                 if (response.isSuccessful) {
-                    response.body() // Return the body if successful
+                    response.body()
                 } else {
-                    null // Handle failure case
+                    null
                 }
             } catch (e: Exception) {
-                // Log or handle the exception
                 null
             }
         }

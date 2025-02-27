@@ -1,74 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
 
 
     <!-- Logo -->
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/news_worth_logo"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
-        android:layout_marginTop="89dp"
+        android:layout_marginTop="90dp"
+        android:layout_marginBottom="-20dp"
+        android:contentDescription="@string/news_worth_logo"
         android:src="@drawable/image11" />
 
+
     <!-- Banner ViewPager2 -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/bannerViewPager"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        android:clipChildren="false"
-        android:overScrollMode="never" />
-
-    <!-- Dots Indicator -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/bannerIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        app:tabIndicatorHeight="0dp"
-        app:tabSelectedTextColor="@color/black"
-        app:tabTextColor="@color/gray" />
-
-    <!-- Sign Up Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/signUpButton"
-        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:background="@drawable/rectangular_button"
-        android:fontFamily="@font/poppins_regular"
-        android:layout_gravity="center"
-        android:text="@string/sign_up"
-        android:textColor="@color/white" />
+        android:layout_margin="30dp"
+        android:backgroundTint="@color/white"
+        android:elevation="10dp"
+        app:cardCornerRadius="30dp">
 
-    <!-- Login Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/loginButton"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/bannerViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:overScrollMode="never" />
+
+            <TextView
+                android:id="@+id/heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_medium"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/matter"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_regular"
+                android:gravity="center"
+                android:maxLines="3"
+                android:textColor="@color/black"
+                android:textSize="12dp" />
+            <!-- Dots Indicator -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/bannerIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/white"
+                android:layout_margin="10dp"
+                app:tabIndicatorHeight="0dp"
+                app:tabSelectedTextColor="@color/black"
+                app:tabTextColor="@color/gray" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/getStarted"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/rectangular_button"
-        android:backgroundTint="@color/blue"
-        android:fontFamily="@font/poppins_regular"
+        android:layout_height="50dp"
         android:layout_gravity="center"
-        android:text="@string/login"
-        android:textColor="@color/white"/>
-
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangular_button"
+        android:backgroundTint="@color/button"
+        android:gravity="center"
+        android:text="Get Started"
+        android:textColor="@color/white"
+        android:textSize="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Version 1.0.1"
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
-        android:textSize="12dp"
-        android:textColor="@color/gray"/>
+        android:text="Version 1.0.2"
+        android:textColor="@color/black"
+        android:textSize="12dp" />
 
 </LinearLayout>

@@ -28,7 +28,8 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image_card, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_image_card, parent, false)
         return ImageViewHolder(view)
     }
 
@@ -40,17 +41,31 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
         holder.uploaded_by.text = item.uploaded_by
         holder.gps_location.text = item.gps_location
 
-        val originalPrice = item.price
-        val discountPercentage = item.discount
+        // Calculate discounted price
+        val originalPrice = item.price.toDoubleOrNull() ?: 0.0
+        val discountPercentage = item.discount.toDoubleOrNull() ?: 0.0
+
 
         val originalPriceText = SpannableString("₹${originalPrice}")
-        originalPriceText.setSpan(StrikethroughSpan(), 0, originalPriceText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        originalPriceText.setSpan(
+            StrikethroughSpan(),
+            0,
+            originalPriceText.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
-        // Calculate discounted price
+
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-        // Combine discounted price, original price (with strike-through), and discount percentage
-        val finalText = TextUtils.concat("Price ₹${discountedPrice.toInt()} ", originalPriceText, " at Discount ${discountPercentage}%")
+// Format the discount percentage to remove the decimal
+        val formattedDiscount = discountPercentage.toInt().toString() + "%"
+
+// Combine discounted price, original price (with strike-through), and discount percentage
+        val finalText = TextUtils.concat(
+            "Price ₹${discountedPrice.toInt()} ",
+            originalPriceText,
+            " at Discount $formattedDiscount" // Use the formattedDiscount here
+        )
 
         // Create the formatted text
         holder.price_section.text = finalText
@@ -73,6 +88,7 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
 
         }
     }
+
     override fun getItemCount(): Int = imageList.size
 
 }

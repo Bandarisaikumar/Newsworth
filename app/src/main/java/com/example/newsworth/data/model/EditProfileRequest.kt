@@ -6,7 +6,7 @@ data class EditProfileRequest(
     val middle_name: String?,
     val last_name: String,
     val gender: String?,
-    val user_email: String,
+    val user_email: String?,
     val user_phone_number: String,
     val user_type: String,
     val date_of_birth: String?,

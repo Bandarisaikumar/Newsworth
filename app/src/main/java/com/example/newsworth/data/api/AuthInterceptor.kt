@@ -11,9 +11,8 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val accessToken = SharedPrefModule.provideTokenManager(context).accessToken
-        Log.d("token","$accessToken")
+        Log.d("token", "$accessToken")
 
-        // Add Authorization header if token exists
         val newRequest = if (!accessToken.isNullOrEmpty()) {
             originalRequest.newBuilder()
                 .header("Authorization", "Bearer $accessToken")

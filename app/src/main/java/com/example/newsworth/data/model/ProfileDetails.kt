@@ -1,7 +1,7 @@
 package com.example.newsworth.data.model
 
 data class ProfileDetails(
-    val user_id: Int,
+    val user_id: Int?,
     val first_name: String,
     val middle_name: String?,
     val last_name: String,

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_marginTop="5dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginStart="10dp"
         android:gravity="center"
-        android:layout_marginTop="15dp"
         android:orientation="horizontal">
         <!-- Back Button -->
         <ImageView
@@ -32,332 +32,558 @@
             android:fontFamily="@font/poppins_regular"
             android:gravity="center"
             android:text="Profile"
-            android:textColor="#1B6EBC"
+            android:textColor="@color/black"
             android:textSize="24dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:weightSum="2">
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/blacks"
+        android:orientation="vertical"
+        app:cardCornerRadius="20dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical">
+            android:layout_marginTop="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2">
-            <!-- Name Field -->
-            <TextView
-                android:id="@+id/nameLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16dp"
-                android:layout_weight="2"
-                android:textStyle="bold" />
-            <ImageView
-                android:id="@+id/editButton"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:src="@drawable/edit_profile" />
+                android:layout_margin="8dp"
+                android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangular_button2"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+
+                            <!-- Name Field -->
+                            <TextView
+                                android:id="@+id/nameLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Name"
+                                android:textAppearance="?attr/textAppearanceBodyMedium"
+                                android:textSize="17dp"
+                                android:textStyle="bold" />
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:background="@drawable/name_label_background"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/usericon" />
+
+                            <TextView
+                                android:id="@+id/nameValue"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:text="Name"
+                                android:layout_marginStart="5dp"
+                                android:textAppearance="?attr/textAppearanceBodyLarge"
+                                android:textSize="16dp"
+                                tools:ignore="TextSizeCheck" />
+
+                        </LinearLayout>
+
+
+                </LinearLayout>
+                <!-- Email Field -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/emailLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Email"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/emailicon" />
+
+                        <TextView
+                            android:id="@+id/emailValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Email"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- Phone Number Field -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/phoneLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Phone Number"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/mobileiconn" />
+
+                        <TextView
+                            android:id="@+id/phoneValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Mobile Number"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Gender -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/genderLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Gender"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/usericon" />
+
+                        <TextView
+                            android:id="@+id/genderValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Gender"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- Date Of Birth -->
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/dobLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Date Of Birth"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/usericon" />
+
+                        <TextView
+                            android:id="@+id/dobValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Date Of Birth"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Address Lane 1 -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/address1Label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Address Line 1"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/address" />
+
+                        <TextView
+                            android:id="@+id/address1Value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Address Line 1"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- Address Lane 2 -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/address2Label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Address Line 2"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/name_label_background"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/address" />
+
+                        <TextView
+                            android:id="@+id/address2Value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="Address Line 1"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <!-- Name Field -->
+                        <TextView
+                            android:id="@+id/pincodeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pincode"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/pincodeValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/name_label_background"
+                            android:text="500055"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <!-- Name Field -->
+                        <TextView
+                            android:id="@+id/districtLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="District"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/districtValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/name_label_background"
+                            android:text="Medchal"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+                    <!-- Name Field -->
+                    <TextView
+                        android:id="@+id/locationLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Location"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/locationValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/name_label_background"
+                        android:text="8-66 , Jaya Ram Nagar , Quthbullapur"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textSize="16dp"
+                        tools:ignore="TextSizeCheck" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <!-- Name Field -->
+                        <TextView
+                            android:id="@+id/stateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="State"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/stateValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/name_label_background"
+                            android:text="Telangana"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <!-- Name Field -->
+                        <TextView
+                            android:id="@+id/countryLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Country"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/contryValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/name_label_background"
+                            android:text="India"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textSize="16dp"
+                            tools:ignore="TextSizeCheck" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/editButton"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/rectangular_button"
+                    android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
+                    android:text="Edit"
+                    android:textColor="@color/white"
+                    app:backgroundTint="#1D61E7"
+                    tools:ignore="DuplicateSpeakableTextCheck,VisualLintButtonSize" />
             </LinearLayout>
-            <TextView
-                android:id="@+id/nameValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="John Doe"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textSize="14dp"
-                android:background="@drawable/name_label_background"
-                tools:ignore="TextSizeCheck" />
-        </LinearLayout>
-
-
-    </LinearLayout>
-    <!-- Email Field -->
-    <TextView
-        android:id="@+id/emailLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/emailValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="example@gmail.com"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        android:background="@drawable/name_label_background"
-        tools:ignore="TextSizeCheck" />
-
-    <!-- Phone Number Field -->
-    <TextView
-        android:id="@+id/phoneLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Phone Number"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/phoneValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="1234567890"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        android:background="@drawable/name_label_background"
-        tools:ignore="TextSizeCheck" />
-
-    <!-- Gender -->
-    <TextView
-        android:id="@+id/genderLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gender"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/genderValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Male"
-        android:background="@drawable/name_label_background"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        tools:ignore="TextSizeCheck" />
-    <!-- Date Of Birth -->
-    <TextView
-        android:id="@+id/dobLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Date Of Birth"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/dobValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="25-06-2000"
-        android:background="@drawable/name_label_background"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        tools:ignore="TextSizeCheck" />
-
-    <!-- Address Lane 1 -->
-    <TextView
-        android:id="@+id/address1Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address Line 1"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/address1Value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address Line 1"
-        android:background="@drawable/name_label_background"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        tools:ignore="TextSizeCheck" />
-    <!-- Address Lane 2 -->
-    <TextView
-        android:id="@+id/address2Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address Line 2"
-        android:layout_marginTop="4dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/address2Value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address Line 2"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textSize="14dp"
-        android:background="@drawable/name_label_background"
-        tools:ignore="TextSizeCheck" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="4dp"
-        android:weightSum="2">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
-            android:orientation="vertical">
-            <!-- Name Field -->
-            <TextView
-                android:id="@+id/pincodeLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pincode"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/pincodeValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="500055"
-                android:background="@drawable/name_label_background"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textSize="14dp"
-                tools:ignore="TextSizeCheck" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <!-- Name Field -->
-            <TextView
-                android:id="@+id/districtLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="District"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/districtValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Medchal"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textSize="14dp"
-                android:background="@drawable/name_label_background"
-                tools:ignore="TextSizeCheck" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:orientation="vertical">
-        <!-- Name Field -->
-        <TextView
-            android:id="@+id/locationLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Location"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textSize="16dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/locationValue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="8-66 , Jaya Ram Nagar , Quthbullapur"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textSize="14dp"
-            android:background="@drawable/name_label_background"
-            tools:ignore="TextSizeCheck" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="4dp"
-        android:weightSum="2">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
-            android:orientation="vertical">
-            <!-- Name Field -->
-            <TextView
-                android:id="@+id/stateLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="State"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/stateValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Telangana"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textSize="14dp"
-                android:background="@drawable/name_label_background"
-                tools:ignore="TextSizeCheck" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <!-- Name Field -->
-            <TextView
-                android:id="@+id/countryLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Country"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/contryValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="India"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textSize="14dp"
-                android:background="@drawable/name_label_background"
-                tools:ignore="TextSizeCheck" />
-        </LinearLayout>
-    </LinearLayout>
-
-
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

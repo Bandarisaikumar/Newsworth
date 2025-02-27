@@ -62,8 +62,8 @@ interface ApiService {
         @Query("content_description") contentDescription: String,
         @Query("price") price: Float,
         @Query("discount") discount: Int,
-        @Part("base64_file") base64Image: RequestBody ,// Base64 image String as form-data
-        @Part("tags") tags: RequestBody          // Tags as form-data
+        @Part("base64_file") base64Image: RequestBody,
+        @Part("tags") tags: RequestBody
     ): Response<ContentUploadResponse>
 
     @POST("uploaded_content")
@@ -94,13 +94,17 @@ interface ApiService {
     suspend fun getProfileDetails(@Query("user_id") userId: Int): Response<GetProfileResponse>
 
     @POST("edt_prfl_dtls")
-    suspend fun editProfileDetails(@Query("user_id") userId: String, @Body profileRequest: EditProfileRequest): Response<EditProfileResponse>
+    suspend fun editProfileDetails(
+        @Query("user_id") userId: String,
+        @Body profileRequest: EditProfileRequest
+    ): Response<EditProfileResponse>
 
     @POST("ChangeUserPassword")
     suspend fun changeUserPassword(@Body request: ChangePasswordRequest): Response<ChangePasswordResponse>
 
     @POST("location_details/")
     suspend fun getLocationDetails(@Body request: Map<String, Int>): Response<LocationResponse>
+
 
 }
 

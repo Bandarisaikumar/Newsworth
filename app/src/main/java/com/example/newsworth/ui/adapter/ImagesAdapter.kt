@@ -1,5 +1,6 @@
 package com.example.newsworth.ui.adapter
 
+import android.graphics.drawable.Drawable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextUtils
@@ -12,8 +13,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.newsworth.data.model.ImageModel
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.newsworth.R
+import com.example.newsworth.data.model.ImageModel
 
 class ImagesAdapter(private var imagesList: List<ImageModel>) :
     RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
@@ -26,7 +31,6 @@ class ImagesAdapter(private var imagesList: List<ImageModel>) :
         val gps_location: TextView = itemView.findViewById(R.id.gps_location)
         val uploaded_by: TextView = itemView.findViewById(R.id.uploaded_by)
         val price_section: TextView = itemView.findViewById(R.id.price_section)
-//        val cartIcon: ImageView = itemView.findViewById(R.id.cart_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -35,41 +39,77 @@ class ImagesAdapter(private var imagesList: List<ImageModel>) :
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
+        if (imagesList == null || imagesList.isEmpty() || position >= imagesList.size || holder == null) {
+            Log.e("ImagesAdapter", "Invalid imagesList or position: $position or holder is null")
+            return
+        }
+
         val image = imagesList[position]
+
         holder.content_title.text = image.content_title
         holder.content_description.text = image.content_description
         holder.age_in_days.text = image.age_in_days
         holder.gps_location.text = image.gps_location
         holder.uploaded_by.text = image.uploaded_by
-        val originalPrice = image.price
-        val discountPercentage = image.discount
+
+        val originalPrice = image.price.toDoubleOrNull() ?: 0.0
+        val discountPercentage = image.discount.toDoubleOrNull() ?: 0.0
 
         val originalPriceText = SpannableString("₹${originalPrice}")
-        originalPriceText.setSpan(StrikethroughSpan(), 0, originalPriceText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        originalPriceText.setSpan(
+            StrikethroughSpan(),
+            0,
+            originalPriceText.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
-        // Calculate discounted price
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-        // Combine discounted price, original price (with strike-through), and discount percentage
-        val finalText = TextUtils.concat("Price ₹${discountedPrice.toInt()} ", originalPriceText, " at Discount ${discountPercentage}%")
+// Format the discount percentage to remove the decimal
+        val formattedDiscount = discountPercentage.toInt().toString() + "%"
 
-        // Create the formatted text
+// Combine discounted price, original price (with strike-through), and discount percentage
+        val finalText = TextUtils.concat(
+            "Price ₹${discountedPrice.toInt()} ",
+            originalPriceText,
+            " at Discount $formattedDiscount" // Use the formattedDiscount here
+        )
         holder.price_section.text = finalText
+        val imageUrl = image.Image_link
 
-        // Check if the image URL is null or blank
-        val Image_link = image.Image_link
-        if (Image_link != null) {
-            Log.e("Image",Image_link)
-        }
-        
-        if (Image_link.isNullOrBlank()) {
-            // You can use a placeholder image or handle this case differently
+        if (imageUrl.isNullOrEmpty()) {
+            Log.w("ImageAdapter", "Image URL is null or empty for position: $position")
             Glide.with(holder.itemView.context)
                 .load(R.drawable.no_image)
+                .fitCenter()
                 .into(holder.Image_link)
         } else {
             Glide.with(holder.itemView.context)
-                .load(Image_link)
+                .load(imageUrl)
+                .fitCenter()
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.e("GlideError", "Image load failed for URL: $imageUrl, Exception: ", e)
+                        holder.Image_link.setImageResource(R.drawable.no_image)
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.d("GlideSuccess", "Image loaded successfully for URL: $imageUrl")
+                        return false
+                    }
+                })
                 .into(holder.Image_link)
         }
     }
@@ -78,9 +118,8 @@ class ImagesAdapter(private var imagesList: List<ImageModel>) :
         return imagesList.size
     }
 
-    // Method to update the list of images
     fun updateImages(newImagesList: List<ImageModel>) {
-        imagesList = newImagesList
-        notifyDataSetChanged()  // Notify adapter to update the RecyclerView
+        this.imagesList = newImagesList
+        notifyDataSetChanged()
     }
 }

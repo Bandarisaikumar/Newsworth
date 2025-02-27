@@ -1,18 +1,25 @@
 package com.example.newsworth.ui.view.fragment
 
 import android.app.AlertDialog
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.newsworth.R
@@ -29,24 +36,48 @@ import com.example.newsworth.utils.SharedPrefModule
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable.isActive
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.EOFException
 import java.io.File
+import java.io.IOException
+import java.net.SocketException
+import javax.net.ssl.SSLHandshakeException
 
 class UserProfile : Fragment() {
 
     private var _binding: FragmentUserProfileBinding? = null
-    private val binding get() = _binding!! // Non-null assertion for safe access
+    private val binding get() = _binding!!
     private var _profileViewModel: ProfileManagementViewmodel? = null
-    private val  profileViewModel get() = _profileViewModel!! // Non-null assertion for safe access
+    private val profileViewModel get() = _profileViewModel!!
     private lateinit var userViewModel: UserManagementViewModel
 
+    private lateinit var selectImageLauncher: ActivityResultLauncher<String>
 
-    private val selectImageLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { uploadImage(it) }
-        }
+    private var isInternetAvailable: Boolean = true
+    private var isViewCreated: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.showMyFilesTab()
+            }
+        })
+        selectImageLauncher =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                uri?.let { uploadImage(it) }
+            }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,107 +85,248 @@ class UserProfile : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
-        val isTinted = false
-
+        isViewCreated = true
 
         val profileRepository =
             ProfileManagementRepository(RetrofitClient.getApiService(requireContext()))
         val profileFactory = ProfileManagementViewmodelFactory(profileRepository)
         _profileViewModel =
-            ViewModelProvider(this, profileFactory).get(ProfileManagementViewmodel::class.java)
+            ViewModelProvider(this, profileFactory)[ProfileManagementViewmodel::class.java]
 
         val userRepository =
             UserManagementRepository(RetrofitClient.getApiService(requireContext()))
         val userFactory = UserManagementViewModelFactory(userRepository)
         userViewModel =
-            ViewModelProvider(this, userFactory).get(UserManagementViewModel::class.java)
+            ViewModelProvider(this, userFactory)[UserManagementViewModel::class.java]
 
-
-
+        checkInternetAndSetup() // Initial internet check
 
         binding.addButton.setOnClickListener { navigateToUserScreenForUpload() }
         binding.userHome.setOnClickListener { findNavController().navigate(R.id.action_userProfileFragment_to_userScreen) }
-        binding.backButton.setOnClickListener { findNavController().navigate(R.id.action_userProfileFragment_to_userScreen) }
         binding.logout.setOnClickListener {
-            val userId =
-                SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
-            performLogout(userId)
+            handleButtonClick {
+                val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+                performLogout(userId)
 
+            }
         }
         binding.profileInfo.setOnClickListener {
-            findNavController().navigate(R.id.action_userProfileFragment_to_profileDetailsScreen)
+            handleButtonClick {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.navigateProfileDetailsFragment()
+            }
         }
 
         binding.cameraIcon.setOnClickListener {
-            openGallery()
+            handleButtonClick {
+                openGallery()
+            }
+        }
+        binding.changePasswordBtn.setOnClickListener {
+            handleButtonClick {
+                showChangePasswordDialog() // Call the function here
+            }
         }
         binding.myJournals.setOnClickListener {
-            findNavController().navigate(R.id.action_userProfileFragment_to_userScreen)
-
-        }
-        if (isTinted) {
-            binding.personImage.clearColorFilter() // Remove tint
-        } else {
-            binding.personImage.setColorFilter(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.mehrun_color
-                ), android.graphics.PorterDuff.Mode.SRC_IN
-            )
+            val homeScreenFragment = parentFragment as? HomeScreen
+            homeScreenFragment?.showMyFilesTab()
         }
 
-        // Fetch profile image for the user
         fetchProfileImage()
-
         observeViewModels()
+        _profileViewModel!!.error.observe(viewLifecycleOwner) { errorMessage ->
+            if (errorMessage != null) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show() // Longer Toast
+                _profileViewModel!!.clearErrorMessage() // Clear the error after displaying it
+            }
+        }
+        _profileViewModel!!.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
-        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+        return binding.root
+    }
+
+    private fun checkInternetAndSetup() {
+        isInternetAvailable = isInternetAvailable()
+        if (isInternetAvailable) {
+            fetchProfileData()
+            enableUI()
+        } else {
+            showNoInternetDialog()
+//            disableUI() // Disable UI when offline
+        }
+    }
+    //    private fun fetchProfileData() {
+//        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+//        if (userId != -1) {
+//            _profileViewModel?.viewModelScope?.launch {
+//                try {
+//                    retryFailedRequests()
+//                } catch (e: Exception) {
+//                    withContext(Dispatchers.Main) { // Handle errors on the main thread
+//                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+//                    }
+//                    Log.e("UserProfile", "Error fetching profile data", e) // Log the error
+//                }
+//            }
+//        } else {
+//            Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+    private fun fetchProfileData() {
+        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
         if (userId != -1) {
-            profileViewModel.fetchProfileDetails(userId) // Fetch data when the fragment is created
+            _profileViewModel?.viewModelScope?.launch {
+                try {
+                    showProgressBar()
+                    profileViewModel.fetchProfileDetails(userId) // Or retryFailedRequests() if needed
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        val errorMessage = when (e) {
+                            is IOException -> {
+                                when (e) {
+                                    is SSLHandshakeException -> "Secure connection failed. Please try again later."
+                                    is SocketException -> "Unable to connect to the server. Please check your internet connection."
+                                    is EOFException -> "The connection was closed unexpectedly. Please try again later." // Handle EOFException
+                                    else -> "A network error occurred. Please check your internet connection."
+                                }
+                            }
+                            else -> "An unexpected error occurred: ${e.message}"
+                        }
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        disableUI() // Disable UI on error
+                    }
+                    Log.e("UserProfile", "Error fetching profile data: ${e.message}", e)
+                }finally {
+                    hideProgressBar() // Hide progress bar after network call (success or failure)
+                }
+            }
         } else {
             Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
         }
+    }
+    private fun handleButtonClick(action: () -> Unit) {
+        if (isInternetAvailable) {
+            action()
+        } else {
+            showNoInternetToast()
+        }
+    }
+    private fun showNoInternetToast() {
+        Toast.makeText(requireContext(), "No internet connection.please turn on internet", Toast.LENGTH_SHORT).show()
+    }
+    private fun showProgressBar() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
 
-        profileViewModel.profileDetails.observe(viewLifecycleOwner) {  response ->
-            context?.let {
-                Toast.makeText(context, response.response, Toast.LENGTH_SHORT).show()
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
+    }
 
-                // Bind the response data to the UI elements
-                binding.apply {
-               // Concatenate first name, middle name, and last name
-                    val fullName = buildString {
-                        append(response.response_message.first_name)
-                        if (!response.response_message.middle_name.isNullOrEmpty()) {
-                            append(" ${response.response_message.middle_name}")
-                        }
-                        if (response.response_message.last_name.isNotEmpty()) {
-                            append(" ${response.response_message.last_name}")
-                        }
+    private suspend fun retryFailedRequests() {
+        val maxRetries = 3
+        var retryCount = 0
+        var delayMillis = 1000L
+
+        while (retryCount < maxRetries) {
+            try {
+                if (isActive) {
+                    withTimeout(5000) { // Timeout for each retry
+                        val userId =
+                            SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt()
+                                ?: -1
+                        profileViewModel.fetchProfileDetails(userId)
                     }
-                    // Set "User Name" and the full name to the userName TextView
-                    userName.text = "User Name : ${fullName.ifEmpty { "N/A" }}"
+                } else {
+                    Log.d("Network", "Coroutine cancelled, exiting retry loop.")
+                    break // Exit the retry loop
+                }
+                return
+                // Success! Exit the loop
+            }
+            catch (exception: Exception) {
+                if (exception is IOException || exception is TimeoutCancellationException || exception is SSLHandshakeException || exception is EOFException) { // Include SSL and EOF
+                    retryCount++
+                    Log.e("Network", "Retry $retryCount: ${exception.message}")
+                    delay(delayMillis)
+                    delayMillis *= 2
 
-                    // Set "User ID" and the user ID to the usersId TextView
-                    usersId.text = "User ID : ${response.response_message.user_id}"
-
+                    withContext(Dispatchers.Main) { // Toast on the main thread
+                        Toast.makeText(requireContext(), "Retrying...", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    throw exception // Re-throw other exceptions (like authentication errors)
                 }
             }
         }
 
-
-
-        // Trigger the dialog when "Change Password" section is clicked
-        binding.changePasswordBtn.setOnClickListener {
-            showChangePasswordDialog()
+        withContext(Dispatchers.Main) {
+            Toast.makeText(requireContext(), "Network request failed after multiple retries.", Toast.LENGTH_SHORT).show()
+            disableUI()
         }
-
-
-
-        return binding.root
     }
+
+    //
+//    private fun fetchProfileData() {
+//        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+//        if (userId != -1) {
+//            _profileViewModel?.viewModelScope?.launch {
+//                try {
+//                    retryFailedRequests() // Use the improved retry function
+//                } catch (e: Exception) {
+//                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+//                        disableUI() // Disable UI on final failure
+//                    }
+//                    Log.e("UserProfile", "Error fetching profile data", e)
+//                }
+//            }
+//        } else {
+//            Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+    private fun enableUI() {
+        binding.addButton.isEnabled = true
+        binding.userHome.isEnabled = true
+        binding.logout.isEnabled = true
+        binding.profileInfo.isEnabled = true
+        binding.cameraIcon.isEnabled = true
+        binding.myJournals.isEnabled = true
+        binding.changePasswordBtn.isEnabled = true
+    }
+
+    private fun disableUI() {
+        binding.addButton.isEnabled = false
+        binding.userHome.isEnabled = false
+        binding.logout.isEnabled = false
+        binding.profileInfo.isEnabled = false
+        binding.cameraIcon.isEnabled = false
+        binding.myJournals.isEnabled = false
+        binding.changePasswordBtn.isEnabled = false
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService<ConnectivityManager>()
+        val network = connectivityManager?.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+
+    private fun showNoInternetDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+            .setTitle("No Internet Connection")
+            .setMessage("Please turn on your internet connection to continue.")
+            .setCancelable(false)
+            .setPositiveButton("OK") { _, _ -> }
+        val alert = builder.create()
+        alert.show()
+    }
+
     private fun navigateToUserScreenForUpload() {
         val bundle = Bundle().apply {
-            putBoolean("continueUpload", true) // Flag to continue the upload process
+            putBoolean("continueUpload", true)
         }
         findNavController().navigate(R.id.action_userProfileFragment_to_userScreen, bundle)
     }
@@ -169,47 +341,34 @@ class UserProfile : Fragment() {
 
     private fun uploadImage(uri: Uri) {
         try {
-            // Display the selected image immediately
             Glide.with(this)
                 .load(uri)
-                .placeholder(R.drawable.avthar_image2) // Optional placeholder
+                .placeholder(R.drawable.avthar_image2)
                 .into(binding.profileImage)
 
-            // Proceed with the upload
             val file = createFileFromUri(uri)
             val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
             val multipartFile = MultipartBody.Part.createFormData("file", file.name, requestBody)
 
-            val userId =
-                SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+            val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
             profileViewModel.uploadProfileImage(userId, multipartFile)
+            showProgressBar()
 
-            // Fetch the latest profile image URL after the upload completes
             profileViewModel.uploadResponse.observe(viewLifecycleOwner) { response ->
+                hideProgressBar()
                 if (response != null && response.response == "success") {
-                    fetchProfileImage() // Fetch the updated image URL
-                    Toast.makeText(
-                        requireContext(),
-                        "Image uploaded successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    fetchProfileImage()
+                    Toast.makeText(requireContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Image upload failed. Please try again.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Image upload failed. Please try again.", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "Failed to process the file: ${e.message}",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(requireContext(), "Failed to process the file: ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("UserProfile", "File processing error: ${e.message}")
+            hideProgressBar()
         }
     }
-
 
     private fun createFileFromUri(uri: Uri): File {
         val contentResolver = requireContext().contentResolver
@@ -248,42 +407,53 @@ class UserProfile : Fragment() {
     }
 
     private fun observeViewModels() {
-//        profileViewModel.uploadResponse.observe(viewLifecycleOwner) { response ->
-//            if (response != null) {
-//                Toast.makeText(requireContext(), response.response, Toast.LENGTH_LONG).show()
-//            } else {
-//                Toast.makeText(requireContext(), "Upload failed. Please try again.", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        profileViewModel.imageUrl.observe(viewLifecycleOwner) { imageUrlResponse ->
+            val imageUrlString = imageUrlResponse?.url
 
-        profileViewModel.imageUrl.observe(viewLifecycleOwner) { imageUrl ->
-            if (imageUrl.isNotEmpty()) {
+            val uri: Uri? = imageUrlString?.let { Uri.parse(it) }
+
+            if (uri != null) {
                 Glide.with(this)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.avthar_image2) // Add a placeholder image
+                    .load(uri)
+                    .placeholder(R.drawable.avthar_image2)
                     .into(binding.profileImage)
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to load profile image.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                binding.profileImage.setImageResource(R.drawable.avthar_image2)
+                Log.d("ProfileImage", "Image URL is null or invalid.")
             }
         }
 
+        // *** COMBINED ERROR OBSERVER FOR PROFILE VIEW MODEL ***
         profileViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            error?.let {
+                Log.d("ProfileViewModelError", "Error: $it") // Log the error
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                profileViewModel.clearErrorMessage()
+            }
         }
 
         userViewModel.logoutResponse.observe(viewLifecycleOwner) { response ->
-            Toast.makeText(context, response.response_message, Toast.LENGTH_LONG).show()
-            findNavController().navigate(R.id.action_userProfileFragment_to_welcomeScreen)
+            if (response != null && response.response == "success") { // Check for successful logout
+                Toast.makeText(context, response.response_message, Toast.LENGTH_LONG).show()
+                SharedPrefModule.provideTokenManager(requireContext()).clearTokens() // Clear tokens AFTER successful logout
+                findNavController().navigate(R.id.action_homeScreen_to_welcomeScreen)
+            } else {
+                // Handle logout failure (optional)
+                Toast.makeText(context, "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
+            }
         }
 
+        // *** ERROR OBSERVER FOR USER VIEW MODEL ***
         userViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            error?.let {
+                Log.d("UserViewModelError", "Error: $it") // Log the error
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                userViewModel.clearErrorMessage()
+            }
         }
+
         profileViewModel.changePasswordResponse.observe(viewLifecycleOwner) { response ->
+            hideProgressBar()
             if (response.response == "success") {
                 Toast.makeText(requireContext(), "Password changed successfully!", Toast.LENGTH_LONG).show()
             } else {
@@ -292,85 +462,156 @@ class UserProfile : Fragment() {
             }
         }
 
-        profileViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+
+        profileViewModel.profileDetails.observe(viewLifecycleOwner) { response ->
+            hideProgressBar()
+            context?.let {
+                val fullName = buildString {
+                    if (response != null) {
+                        append(response.response_message.first_name)
+                        if (!response.response_message.middle_name.isNullOrEmpty()) {
+                            append(" ${response.response_message.middle_name}")
+                        }
+                        if (response.response_message.last_name.isNotEmpty()) {
+                            append(" ${response.response_message.last_name}")
+                        }
+                    }
+                }
+                binding.userName.text = "User Name : ${fullName.ifEmpty { " " }}"
+                if (response != null) {
+                    binding.usersId.text = "User ID : ${response.response_message.user_id}"
+                }
+            }
+        }
+
+        profileViewModel.uploadResponse.observe(viewLifecycleOwner) { response ->
+            hideProgressBar()
+            if (response != null && response.response == "success") {
+                fetchProfileImage()
+                Toast.makeText(requireContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Image upload failed. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // *** ERROR OBSERVER FOR PROFILE IMAGE UPLOAD ***
+        profileViewModel.errorMessage.observe(viewLifecycleOwner) { error -> // Same observer as above
+            error?.let {
+                Log.d("ProfileImageUploadError", "Error: $it") // Log the error
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                profileViewModel.clearErrorMessage()
+            }
         }
     }
+
     private fun showChangePasswordDialog() {
+        val dialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
 
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
+        val oldPasswordEditText =
+            dialogView.findViewById<TextInputEditText>(R.id.oldPasswordEditText)
+        val newPasswordEditText =
+            dialogView.findViewById<TextInputEditText>(R.id.newPasswordEditText)
+        val confirmPasswordEditText =
+            dialogView.findViewById<TextInputEditText>(R.id.confirmPasswordEditText)
+        val changePasswordButton =
+            dialogView.findViewById<MaterialButton>(R.id.changePasswordButton)
+        var isValid = true // Flag to track overall validation
 
-        val oldPasswordEditText = dialogView.findViewById<TextInputEditText>(R.id.oldPasswordEditText)
-        val newPasswordEditText = dialogView.findViewById<TextInputEditText>(R.id.newPasswordEditText)
-        val confirmPasswordEditText = dialogView.findViewById<TextInputEditText>(R.id.confirmPasswordEditText)
-        val changePasswordButton = dialogView.findViewById<MaterialButton>(R.id.changePasswordButton)
 
-        // Apply password visibility toggle on each password field
         setupPasswordVisibilityToggle(dialogView.findViewById(R.id.oldPasswordEditTextLayout))
         setupPasswordVisibilityToggle(dialogView.findViewById(R.id.newPasswordEditTextLayout))
         setupPasswordVisibilityToggle(dialogView.findViewById(R.id.confirmPasswordEditTextLayout))
 
 
-        // Apply the function to your password fields
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .create()
 
         changePasswordButton.setOnClickListener {
-            val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
+
+            val userId =
+                SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
             val oldPassword = oldPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
             val confirmPassword = confirmPasswordEditText.text.toString()
 
             // Validation for empty fields
             if (oldPassword.isEmpty()) {
-                Toast.makeText(requireContext(), "Old password cannot be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Old password cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
             if (newPassword.isEmpty()) {
-                Toast.makeText(requireContext(), "New password cannot be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "New password cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
             if (confirmPassword.isEmpty()) {
-                Toast.makeText(requireContext(), "Confirm password cannot be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Confirm password cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for password length
             if (newPassword.length < 8) {
-                Toast.makeText(requireContext(), "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Password must be at least 8 characters long",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for at least one uppercase letter
             if (!newPassword.any { it.isUpperCase() }) {
-                Toast.makeText(requireContext(), "Password must contain at least one uppercase letter", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Password must contain at least one uppercase letter",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for at least one lowercase letter
             if (!newPassword.any { it.isLowerCase() }) {
-                Toast.makeText(requireContext(), "Password must contain at least one lowercase letter", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Password must contain at least one lowercase letter",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for at least one number
             if (!newPassword.any { it.isDigit() }) {
-                Toast.makeText(requireContext(), "Password must contain at least one number", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Password must contain at least one number",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for at least one special character
             if (!newPassword.any { it in "!@#$%^&*()-_=+[]{}|;:'\",.<>?/\\`~" }) {
-                Toast.makeText(requireContext(), "Password must contain at least one special character", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "Password must contain at least one special character",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Validation for matching passwords
             if (newPassword != confirmPassword) {
-                Toast.makeText(requireContext(), "New password and confirm password do not match", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                Toast.makeText(
+                    requireContext(),
+                    "New password and confirm password do not match",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener                        }
 
             // Proceed with the change password request
             val request = ChangePasswordRequest(
@@ -381,56 +622,51 @@ class UserProfile : Fragment() {
             )
 
             profileViewModel.changePassword(request)
+            showProgressBar()
 
             dialog.dismiss()
         }
 
-
         dialog.show()
     }
+
+
     private fun setupPasswordVisibilityToggle(textInputLayout: TextInputLayout) {
         val editText = textInputLayout.editText
 
-        // Initialize the state
         var isPasswordVisible = false
 
-        // Ensure end icon mode is custom
         textInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
 
-        // Save the current font family
         val currentFontFamily = editText?.typeface
 
-        // Set the initial input type and icon
         editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon initially
+        textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off)
 
-        // Reverse the default toggle behavior
         textInputLayout.setEndIconOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
-                // Password is visible, eye icon open
                 editText?.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_on) // Open-eye icon
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_on)
             } else {
-                // Password is hidden, eye icon closed
                 editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off)
             }
-            // Restore the font family
             editText?.typeface = currentFontFamily
-
-            // Preserve the cursor position
             editText?.setSelection(editText.text?.length ?: 0)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null // Clean up binding
-        // Make sure to clean up other resources if needed (like ViewModel, adapters, etc.)
-        _profileViewModel = null // Make sure your ViewModel is also cleaned up if necessary
+
+    override fun onResume() {
+        super.onResume()
+        checkInternetAndSetup()
     }
 
-
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _profileViewModel = null
+        isViewCreated = false
+    }
 }

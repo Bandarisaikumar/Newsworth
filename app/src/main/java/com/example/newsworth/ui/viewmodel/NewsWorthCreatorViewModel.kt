@@ -10,27 +10,32 @@ import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.data.model.MetadataResponse
 import com.example.newsworth.data.model.UploadedContentResponse
 import com.example.newsworth.repository.NewsWorthCreatorRepository
-import com.example.newsworth.utils.NetworkUtils.retryIO
+import com.example.newsworth.utils.NetworkUtils.retryIO // Assuming this handles CancellationException
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import javax.net.ssl.SSLHandshakeException
+import java.net.SocketException
+import javax.inject.Inject
 
-class NewsWorthCreatorViewModel(private val repository: NewsWorthCreatorRepository) : ViewModel() {
+class NewsWorthCreatorViewModel @Inject constructor(private val repository: NewsWorthCreatorRepository) :
+    ViewModel() { // Add @Inject if using DI
 
     private val _metadataResult = MutableLiveData<MetadataResponse?>()
     val metadataResult: LiveData<MetadataResponse?> = _metadataResult
 
-    // LiveData to observe API response
     private val _contentUploadResponse = MutableLiveData<ContentUploadResponse>()
-    val contentUploadResponse: LiveData<ContentUploadResponse> get() = _contentUploadResponse
+    val contentUploadResponse: LiveData<ContentUploadResponse> = _contentUploadResponse
 
     private val _uploadedContent = MutableLiveData<UploadedContentResponse>()
-    val uploadedContent: LiveData<UploadedContentResponse> get() = _uploadedContent
+    val uploadedContent: LiveData<UploadedContentResponse> = _uploadedContent
 
-    // LiveData for error handling
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private val _error = MutableLiveData<String?>()
+    val error: MutableLiveData<String?> = _error
 
+    val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     fun insertMetadata(metadata: MetadataRequest) {
         viewModelScope.launch {
@@ -39,14 +44,25 @@ class NewsWorthCreatorViewModel(private val repository: NewsWorthCreatorReposito
                 if (response.isSuccessful) {
                     _metadataResult.postValue(response.body())
                 } else {
+                    val errorMessage = when (response.code()) {
+                        400 -> "Bad Request"
+                        401 -> "Unauthorized"
+                        403 -> "Forbidden"
+                        500 -> "Internal Server Error"
+                        else -> "Metadata upload failed: ${response.message()}"
+                    }
+                    Log.e("MetadataUpload", errorMessage)
+                    _error.postValue(errorMessage) // Set error message
                     _metadataResult.postValue(null)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("MetadataUpload", "An error occurred: ${e.message}")
+                _error.postValue("An error occurred: ${e.message}") // Set error message
                 _metadataResult.postValue(null)
             }
         }
     }
+
 
     fun uploadContent(
         userId: Int,
@@ -61,62 +77,108 @@ class NewsWorthCreatorViewModel(private val repository: NewsWorthCreatorReposito
     ) {
         viewModelScope.launch {
             try {
-                retryIO {
+                retryIO { // Assuming retryIO handles CancellationException
 
                     Log.d("UploadContent", "Starting uploadContent with title: $title")
 
-                    // Create the requestBody for tags
                     val tagsRequestBody = tags.toRequestBody("text/plain".toMediaTypeOrNull())
-
-                    // Prepare the file part for the upload
                     val base64ImageRequestBody =
                         filebase64_file.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                    // Upload the content
                     val response = mediaType?.let {
                         repository.uploadContent(
-                            userId = userId,                 // Query param
-                            contentId = contentId,           // Query param
-                            title = title,                   // Query param
-                            mediaType = it,                  // Query param (
-                            description = description,       // Query param
-                            price = price,                   // Query param
-                            discount = discount,             // Query param
-                            filebase64_file = base64ImageRequestBody,   // Form data
-                            tags = tagsRequestBody           // Form data
+                            userId,
+                            contentId,
+                            title,
+                            it, // mediaType
+                            description,
+                            price,
+                            discount,
+                            base64ImageRequestBody,
+                            tagsRequestBody
                         )
                     }
 
-                    // Handle the response
                     if (response != null) {
                         if (response.isSuccessful) {
                             Log.d("UploadContent", "Upload successful: ${response.body()}")
                             _contentUploadResponse.postValue(response.body())
                         } else {
-                            Log.e("UploadContent", "Upload failed: ${response.message()}")
-                            _error.postValue("Upload failed: ${response.message()}")
+                            val errorMessage = when (response.code()) {
+                                400 -> "Bad Request"
+                                401 -> "Unauthorized"
+                                403 -> "Forbidden"
+                                500 -> "Internal Server Error"
+                                else -> "Upload failed: ${response.message()}"
+                            }
+                            Log.e("UploadContent", errorMessage)
+                            _error.postValue(errorMessage)
                         }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("UploadContent", "An error occurred: ${e.localizedMessage}")
-                _error.postValue("An error occurred: ${e.localizedMessage}")
+                Log.e("UploadContent", "An error occurred: ${e.message}")
+
+                val errorMessage = when (e) {
+                    is IOException -> {
+                        if (e is SSLHandshakeException) {
+                            "There was a problem establishing a secure connection. Please try again later." // User-friendly message
+                        } else if (e is SocketException) {
+                            "Unable to connect to the server. Please check your internet connection."
+                        } else {
+                            "A network error occurred. Please check your internet connection."
+                        }
+                    }
+
+                    else -> "An unexpected error occurred. Please try again later." // More general message
+                }
+                _error.postValue(errorMessage)
+            } finally {
+                _isLoading.postValue(false) // Clear loading state
             }
         }
     }
+
     fun fetchUploadedContent(userId: Int) {
         viewModelScope.launch {
+            _isLoading.postValue(true) // Start loading
             try {
                 val response = repository.fetchUploadedContent(userId)
                 if (response.isSuccessful) {
                     _uploadedContent.postValue(response.body())
                 } else {
-                    Log.e("FetchContent", "Error fetching content: ${response.message()}")
+                    val errorMessage = when (response.code()) {
+                        400 -> "Bad Request"
+                        401 -> "Unauthorized"
+                        403 -> "Forbidden"
+                        500 -> "Internal Server Error"
+                        else -> "Error fetching content: ${response.message()}"
+                    }
+                    Log.e("FetchContent", errorMessage)
+                    _error.postValue(errorMessage)
                 }
             } catch (e: Exception) {
-                Log.e("FetchContent", "An error occurred: ${e.localizedMessage}")
+                Log.e("FetchContent", "An error occurred: ${e.message}")
+                val errorMessage = when (e) {
+                    is IOException -> {
+                        if (e is SSLHandshakeException) {
+                            "There was a problem establishing a secure connection. Please try again later."
+                        } else if (e is SocketException) {
+                            "Unable to connect to the server. Please check your internet connection."
+                        } else {
+                            "A network error occurred. Please check your internet connection."
+                        }
+                    }
+                    else -> "You have not uploaded any content yet."
+                }
+                _error.postValue(errorMessage)
+            } finally {
+                _isLoading.postValue(false) // Stop loading, regardless of outcome
             }
         }
     }
 
+    fun clearErrorMessage() {
+        _error.value = null
+    }
 }

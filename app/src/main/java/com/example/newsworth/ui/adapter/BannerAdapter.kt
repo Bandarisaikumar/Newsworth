@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsworth.R
 
-class BannerAdapter(private val bannerImages: List<Int>) : RecyclerView.Adapter<BannerAdapter.ViewHolder>() {
+class BannerAdapter(private val bannerImages: List<Int>) :
+    RecyclerView.Adapter<BannerAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.bannerImageView)

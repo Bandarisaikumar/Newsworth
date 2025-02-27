@@ -59,7 +59,7 @@
             android:paddingEnd="90dp"
             android:text="  video"
             android:textColor="@color/black"
-            app:drawableStartCompat="@drawable/video_icon"
+            app:drawableStartCompat="@drawable/video_icons"
             tools:ignore="HardcodedText,TextSizeCheck" />
 
         <TextView

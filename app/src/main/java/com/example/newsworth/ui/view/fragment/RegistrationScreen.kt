@@ -1,20 +1,26 @@
 package com.example.newsworth.ui.view.fragment
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -26,6 +32,7 @@ import com.example.newsworth.repository.UserManagementRepository
 import com.example.newsworth.ui.view.PdfViewerActivity
 import com.example.newsworth.ui.viewmodel.UserManagementViewModel
 import com.example.newsworth.ui.viewmodel.UserManagementViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -38,15 +45,20 @@ class RegistrationScreen : Fragment() {
     private lateinit var binding: FragmentRegistrationScreenBinding
     private lateinit var viewModel: UserManagementViewModel
     private var sendOtpDialog: AlertDialog? = null // Store the dialog instance
+    private var isEditing = false
 
 
-
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRegistrationScreenBinding.inflate(inflater, container, false)
+        binding.root.setOnTouchListener { _, _ ->
+            hideKeyboard()
+            false
+        }
 
         // Initialize ViewModel with ApiService from RetrofitClient
         val apiService = RetrofitClient.getApiService(requireContext())
@@ -59,7 +71,6 @@ class RegistrationScreen : Fragment() {
         // Apply the function to your password fields
         setupPasswordVisibilityToggle(binding.passwordLayout)
         setupPasswordVisibilityToggle(binding.confirmPasswordLayout) // If you have another field
-
 
 
         // Dropdown items for User Type and Role
@@ -77,9 +88,16 @@ class RegistrationScreen : Fragment() {
 
 
         binding.registerButton.setOnClickListener {
+            if (!isInternetAvailable()) {  // Check internet *before* proceeding
+                showNoInternetToast() // Or a more specific message
+                return@setOnClickListener // Stop execution if no internet
+            }
             if (validateDropdownSelections() && validateFields() && validatePasswordFields()) {
-                if(binding.checkbox.isChecked) {
+                if (binding.checkbox.isChecked) {
 //                    binding.registerCardView.visibility = View.GONE
+                    // Show the progress bar
+                    binding.progressBar.visibility = View.VISIBLE
+
                     val request = RegistrationModels.RegistrationRequest(
                         first_name = binding.firstName.text.toString(),
                         middle_name = binding.middleName.text.toString(),
@@ -94,8 +112,12 @@ class RegistrationScreen : Fragment() {
                         confirm_password = binding.confirmPassword.text.toString()
                     )
                     viewModel.registerUser(request)
-                }else{
-                    Toast.makeText(requireContext(), "Please agree to the terms and conditions", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please agree to the terms and conditions",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -160,7 +182,15 @@ class RegistrationScreen : Fragment() {
             }
         }
         binding.sendOtpButton.setOnClickListener {
+            if (!isInternetAvailable()) {  // Check internet *before* proceeding
+                showNoInternetToast() // Or a more specific message
+                return@setOnClickListener // Stop execution if no internet
+            }
             if (validateDropdownSelections() && validateFields()) {
+                binding.progressBar2.visibility = View.VISIBLE
+//                disableFields()
+//                isEditing = false
+
                 val request = RegistrationModels.SendOtpRequest(
                     first_name = binding.firstName.text.toString(),
                     mobile = binding.mobileNumber.text.toString(),
@@ -176,8 +206,10 @@ class RegistrationScreen : Fragment() {
         // Observe LiveData
         viewModel.registrationResponse.observe(viewLifecycleOwner) { response ->
             if (response.response == "success") {
-                Toast.makeText(requireContext(), response.response_message, Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(requireContext(), response.response_message, Toast.LENGTH_SHORT)
+                    .show()
+                // Hide the progress bar
+                binding.progressBar.visibility = View.GONE
 //                // Hide registration form and show success dialog
 //                binding.registerCardView.visibility = View.GONE
                 showSuccessDialog()
@@ -192,17 +224,29 @@ class RegistrationScreen : Fragment() {
             }
         }
         viewModel.verificationResponse.observe(viewLifecycleOwner) { response ->
+            binding.progressBar2.visibility =
+                View.GONE // Hide progress bar regardless of success/failure
 
             // Handle the main response
             if (response.response == "success") {
+                isEditing = false // Set isEditing to false after successful verification
                 Toast.makeText(
                     requireContext(),
                     response.response_message ?: "Success!",
                     Toast.LENGTH_SHORT
                 ).show()
                 sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
             } else if (response.response == "fail") {
-                when(response.response_message) {
+                isEditing = true
+
+                when (response.response_message) {
                     "Invalid or incorrect OTP." -> {
                         Toast.makeText(
                             requireContext(),
@@ -213,8 +257,8 @@ class RegistrationScreen : Fragment() {
                         binding.passwordsLayout.visibility = View.GONE
                     }
                 }
-                when(response.response_message) {
-                    "Invalid OTP, please try again." -> {
+                when (response.response_message) {
+                    "Invalid otp please try again" -> {
                         Toast.makeText(
                             requireContext(),
                             response.response_message ?: "Failure!",
@@ -234,7 +278,16 @@ class RegistrationScreen : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
                 sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
             } else if (response.response == "failure") {
+                isEditing = true
+
                 // Check for both email and mobile failure
                 val emailFail = response.email_response?.response == "fail"
                 val mobileFail = response.mobile_response?.response == "fail"
@@ -247,6 +300,7 @@ class RegistrationScreen : Fragment() {
                     ).show()
                     showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
                     binding.passwordsLayout.visibility = View.GONE
+
                 }
 
 
@@ -258,7 +312,14 @@ class RegistrationScreen : Fragment() {
                             "Mobile Response: ${mobileResponse.response_message}",
                             Toast.LENGTH_SHORT
                         ).show()
-//                        sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                        sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                        activity?.runOnUiThread {
+                            binding.passwordsLayout.visibility =View.VISIBLE
+                            binding.sendOtpButton.isEnabled = false
+                            binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                            binding.sendOtpButton.isClickable = false
+                            Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                        }
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -278,7 +339,14 @@ class RegistrationScreen : Fragment() {
                             "Email Response: ${emailResponse.response_message}",
                             Toast.LENGTH_SHORT
                         ).show()
-//                        sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                        sendOtpDialog?.dismiss() // Dismiss the dialog if verification is successful
+                        activity?.runOnUiThread {
+                            binding.passwordsLayout.visibility =View.VISIBLE
+                            binding.sendOtpButton.isEnabled = false
+                            binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                            binding.sendOtpButton.isClickable = false
+                            Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                        }
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -305,6 +373,8 @@ class RegistrationScreen : Fragment() {
 
         viewModel.otpResponse.observe(viewLifecycleOwner) { response ->
             response?.let {
+                binding.progressBar2.visibility =
+                    View.GONE // Hide progress bar regardless of success/failure
                 handleOtpResponse(it)
             }
         }
@@ -312,16 +382,25 @@ class RegistrationScreen : Fragment() {
         return binding.root
     }
 
-    private fun handleOtpResponse(response: RegistrationModels.SendOtpResponse ) {
+    private fun handleOtpResponse(response: RegistrationModels.SendOtpResponse) {
         when (response.response) {
             "success" -> {
+                binding.progressBar2.visibility = View.GONE
                 handleSuccessResponse(response.response_message)
             }
+
             "failure" -> {
+                binding.progressBar2.visibility = View.GONE
+                handleFailureResponse(response.response_message)
+            }
+
+            "fail" -> {
+                binding.progressBar2.visibility = View.GONE
                 handleFailureResponse(response.response_message)
             }
         }
     }
+
     // Declare a global variable for the current Toast
     private var currentToast: Toast? = null
 
@@ -334,35 +413,89 @@ class RegistrationScreen : Fragment() {
         currentToast?.show()
     }
 
+    private fun showNoInternetToast() {
+        Toast.makeText(
+            requireContext(),
+            "No internet connection. Please try again later.",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService<ConnectivityManager>()
+        val network = connectivityManager?.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+
     private fun handleSuccessResponse(message: String) {
         // Use the showToast function to display the message
         showToast(message)
 
         when (message) {
-            "Mobile is already registered. Please log in or use a different mobile number." -> {
+            "Mobile is already registered. Please use different mobile to proceed" -> {
                 binding.passwordsLayout.visibility = View.GONE
             }
+            "Email is already registered. Please use different email to proceed"->{
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "Mobile is already registered. Please complete your registration and activate your account." ->{
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
+
+            }
+            "Email is already registered. Please complete your registration and activate your account." ->{
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
+            }
+
             "OTP successfully sent to your email." -> {
                 showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
                 binding.passwordsLayout.visibility = View.GONE
             }
+
             "OTP successfully sent to Mobile." -> {
                 showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
                 binding.passwordsLayout.visibility = View.GONE
             }
+
             "OTP successfully sent to both email and mobile." -> {
                 showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
                 binding.passwordsLayout.visibility = View.GONE
             }
+
             "Mobile is already registered. Please verify your mobile to proceed." -> {
                 showSendOtpDialog(isEmailOtp = false, isMobileOtp = true)
 //                binding.passwordsLayout.visibility = View.VISIBLE
             }
+
             "Please verify your email to proceed." -> {
                 showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
             }
+
+            "both Mobile and EMail  already registered.Please verify your Mobile and Email to proceed" -> {
+                showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
+            }
+
             "Please complete your registration and activate your account." -> {
-                binding.passwordsLayout.visibility = View.VISIBLE
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
             }
         }
     }
@@ -375,16 +508,38 @@ class RegistrationScreen : Fragment() {
             "Email is already registered. Please log in or use a different email." -> {
                 binding.passwordsLayout.visibility = View.GONE
             }
+
             "Both email and mobile number are already registered. Please use different credentials." -> {
                 binding.passwordsLayout.visibility = View.GONE
             }
+
             "Please complete your registration and activate your account." -> {
-                binding.passwordsLayout.visibility = View.VISIBLE
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
+
             }
-            "Mobile is already registered. Please use a different Mobile Number." -> {
+
+            "Please click here to complete your registration and activate your account." -> {
+                activity?.runOnUiThread {
+                    binding.passwordsLayout.visibility =View.VISIBLE
+                    binding.sendOtpButton.isEnabled = false
+                    binding.sendOtpButton.alpha = 0.5f // Adjust as needed
+                    binding.sendOtpButton.isClickable = false
+                    Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
+                }
+
+            }
+
+            "Mobile is already registered. Please use a different mobile number or verify your current mobile." -> {
                 // No additional UI updates
             }
-            "Email is already registered. Please use a different email address." -> {
+
+            "Email is already registered. Please verify your email or use a different email." -> {
                 // No additional UI updates
             }
         }
@@ -425,43 +580,56 @@ class RegistrationScreen : Fragment() {
             datePicker.maxDate = maxDate
         }.show()
     }
+
+    private fun hideKeyboard() {
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus
+        view?.let {
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
+            it.clearFocus()
+        }
+    }
     private fun validateFields(): Boolean {
-        // Trim whitespace from user inputs before validation
         val firstName = binding.firstName.text.toString().trim()
         val lastName = binding.lastName.text.toString().trim()
         val mobileNumber = binding.mobileNumber.text.toString().trim()
         val emailAddress = binding.emailAddress.text.toString().trim()
 
+        val context = requireContext() // Get the context
+
         when {
+            firstName.isBlank() -> {
+                Toast.makeText(context, "First Name is required", Toast.LENGTH_SHORT).show()
+                return false
+            }
             !isValidName(firstName) -> {
-                binding.firstName.error = "First Name is required and cannot contain numbers or special characters"
+                Toast.makeText(context, "Invalid First Name (letters only)", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            lastName.isBlank() -> {
+                Toast.makeText(context, "Last Name is required", Toast.LENGTH_SHORT).show()
                 return false
             }
             !isValidName(lastName) -> {
-                binding.lastName.error = "Last Name is required and cannot contain numbers or special characters"
+                Toast.makeText(context, "Invalid Last Name (letters only)", Toast.LENGTH_SHORT).show()
                 return false
             }
-
-            mobileNumber.isNotBlank() && !mobileNumber.matches(Regex("^\\d{10}\$")) -> {
-                binding.mobileNumber.error = "Enter a valid 10-digit Mobile Number"
-                return false
-            }
-
-            emailAddress.isNotBlank() &&
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches() -> {
-                binding.emailAddress.error = "Enter a valid Email Address"
-                return false
-            }
-
             mobileNumber.isBlank() && emailAddress.isBlank() -> {
-                binding.mobileNumber.error = "Mobile Number or Email Address is required"
-                binding.emailAddress.error = "Mobile Number or Email Address is required"
+                Toast.makeText(context, "Mobile Number or Email Address is required", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            mobileNumber.isNotBlank() && !mobileNumber.matches(Regex("^\\d{10}\$")) -> {
+                Toast.makeText(context, "Enter a valid 10-digit Mobile Number", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            emailAddress.isNotBlank() && !android.util.Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches() -> {
+                Toast.makeText(context, "Enter a valid Email Address", Toast.LENGTH_SHORT).show()
                 return false
             }
         }
         return true
     }
-
     // Updated helper function for validating names
     private fun isValidName(name: String): Boolean {
         return when {
@@ -497,7 +665,11 @@ class RegistrationScreen : Fragment() {
             else -> {
                 val dateOfBirth = binding.dateDropdown.text.toString()
                 if (dateOfBirth.isNullOrBlank()) {
-                    Toast.makeText(requireContext(), "Please select Date Of Birth", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select Date Of Birth",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                     return false
                 }
@@ -506,7 +678,8 @@ class RegistrationScreen : Fragment() {
                 val age = calculateAge(dob)
 
                 if (age < 18) {
-                    Toast.makeText(requireContext(), "Age must be 18 or above", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Age must be 18 or above", Toast.LENGTH_SHORT)
+                        .show()
                     return false
                 }
                 true
@@ -521,6 +694,7 @@ class RegistrationScreen : Fragment() {
         val birthYear = Calendar.getInstance().apply { time = dob }.get(Calendar.YEAR)
         return currentYear - birthYear
     }
+
     private fun setupPasswordVisibilityToggle(textInputLayout: TextInputLayout) {
         val editText = textInputLayout.editText
 
@@ -535,7 +709,10 @@ class RegistrationScreen : Fragment() {
 
         // Set the initial input type and icon
         editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon initially
+        textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.visibility_off
+        ) // Closed-eye icon initially
 
         // Reverse the default toggle behavior
         textInputLayout.setEndIconOnClickListener {
@@ -543,11 +720,18 @@ class RegistrationScreen : Fragment() {
             if (isPasswordVisible) {
                 // Password is visible, eye icon open
                 editText?.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_on) // Open-eye icon
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.visibility_on
+                ) // Open-eye icon
             } else {
                 // Password is hidden, eye icon closed
-                editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon
+                editText?.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.visibility_off
+                ) // Closed-eye icon
             }
             // Restore the font family
             editText?.typeface = currentFontFamily
@@ -585,7 +769,11 @@ class RegistrationScreen : Fragment() {
 
     private fun validatePasswordsMatch(password: String, confirmPassword: String): Boolean {
         return if (password != confirmPassword) {
-            Toast.makeText(requireContext(), "Password and Confirm Password do not match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password and Confirm Password do not match",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -594,7 +782,11 @@ class RegistrationScreen : Fragment() {
 
     private fun validatePasswordLength(password: String): Boolean {
         return if (password.length < 8) {
-            Toast.makeText(requireContext(), "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password must be at least 8 characters long",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -603,7 +795,11 @@ class RegistrationScreen : Fragment() {
 
     private fun validateUppercase(password: String): Boolean {
         return if (!password.any { it.isUpperCase() }) {
-            Toast.makeText(requireContext(), "Password must contain at least one uppercase letter", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password must contain at least one uppercase letter",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -612,7 +808,11 @@ class RegistrationScreen : Fragment() {
 
     private fun validateLowercase(password: String): Boolean {
         return if (!password.any { it.isLowerCase() }) {
-            Toast.makeText(requireContext(), "Password must contain at least one lowercase letter", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password must contain at least one lowercase letter",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -621,7 +821,11 @@ class RegistrationScreen : Fragment() {
 
     private fun validateNumber(password: String): Boolean {
         return if (!password.any { it.isDigit() }) {
-            Toast.makeText(requireContext(), "Password must contain at least one number", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password must contain at least one number",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -632,7 +836,11 @@ class RegistrationScreen : Fragment() {
     private fun validateSpecialCharacter(password: String): Boolean {
         val specialCharacterRegex = Regex("[!@#\$%^&*(),.?\":{}|<>]")
         return if (!specialCharacterRegex.containsMatchIn(password)) {
-            Toast.makeText(requireContext(), "Password must contain at least one special character", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Password must contain at least one special character",
+                Toast.LENGTH_SHORT
+            ).show()
             false
         } else {
             true
@@ -697,7 +905,9 @@ class RegistrationScreen : Fragment() {
             // Create the dialog
             sendOtpDialog = AlertDialog.Builder(requireContext())
                 .setView(dialogView)
+                .setCancelable(true) // Prevent dialog dismissal by touching outside (optional)
                 .create()
+
 
             // Find the OTP input and buttons
             val emailOtpInput = dialogView.findViewById<EditText>(R.id.etEmailOtp)
@@ -705,20 +915,39 @@ class RegistrationScreen : Fragment() {
             val verifyOtpButton = dialogView.findViewById<Button>(R.id.btnVerify)
             val resendOtpButton = dialogView.findViewById<Button>(R.id.btnResendOtp)
             val editDetailsButton = dialogView.findViewById<Button>(R.id.btnEditDetails)
+            val cancelButton = dialogView.findViewById<Button>(R.id.cancelButton)
+
+            editDetailsButton.setOnClickListener {
+                enableFields()
+                isEditing = true // Re-enable the input fields
+                sendOtpDialog?.dismiss() // Dismiss the dialog immediately
+            }
+            // Cancel button click listener
+            cancelButton.setOnClickListener {
+                sendOtpDialog?.dismiss() // Dismiss the dialog immediately
+            }
 
             // Show or hide fields based on the provided flags
             emailOtpInput.visibility = if (isEmailOtp) View.VISIBLE else View.GONE
             mobileOtpInput.visibility = if (isMobileOtp) View.VISIBLE else View.GONE
+            // Ensure buttons are enabled
+            editDetailsButton.isEnabled = true
+            cancelButton.isEnabled = true
 
             // Handle OTP verification on button click
             verifyOtpButton.setOnClickListener {
+                if (!isInternetAvailable()) {  // Check internet *before* proceeding
+                    showNoInternetToast() // Or a more specific message
+                    return@setOnClickListener // Stop execution if no internet
+                }
                 val emailOtp = emailOtpInput.text.toString()
                 val mobileOtp = mobileOtpInput.text.toString()
 
                 // Check if at least one OTP is provided and both are valid (6 digits)
                 if ((isEmailOtp && emailOtp.isNotBlank() && emailOtp.length == 6) ||
 
-                    (isMobileOtp && mobileOtp.isNotBlank() && mobileOtp.length == 6)) {
+                    (isMobileOtp && mobileOtp.isNotBlank() && mobileOtp.length == 6)
+                ) {
                     // Proceed only if both OTP fields are filled and valid
                     if (isEmailOtp && emailOtp.isNotBlank() && isMobileOtp && mobileOtp.isNotBlank()) {
                         // Both OTP fields are filled and valid
@@ -767,7 +996,11 @@ class RegistrationScreen : Fragment() {
                     }
                 } else {
                     // Show error if OTP fields are invalid
-                    Toast.makeText(context, "Please enter valid 6-digit OTP/OTP'S", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Please enter valid 6-digit OTP/OTP'S",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -800,7 +1033,11 @@ class RegistrationScreen : Fragment() {
         } catch (e: Exception) {
             // Log the error if something goes wrong
             Log.e("OTPDialogError", "Error in showing OTP dialog", e)
-            Toast.makeText(requireContext(), "Something went wrong while loading the OTP dialog.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                "Something went wrong while loading the OTP dialog.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }

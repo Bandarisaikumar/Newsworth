@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newsworth.R
 import com.example.newsworth.data.model.ImageModel
 
-class AudiosItemAdapter(private val audiosList: List<ImageModel>) :
+class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
     RecyclerView.Adapter<AudiosItemAdapter.AudioViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
@@ -36,7 +36,8 @@ class AudiosItemAdapter(private val audiosList: List<ImageModel>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_audio_card, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_audio_card, parent, false)
         return AudioViewHolder(view)
     }
 
@@ -58,10 +59,17 @@ class AudiosItemAdapter(private val audiosList: List<ImageModel>) :
             if (!audioLink.isNullOrBlank()) {
                 handleAudioPlay(holder, audioLink)
             } else {
-                Toast.makeText(holder.itemView.context, "No audio available!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(holder.itemView.context, "No audio available!", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
+
+    fun updateAudios(newAudios: List<ImageModel>) {
+        this.audiosList = newAudios
+        notifyDataSetChanged()
+    }
+
 
     private fun handleAudioPlay(holder: AudioViewHolder, audioLink: String) {
         try {
@@ -113,8 +121,13 @@ class AudiosItemAdapter(private val audiosList: List<ImageModel>) :
             startSeekBarUpdates(holder)
 
             // Handle SeekBar scrubbing
-            holder.audio_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            holder.audio_seekbar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     if (fromUser) {
                         mediaPlayer?.seekTo(progress)
                     }
@@ -132,12 +145,20 @@ class AudiosItemAdapter(private val audiosList: List<ImageModel>) :
 
             // Handle playback completion
             mediaPlayer?.setOnCompletionListener {
-                Toast.makeText(holder.itemView.context, "Audio playback completed!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Audio playback completed!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 stopAndResetMediaPlayer()
                 resetUI(holder)
             }
         } catch (e: Exception) {
-            Toast.makeText(holder.itemView.context, "Error playing audio: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                holder.itemView.context,
+                "Error playing audio: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
             stopAndResetMediaPlayer()
             resetUI(holder)
         }

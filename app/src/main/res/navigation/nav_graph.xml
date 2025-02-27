@@ -21,6 +21,12 @@
         <action
             android:id="@+id/action_loginScreen_to_forgotPasswordScreen"
             app:destination="@id/forgotPasswordScreen" />
+        <action
+            android:id="@+id/action_loginScreen_to_homeScreen"
+            app:destination="@id/homeScreen" />
+        <action
+            android:id="@+id/action_loginScreen_to_signinSignupScreen"
+            app:destination="@id/signinSignupScreen" />
     </fragment>
 
     <fragment
@@ -40,6 +46,9 @@
         <action
             android:id="@+id/action_welcomeScreen_self"
             app:destination="@id/welcomeScreen" />
+        <action
+            android:id="@+id/action_welcomeScreen_to_signinSignupScreen"
+            app:destination="@id/signinSignupScreen" />
     </fragment>
 
     <fragment
@@ -56,6 +65,9 @@
         <action
             android:id="@+id/action_registrationScreen_to_pdfViewerFragment"
             app:destination="@id/pdfViewerFragment" />
+        <action
+            android:id="@+id/action_registrationScreenSelf"
+            app:destination="@id/registrationScreen" />
     </fragment>
     <fragment
         android:id="@+id/userScreen"
@@ -87,7 +99,14 @@
         android:id="@+id/imagesFragment"
         android:name="com.example.newsworth.ui.view.fragment.ImagesSection"
         android:label="ImagesFragment"
-        tools:layout="@layout/fragment_images_section"/>
+        tools:layout="@layout/fragment_images_section">
+        <action
+            android:id="@+id/action_imagesFragment_to_userScreen"
+            app:destination="@id/userScreen" />
+        <action
+            android:id="@+id/action_imagesFragment_to_homeScreen"
+            app:destination="@id/homeScreen" />
+    </fragment>
     <fragment
         android:id="@+id/mediaUploadFragment"
         android:name="com.example.newsworth.ui.view.fragment.MediaUploadFragment"
@@ -160,6 +179,9 @@
         <action
             android:id="@+id/action_profileDetailsScreen_to_userProfileFragment"
             app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_profileDetailsScreen_to_homeScreen"
+            app:destination="@id/homeScreen" />
     </fragment>
     <fragment
         android:id="@+id/editProfileScreen"
@@ -175,4 +197,55 @@
         android:name="com.example.newsworth.ui.view.fragment.PdfViewerFragment"
         android:label="fragment_pdf_viewer"
         tools:layout="@layout/fragment_pdf_viewer" />
+    <fragment
+        android:id="@+id/signinSignupScreen"
+        android:name="com.example.newsworth.ui.view.fragment.SigninSignupScreen"
+        android:label="fragment_signin_signup_screen"
+        tools:layout="@layout/fragment_signin_signup_screen" >
+        <action
+            android:id="@+id/action_signinSignupScreen_to_loginScreen"
+            app:destination="@id/loginScreen" />
+        <action
+            android:id="@+id/action_signinSignupScreen_to_registrationScreen"
+            app:destination="@id/registrationScreen" />
+        <action
+            android:id="@+id/action_signinSignupScreen_to_welcomeScreen"
+            app:destination="@id/welcomeScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeScreen"
+        android:name="com.example.newsworth.ui.view.fragment.HomeScreen"
+        android:label="HomeScreen"
+        tools:layout="@layout/fragment_home_screen">
+        <action
+            android:id="@+id/action_homeScreen_to_imagesFragment"
+            app:destination="@id/imagesFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_audiosFragment"
+            app:destination="@id/audiosFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_audiosFragment2"
+            app:destination="@id/audiosFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_audiosFragment3"
+            app:destination="@id/audiosFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_videoFragment"
+            app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_homeScreen_to_profileDetailsScreen"
+            app:destination="@id/profileDetailsScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_welcomeScreen"
+            app:destination="@id/welcomeScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_userScreen"
+            app:destination="@id/userScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_mediaUploadFragment"
+            app:destination="@id/mediaUploadFragment" />
+    </fragment>
 </navigation>

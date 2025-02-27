@@ -13,27 +13,37 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import retrofit2.Response
+import java.io.IOException
+import java.net.SocketException
+import javax.net.ssl.SSLHandshakeException
 
 class ProfileManagementRepository(private val apiService: ApiService) {
 
     suspend fun uploadProfileImage(userId: Int, file: MultipartBody.Part): Response<ImageUploadResponse> {
         return apiService.uploadProfileImage(userId, file)
     }
-    suspend fun getImageLink(userId: String): ImageLinkResponse? {
-        return try {
-            val response = apiService.getImageLink(userId)
-            if (response.isSuccessful) {
-                response.body()
+    suspend fun getProfileDetails(userId: Int): Response<GetProfileResponse> {
+        try {
+            return apiService.getProfileDetails(userId)
+        } catch (e: IOException) {
+            if (e is SSLHandshakeException || e is SocketException) {
+                throw SSLHandshakeException("SSL/Socket Error: ${e.message}")
             } else {
-                null
+                throw IOException("Network Error: ${e.message}")
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
         }
     }
-    suspend fun getProfileDetails(userId: Int): Response<GetProfileResponse> {
-        return apiService.getProfileDetails(userId)
+
+    suspend fun getImageLink(userId: String): Response<ImageLinkResponse> {
+        try {
+            return apiService.getImageLink(userId)
+        } catch (e: IOException) {
+            if (e is SSLHandshakeException || e is SocketException) {
+                throw SSLHandshakeException("SSL/Socket Error: ${e.message}")
+            } else {
+                throw IOException("Network Error: ${e.message}")
+            }
+        }
     }
 
     suspend fun editProfileDetails(userId: String,profileRequest: EditProfileRequest): Response<EditProfileResponse> {
