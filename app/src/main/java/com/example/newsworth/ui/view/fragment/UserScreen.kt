@@ -102,9 +102,6 @@ class UserScreen : Fragment() {
                 initializeViewModelAndFetchData() // Fetch data if internet is available
             }
         }
-
-
-
         setupRecyclerViews()
         setupButtonListeners()
         binding.homeImage.setColorFilter(
@@ -137,6 +134,7 @@ class UserScreen : Fragment() {
 
         return binding.root
     }
+
     private fun checkInternetAndSetup() {
         isInternetAvailable = isInternetAvailable()
         if (isInternetAvailable) {
@@ -154,8 +152,8 @@ class UserScreen : Fragment() {
         }
 
 
-
-        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
+        val userId =
+            SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
 
         viewModel.fetchUploadedContent(userId)
 
@@ -179,18 +177,20 @@ class UserScreen : Fragment() {
                     }
                     sharedViewModel.setImagesList(imagesList)
                 } else {
-                    Toast.makeText(requireContext(), "Content upload failed.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Content upload failed.", Toast.LENGTH_SHORT)
+                        .show()
                     Log.e("UploadError", "API response is null")
                 }
             } catch (e: Exception) {
                 handleNetworkError(e)
             }
-//            finally {
+            //            finally {
 //                // Ensure isLoading is set to false, hiding the progress bar
 //                viewModel._isLoading.value = false
 //            }
         }
     }
+
     private fun handleNetworkError(e: Exception) {
         val errorMessage = when (e) {
             is IOException -> {
@@ -201,6 +201,7 @@ class UserScreen : Fragment() {
                     else -> "A network error occurred. Please check your internet connection."
                 }
             }
+
             else -> "An unexpected error occurred: ${e.message}"
         }
         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
@@ -236,6 +237,7 @@ class UserScreen : Fragment() {
             }
         }
     }
+
     private fun setupButtonListeners() = with(binding) {
 //        menuButton.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
         addButton.setOnClickListener {
@@ -521,7 +523,6 @@ class UserScreen : Fragment() {
     }
 
 
-
     override fun onStop() {
         super.onStop()
         if (::adapter.isInitialized) {
@@ -546,13 +547,15 @@ class UserScreen : Fragment() {
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
         if (::adapter.isInitialized) {
             adapter.releaseMediaPlayer()  // Release resources only if adapter is initialized
         }
     }
+
+
+
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

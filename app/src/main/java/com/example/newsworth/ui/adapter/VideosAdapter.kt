@@ -5,11 +5,13 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.StrikethroughSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsworth.R
@@ -43,7 +45,6 @@ class VideosAdapter(private var videosList: List<ImageModel>) :
         mediaPlayer?.release()
         mediaPlayer = null
     }
-
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val video = videosList[position]
 
@@ -53,29 +54,46 @@ class VideosAdapter(private var videosList: List<ImageModel>) :
         holder.age_in_days.text = video.age_in_days
         holder.gps_location.text = video.gps_location
 
-        // Calculate discounted price
         val originalPrice = video.price.toDoubleOrNull() ?: 0.0
         val discountPercentage = video.discount.toDoubleOrNull() ?: 0.0
 
         val originalPriceText = SpannableString("₹${originalPrice}")
-        originalPriceText.setSpan(StrikethroughSpan(), 0, originalPriceText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        originalPriceText.setSpan(
+            StrikethroughSpan(),
+            0,
+            originalPriceText.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
-
-// Format the discount percentage to remove the decimal
         val formattedDiscount = discountPercentage.toInt().toString() + "%"
 
-// Combine discounted price, original price (with strike-through), and discount percentage
         val finalText = TextUtils.concat(
             "Price ₹${discountedPrice.toInt()} ",
             originalPriceText,
-            " at Discount $formattedDiscount" // Use the formattedDiscount here
+            " at Discount $formattedDiscount"
         )
         holder.price_section.text = finalText
 
         val videoLink = video.Video_link
         if (!videoLink.isNullOrBlank()) {
             holder.videoView.setVideoPath(videoLink)
+
+            // Remove the automatic start here
+            holder.videoView.setOnPreparedListener { mp ->
+                // Video is prepared, but don't start automatically
+            }
+
+            holder.videoView.setOnErrorListener { mp, what, extra ->
+                Log.e("VideoPlayback", "Error: what=$what, extra=$extra")
+                holder.playIcon.visibility = View.VISIBLE
+//                Toast.makeText(holder.videoView.context, "Cannot play this video", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+        } else {
+            Toast.makeText(holder.videoView.context, "Video link is empty", Toast.LENGTH_SHORT).show()
+            holder.playIcon.visibility = View.VISIBLE
         }
 
         holder.playIcon.setOnClickListener {

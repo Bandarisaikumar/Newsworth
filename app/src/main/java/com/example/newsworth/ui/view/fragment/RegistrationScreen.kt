@@ -285,7 +285,7 @@ class RegistrationScreen : Fragment() {
                     binding.sendOtpButton.isClickable = false
                     Log.d("OTP_Response", "Send OTP button alpha set: ${binding.sendOtpButton.alpha}")
                 }
-            } else if (response.response == "failure") {
+            } else if (response.response == "fail") {
                 isEditing = true
 
                 // Check for both email and mobile failure
@@ -295,7 +295,7 @@ class RegistrationScreen : Fragment() {
                 if (emailFail && mobileFail) {
                     Toast.makeText(
                         requireContext(),
-                        "Both OTPs failed. Please try again.",
+                        "Invalid OTPs for both email and mobile",
                         Toast.LENGTH_LONG
                     ).show()
                     showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
@@ -471,6 +471,10 @@ class RegistrationScreen : Fragment() {
             }
 
             "OTP successfully sent to both email and mobile." -> {
+                showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
+                binding.passwordsLayout.visibility = View.GONE
+            }
+            "Both Mobile and Email already registered. Please verify your Mobile and Email to proceed"->{
                 showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
                 binding.passwordsLayout.visibility = View.GONE
             }

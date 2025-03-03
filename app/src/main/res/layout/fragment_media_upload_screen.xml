@@ -269,6 +269,7 @@
                     android:fontFamily="@font/poppins_regular"
                     android:text="@string/upload2"
                     android:textColor="@color/white"
+                    android:layout_marginBottom="20dp"
                     app:backgroundTint="#1D61E7"
                     tools:ignore="VisualLintButtonSize" />
 

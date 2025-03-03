@@ -205,6 +205,11 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
 
     override fun getItemCount(): Int = audiosList.size
 
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        releaseMediaPlayer()
+    }
+
     fun releaseMediaPlayer() {
         stopAndResetMediaPlayer()
     }
