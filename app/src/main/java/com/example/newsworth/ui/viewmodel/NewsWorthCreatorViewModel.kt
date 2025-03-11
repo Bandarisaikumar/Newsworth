@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsworth.data.model.Category
 import com.example.newsworth.data.model.ContentUploadResponse
 import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.data.model.MetadataResponse
@@ -30,6 +31,9 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
 
     private val _uploadedContent = MutableLiveData<UploadedContentResponse>()
     val uploadedContent: LiveData<UploadedContentResponse> = _uploadedContent
+
+    private val _categories = MutableLiveData<List<Category>?>()
+    val categories: MutableLiveData<List<Category>?> = _categories
 
     private val _error = MutableLiveData<String?>()
     val error: MutableLiveData<String?> = _error
@@ -63,6 +67,22 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
         }
     }
 
+    init {
+        loadCategories()
+    }
+
+    fun loadCategories() {
+        viewModelScope.launch {
+            try {
+                val categoryList = repository.getCategories()
+                _categories.postValue(categoryList)
+            } catch (e: Exception) {
+                Log.e("CategoryFetchError", "Error fetching categories: ${e.message}")
+                _categories.postValue(null)
+            }
+        }
+    }
+
 
     fun uploadContent(
         userId: Int,
@@ -72,6 +92,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
         description: String,
         price: Float,
         discount: Int,
+        content_category_ids: String,
         filebase64_file: String,
         tags: String
     ) {
@@ -84,6 +105,8 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                     val tagsRequestBody = tags.toRequestBody("text/plain".toMediaTypeOrNull())
                     val base64ImageRequestBody =
                         filebase64_file.toRequestBody("text/plain".toMediaTypeOrNull())
+                    val categoriesRequestBody = content_category_ids.toRequestBody("application/json".toMediaTypeOrNull())
+
 
                     val response = mediaType?.let {
                         repository.uploadContent(
@@ -94,6 +117,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                             description,
                             price,
                             discount,
+                            categoriesRequestBody,
                             base64ImageRequestBody,
                             tagsRequestBody
                         )

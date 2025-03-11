@@ -292,7 +292,7 @@ class RegistrationScreen : Fragment() {
                 val emailFail = response.email_response?.response == "fail"
                 val mobileFail = response.mobile_response?.response == "fail"
 
-                if (emailFail && mobileFail) {
+//                if (emailFail && mobileFail) {
                     Toast.makeText(
                         requireContext(),
                         "Invalid OTPs for both email and mobile",
@@ -301,7 +301,7 @@ class RegistrationScreen : Fragment() {
                     showSendOtpDialog(isEmailOtp = true, isMobileOtp = true)
                     binding.passwordsLayout.visibility = View.GONE
 
-                }
+//                }
 
 
                 // Handle the mobile response

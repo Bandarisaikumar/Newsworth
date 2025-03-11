@@ -1,12 +1,9 @@
 package com.example.newsworth.ui.view.fragment
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.media.MediaPlayer
@@ -23,7 +20,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.webkit.MimeTypeMap
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.MultiAutoCompleteTextView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -32,11 +31,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.example.newsworth.R
 import com.example.newsworth.data.api.RetrofitClient
-import com.example.newsworth.data.model.ImageModel
 import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.databinding.FragmentMediaUploadScreenBinding
 import com.example.newsworth.repository.NewsWorthCreatorRepository
@@ -46,7 +43,9 @@ import com.example.newsworth.ui.viewmodel.SharedViewModel
 import com.example.newsworth.utils.SharedPrefModule
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import java.io.BufferedInputStream
+import com.google.gson.Gson
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -66,6 +65,12 @@ class MediaUploadFragment : Fragment() {
     private var contentId: Int = 0
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var sharedViewModel: SharedViewModel // SharedViewModel
+    // Add these variables for categories
+    private lateinit var autoCompleteTextView: MultiAutoCompleteTextView
+    private lateinit var categoryAdapter: ArrayAdapter<String>
+    private val categoryList = mutableListOf<String>()
+    private val selectedCategoryIds = mutableListOf<Int>() // Store selected category IDs
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +106,25 @@ class MediaUploadFragment : Fragment() {
 
         // Initialize SharedViewModel to share data between fragments
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        autoCompleteTextView = binding.autoCompleteCategories
+        autoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+
+        categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList)
+        autoCompleteTextView.setAdapter(categoryAdapter)
+
+        fetchCategories()
+
+        // Set up item click listener for AutoCompleteTextView
+        autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            val selectedCategory = categoryAdapter.getItem(position)
+            selectedCategory?.let {
+                val categoryId = getCategoryIdByName(it)
+                if (categoryId != -1) {
+                    selectedCategoryIds.add(categoryId)
+                }
+            }
+        }
 
         val mediaType = arguments?.getString("mediaType")
 
@@ -195,7 +219,13 @@ class MediaUploadFragment : Fragment() {
             val discountText = binding.etDiscount.text.toString()
             val tags = binding.etTags.text.toString()
 
-            if (title.isEmpty() || tags.isEmpty()) {
+            val selectedCategories = autoCompleteTextView.text.toString().split(",").map { it.trim() }
+            val selectedCategoryIds = selectedCategories.mapNotNull { categoryName ->
+                viewModel.categories.value?.find { it.category_name == categoryName }?.category_id
+            }
+
+
+            if (title.isEmpty() || tags.isEmpty() || selectedCategoryIds.isEmpty()) {
                 Toast.makeText(requireContext(), "Please fill all the required fields", Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
@@ -214,6 +244,9 @@ class MediaUploadFragment : Fragment() {
 
             // Validate discount as a valid integer
             val discount = if (discountText.isNotEmpty()) discountText.toIntOrNull() ?: 0 else 0
+
+            val categoriesString = selectedCategoryIds.joinToString(",")
+
 
             // Trigger metadata and location calls
             observeMetadataResponse() // Triggers the metadata call and updates contentId
@@ -255,6 +288,7 @@ class MediaUploadFragment : Fragment() {
                     viewModel.uploadContent(
                         userId, contentId, title,
                         contentType.toString(), description, price, discount,
+                        categoriesString,
                         filebase64_file.toString(), tags
                     )
                 } ?: Toast.makeText(
@@ -722,6 +756,29 @@ class MediaUploadFragment : Fragment() {
             ""
         }
     }
+    private fun fetchCategories() {
+        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            categories?.let {
+                categoryList.clear()
+                categoryList.addAll(it.map { category -> category.category_name })
+                categoryAdapter.notifyDataSetChanged()
+            } ?: run {
+                Toast.makeText(requireContext(), "Failed to fetch categories", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getCategoryIdByName(categoryName: String): Int {
+        viewModel.categories.value?.let { categories ->
+            categories.forEach { category ->
+                if (category.category_name == categoryName) {
+                    return category.category_id
+                }
+            }
+        }
+        return -1
+    }
+
 
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(

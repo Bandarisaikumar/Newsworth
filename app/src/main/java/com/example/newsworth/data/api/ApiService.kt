@@ -1,5 +1,6 @@
 package com.example.newsworth.data.api
 
+import com.example.newsworth.data.model.CategoryResponse
 import com.example.newsworth.data.model.ChangePasswordRequest
 import com.example.newsworth.data.model.ChangePasswordResponse
 import com.example.newsworth.data.model.ContentUploadResponse
@@ -62,6 +63,7 @@ interface ApiService {
         @Query("content_description") contentDescription: String,
         @Query("price") price: Float,
         @Query("discount") discount: Int,
+        @Part("content_category_ids") content_category_ids: RequestBody,
         @Part("base64_file") base64Image: RequestBody,
         @Part("tags") tags: RequestBody
     ): Response<ContentUploadResponse>
@@ -71,6 +73,9 @@ interface ApiService {
 
     @POST("usr_logout/")
     suspend fun logoutUser(@Body userId: Map<String, Int>): Response<LogoutResponse>
+
+    @POST("content_catgories")
+    suspend fun getCategories(): CategoryResponse
 
     @Multipart
     @POST("upload-image")

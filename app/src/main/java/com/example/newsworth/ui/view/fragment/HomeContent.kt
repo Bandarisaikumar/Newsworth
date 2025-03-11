@@ -128,15 +128,19 @@ class HomeContent : Fragment() {
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         val circleList = mutableListOf(
-            CircleItem("General News", R.drawable.general),
-            CircleItem("Entertainment", R.drawable.entertainment),
-            CircleItem("Sports", R.drawable.sports),
-            CircleItem("Business", R.drawable.business),
+            CircleItem("Breaking News", R.drawable.breakingnews),
+            CircleItem("Politics", R.drawable.politics),
+            CircleItem( "Business & Economy", R.drawable.business),
+            CircleItem("Technology", R.drawable.technology),
+            CircleItem("Science", R.drawable.science),
             CircleItem("Health", R.drawable.health),
-            CircleItem("Educational", R.drawable.education),
-            CircleItem("Fashion", R.drawable.fastion),
-            CircleItem("Location", R.drawable.location)
-        )
+            CircleItem("Education", R.drawable.education),
+            CircleItem("Sports", R.drawable.sports),
+            CircleItem("Entertainment", R.drawable.entertainment),
+            CircleItem("Crime & Law", R.drawable.crime),
+            CircleItem("World News", R.drawable.world),
+            CircleItem("Environment", R.drawable.environment),
+            )
 
         circleAdapter = CircleAdapter(circleList) { position ->
             handleCircleItemClick(position, circleList[position].name ?: "Unknown")
@@ -270,7 +274,7 @@ class HomeContent : Fragment() {
     }
     private fun selectDefaultCircleItem() {
         // Find the position of "General News" in the circleList
-        val defaultPosition = getCircleData().indexOfFirst { it.name == "General News" }
+        val defaultPosition = getCircleData().indexOfFirst { it.name == "Breaking News" }
 
         if (defaultPosition != -1) {
             circleAdapter.setSelectedPosition(defaultPosition)
@@ -281,8 +285,8 @@ class HomeContent : Fragment() {
         circleAdapter.setSelectedPosition(position)
         Log.d("CircleClick", "Circle item clicked at position: $position, Category: $categoryName")
 
-        binding.category.text = categoryName
-        fetchAndDisplayContent()
+        binding.category.text = categoryName // Update the category TextView
+        fetchAndDisplayContent() // Fetch and display content with the new category
     }
     private fun fetchAndDisplayContent() {
         if (!isInternetAvailable()) {
@@ -290,99 +294,109 @@ class HomeContent : Fragment() {
             return
         }
 
-
-        val userId =
-            SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
+        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
         uploadedContentLiveData.removeObservers(viewLifecycleOwner)
 
-        progressBar.visibility = View.VISIBLE // Show the progress bar here!
+        progressBar.visibility = View.VISIBLE
         progressBar.bringToFront()
 
-        viewModel.fetchUploadedContent(userId) // Fetch ALL content
+        viewModel.fetchUploadedContent(userId)
 
         viewModel.uploadedContent.observe(viewLifecycleOwner) { response ->
             try {
-                Log.d("API_RESPONSE", response.toString()) // Log the entire response
-
-                if (response != null) { // Check for null response FIRST
-                    response.let { // Now it's safe to use let
-                        if (it.response == "success") {
-                            val imagesList = it.response_message.map { imageResponse ->
-                                ImageModel(
-                                    content_title = imageResponse.content_title,
-                                    content_description = imageResponse.content_description,
-                                    age_in_days = imageResponse.age_in_days,
-                                    gps_location = imageResponse.gps_location,
-                                    uploaded_by = imageResponse.uploaded_by,
-                                    price = imageResponse.price,
-                                    discount = imageResponse.discount,
-                                    Image_link = imageResponse.Image_link,
-                                    Audio_link = imageResponse.Audio_link,
-                                    Video_link = imageResponse.Video_link
-                                )
-                            }
-                            displayContent(imagesList) // Display content
-                        } else {
-                            val errorMessage = when (it.response) { // Use it.response safely
-                                null -> "Response message is null" // Handle null response message
-                                else -> "API returned an error: ${it.response}" // Existing error handling
-                            }
-
-                            Log.e("API_ERROR", errorMessage)
-                            Toast.makeText(requireContext(), "No content found", Toast.LENGTH_SHORT).show()
-                            displayContent(emptyList()) // Clear RecyclerViews
-                        }
+                if (response != null && response.response == "success") {
+                    val imagesList = response.response_message.map { imageResponse ->
+                        ImageModel(
+                            content_title = imageResponse.content_title,
+                            content_description = imageResponse.content_description,
+                            age_in_days = imageResponse.age_in_days,
+                            gps_location = imageResponse.gps_location,
+                            uploaded_by = imageResponse.uploaded_by,
+                            price = imageResponse.price,
+                            discount = imageResponse.discount,
+                            Image_link = imageResponse.Image_link,
+                            Audio_link = imageResponse.Audio_link,
+                            Video_link = imageResponse.Video_link,
+                            content_categories = imageResponse.content_categories
+                        )
                     }
+                    val selectedCategory = binding.category.text.toString() // Get the selected category
+                    displayContent(imagesList, selectedCategory) // Pass category to displayContent
                 } else {
-                    Log.e("API_ERROR", "Response is null") // Log null response
+                    Log.e("API_ERROR", "Response is null or not success")
                     Toast.makeText(requireContext(), "No content found", Toast.LENGTH_SHORT).show()
-                    displayContent(emptyList()) // Clear RecyclerViews
+                    displayContent(emptyList(), "All") // Clear RecyclerViews
                 }
             } catch (e: Exception) {
                 Log.e("ObserverError", "Error in observer: ${e.message}")
                 Toast.makeText(requireContext(), "An error occurred: ${e.message}", Toast.LENGTH_SHORT).show()
-                displayContent(emptyList()) // Clear RecyclerViews
-            }finally {
-                progressBar.visibility = View.GONE // Hide the progress bar here!
+                displayContent(emptyList(), "All") // Clear RecyclerViews
+            } finally {
+                progressBar.visibility = View.GONE
             }
         }
     }
+    private var lastDisplayedEmptyCategory: String? = null
 
-    private fun displayContent(items: List<ImageModel>) {
-        Log.d("DISPLAY_CONTENT", "Items count: ${items.size}")
+    private fun displayContent(items: List<ImageModel>, category: String) {
+        Log.d("DISPLAY_CONTENT", "Items count: ${items.size}, Category: $category")
 
         // Release MediaPlayers if necessary (only for Video and Audio adapters)
         videosAdapter.releaseMediaPlayer()
         audiosAdapter.releaseMediaPlayer()
 
-        val shuffledItems = items.shuffled()
+        // Filter items based on the selected category
+        val filteredItems = if (category == "All") {
+            items
+        } else {
+            items.filter { item ->
+                val categories = item.content_categories?.split(", ") ?: emptyList()
+                categories.any { it.trim() == category }
+            }
+        }
+
+        if (filteredItems.isEmpty()) {
+            // Only show the toast if this is a new empty category
+            if (lastDisplayedEmptyCategory != category) {
+                Toast.makeText(requireContext(), "No content found for $category", Toast.LENGTH_SHORT).show()
+                lastDisplayedEmptyCategory = category // Update the last displayed category
+            }
+            imagesAdapter.updateImages(emptyList())
+            videosAdapter.updateVideos(emptyList())
+            audiosAdapter.updateAudios(emptyList())
+            return
+        } else {
+            lastDisplayedEmptyCategory = null; //reset the last displayed category when content is found.
+        }
+
+        val shuffledItems = filteredItems.shuffled()
 
         val images = shuffledItems.filter { !it.Image_link.isNullOrBlank() }.take(10)
         Log.d("DISPLAY_CONTENT", "Images count: ${images.size}")
-        imagesAdapter.updateImages(images) // Update the existing adapter
+        imagesAdapter.updateImages(images)
 
         val videos = shuffledItems.filter { !it.Video_link.isNullOrBlank() }.take(10)
         Log.d("DISPLAY_CONTENT", "Videos count: ${videos.size}")
-        videosAdapter.updateVideos(videos) // Update the existing adapter
+        videosAdapter.updateVideos(videos)
 
         val audios = shuffledItems.filter { !it.Audio_link.isNullOrBlank() }.take(10)
         Log.d("DISPLAY_CONTENT", "Audios count: ${audios.size}")
-        audiosAdapter.updateAudios(audios) // Update the existing adapter
-
-        if (items.isEmpty()) {
-            Toast.makeText(requireContext(), "No content found", Toast.LENGTH_SHORT).show()
-        }
+        audiosAdapter.updateAudios(audios)
     }
     private fun getCircleData(): List<CircleItem> {
         return listOf(
-            CircleItem("General News", R.drawable.general),
-            CircleItem("Entertainment", R.drawable.entertainment),
-            CircleItem("Sports", R.drawable.sports),
-            CircleItem("Business", R.drawable.business),
+            CircleItem("Breaking News", R.drawable.breakingnews),
+            CircleItem("Politics", R.drawable.politics),
+            CircleItem( "Business & Economy", R.drawable.business),
+            CircleItem("Technology", R.drawable.technology),
+            CircleItem("Science", R.drawable.science),
             CircleItem("Health", R.drawable.health),
-            CircleItem("Educational", R.drawable.education),
-            CircleItem("Fashion", R.drawable.fastion),
-            CircleItem("Location", R.drawable.location)
+            CircleItem("Education", R.drawable.education),
+            CircleItem("Sports", R.drawable.sports),
+            CircleItem("Entertainment", R.drawable.entertainment),
+            CircleItem("Crime & Law", R.drawable.crime),
+            CircleItem("World News", R.drawable.world),
+            CircleItem("Environment", R.drawable.environment),
         )
     }
 

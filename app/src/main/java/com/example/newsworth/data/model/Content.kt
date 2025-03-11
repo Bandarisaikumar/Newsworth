@@ -32,5 +32,6 @@ data class Content(
     val aging_bucket: String,
     val Image_link: String,
     val Audio_link: String,
-    val Video_link:String
+    val Video_link:String,
+    val content_categories : String
 )

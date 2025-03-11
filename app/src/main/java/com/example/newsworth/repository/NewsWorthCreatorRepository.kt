@@ -1,6 +1,7 @@
 package com.example.newsworth.repository
 
 import com.example.newsworth.data.api.ApiService
+import com.example.newsworth.data.model.Category
 import com.example.newsworth.data.model.ContentUploadResponse
 import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.data.model.MetadataResponse
@@ -14,6 +15,10 @@ import javax.inject.Inject
 
 class NewsWorthCreatorRepository @Inject constructor(private val apiService: ApiService) {
 
+    suspend fun getCategories(): List<Category> {
+        return apiService.getCategories().categories
+    }
+
     suspend fun uploadMetadata(metadata: MetadataRequest): Response<MetadataResponse> {
         return apiService.insertMetadata(metadata)
     }
@@ -26,6 +31,7 @@ class NewsWorthCreatorRepository @Inject constructor(private val apiService: Api
         description: String,
         price: Float,
         discount: Int,
+        content_category_ids: RequestBody,
         filebase64_file: RequestBody,
         tags: RequestBody
     ): Response<ContentUploadResponse> {
@@ -38,6 +44,7 @@ class NewsWorthCreatorRepository @Inject constructor(private val apiService: Api
                 description,
                 price,
                 discount,
+                content_category_ids,
                 filebase64_file,
                 tags
             )
