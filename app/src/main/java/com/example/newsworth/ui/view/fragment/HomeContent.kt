@@ -417,7 +417,7 @@ class HomeContent : Fragment() {
         alert.show()
     }
 
-    private fun showPositionSelectionDialog() {
+    fun showPositionSelectionDialog() {
         positionSelectionDialog = Dialog(requireContext()).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(R.layout.dialog_position_selection) // Create a new layout for the dialog
@@ -737,6 +737,19 @@ class HomeContent : Fragment() {
         } catch (e: Exception) {
             Log.e("VideoSaveError", "Failed to save video: ${e.message}")
             null
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::audiosAdapter.isInitialized) {
+            audiosAdapter.releaseMediaPlayer()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (::audiosAdapter.isInitialized) {
+            audiosAdapter.releaseMediaPlayer()
         }
     }
 

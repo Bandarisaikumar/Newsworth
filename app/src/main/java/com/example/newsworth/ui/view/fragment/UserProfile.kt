@@ -116,6 +116,12 @@ class UserProfile : Fragment() {
                 homeScreen?.navigateProfileDetailsFragment()
             }
         }
+        binding.aboutApp.setOnClickListener {
+            handleButtonClick {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.navigateAboutAppFragment()
+            }
+        }
 
         binding.cameraIcon.setOnClickListener {
             handleButtonClick {
@@ -130,6 +136,10 @@ class UserProfile : Fragment() {
         binding.myJournals.setOnClickListener {
             val homeScreenFragment = parentFragment as? HomeScreen
             homeScreenFragment?.showMyFilesTab()
+        }
+        binding.settingsButton.setOnClickListener {
+            val homeScreenFragment = parentFragment as? HomeScreen
+            homeScreenFragment?.showHomeContentTabAndSettingsDialog()
         }
 
         fetchProfileImage()

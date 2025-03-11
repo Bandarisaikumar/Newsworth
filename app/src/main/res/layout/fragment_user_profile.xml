@@ -313,6 +313,7 @@
             android:textColor="@color/blue"
             android:layout_marginStart="6dp"/>
         <LinearLayout
+            android:id="@+id/settingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -412,6 +413,7 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/aboutApp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

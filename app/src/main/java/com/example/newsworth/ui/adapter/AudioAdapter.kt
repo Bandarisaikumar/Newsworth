@@ -10,15 +10,14 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsworth.R
 import com.example.newsworth.data.model.ImageModel
+import java.io.IOException
 
 class AudioAdapter(private var audioList: List<ImageModel>) :
     RecyclerView.Adapter<AudioAdapter.AudioViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
-    private var currentPlayIcon: ImageView? = null
-    private var currentSeekBar: SeekBar? = null
-    private var currentTimer: TextView? = null
+    private var currentPlayingPosition: Int = -1 // Track the currently playing position
     private var handler: Handler = Handler(Looper.getMainLooper())
 
     class AudioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -29,7 +28,6 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
         val contentDescription: TextView = itemView.findViewById(R.id.audio_description)
         val uploadedBy: TextView = itemView.findViewById(R.id.user_name)
         val priceSection: TextView = itemView.findViewById(R.id.price)
-//        val cartIcon: ImageView = itemView.findViewById(R.id.cart_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioViewHolder {
@@ -49,24 +47,19 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
         holder.audioTimer.text = "00:00"
         holder.playAudioIcon.setImageResource(R.drawable.play_button)
 
-//        holder.cartIcon.setOnClickListener {
-//            Toast.makeText(holder.itemView.context, "${audio.content_title} added to cart!", Toast.LENGTH_SHORT).show()
-//        }
-
         holder.playAudioIcon.setOnClickListener {
             val audioLink = audio.Audio_link
             if (!audioLink.isNullOrBlank()) {
-                handleAudioPlay(holder, audioLink)
+                handleAudioPlay(holder, audioLink, position)
             } else {
                 Toast.makeText(holder.itemView.context, "No audio available!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun handleAudioPlay(holder: AudioViewHolder, audioLink: String) {
+    private fun handleAudioPlay(holder: AudioViewHolder, audioLink: String, position: Int) {
         try {
-            // Handle play/pause logic
-            if (mediaPlayer != null && currentPlayIcon == holder.playAudioIcon && isPlaying) {
+            if (mediaPlayer != null && currentPlayingPosition == position && isPlaying) {
                 mediaPlayer?.pause()
                 stopSeekBarUpdates()
                 holder.playAudioIcon.setImageResource(R.drawable.play_button)
@@ -74,7 +67,7 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
                 return
             }
 
-            if (mediaPlayer != null && currentPlayIcon == holder.playAudioIcon) {
+            if (mediaPlayer != null && currentPlayingPosition == position) {
                 mediaPlayer?.start()
                 startSeekBarUpdates(holder)
                 holder.playAudioIcon.setImageResource(R.drawable.pause_button)
@@ -82,27 +75,41 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
                 return
             }
 
-            // Stop previous media and reset UI
             stopAndResetMediaPlayer()
 
-            // Initialize and play new audio
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(audioLink)
-                prepare()
-                start()
+                setOnPreparedListener {
+                    start()
+                    this@AudioAdapter.isPlaying = true
+                    currentPlayingPosition = position
+                    holder.playAudioIcon.setImageResource(R.drawable.pause_button)
+                    holder.audioSeekBar.max = duration
+                    startSeekBarUpdates(holder)
+                }
+                setOnCompletionListener {
+                    stopAndResetMediaPlayer()
+                    resetUI(holder)
+                }
+                setOnErrorListener { _, _, _ ->
+                    Toast.makeText(holder.itemView.context, "Error playing audio", Toast.LENGTH_SHORT).show()
+                    stopAndResetMediaPlayer()
+                    resetUI(holder)
+                    return@setOnErrorListener true
+                }
+                try {
+                    prepare()
+                } catch (e: IllegalStateException) {
+                    Toast.makeText(holder.itemView.context, "Error preparing audio", Toast.LENGTH_SHORT).show()
+                    stopAndResetMediaPlayer()
+                    resetUI(holder)
+                } catch (e: IOException) {
+                    Toast.makeText(holder.itemView.context, "Error loading audio", Toast.LENGTH_SHORT).show()
+                    stopAndResetMediaPlayer()
+                    resetUI(holder)
+                }
             }
 
-            isPlaying = true
-            currentPlayIcon = holder.playAudioIcon
-            currentSeekBar = holder.audioSeekBar
-            currentTimer = holder.audioTimer
-            holder.playAudioIcon.setImageResource(R.drawable.pause_button)
-
-            // Initialize SeekBar
-            holder.audioSeekBar.max = mediaPlayer?.duration ?: 0
-            startSeekBarUpdates(holder)
-
-            // Handle SeekBar scrubbing
             holder.audioSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
@@ -120,11 +127,6 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
                 }
             })
 
-            // Handle playback completion
-            mediaPlayer?.setOnCompletionListener {
-                stopAndResetMediaPlayer()
-                resetUI(holder)
-            }
         } catch (e: Exception) {
             Toast.makeText(holder.itemView.context, "Error playing audio: ${e.message}", Toast.LENGTH_SHORT).show()
             stopAndResetMediaPlayer()
@@ -145,17 +147,25 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
             }
         })
     }
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        releaseMediaPlayer()
+    }
 
     private fun stopSeekBarUpdates() {
         handler.removeCallbacksAndMessages(null)
     }
 
     private fun stopAndResetMediaPlayer() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.stop()
+            }
+            it.release()
+            mediaPlayer = null
+        }
         stopSeekBarUpdates()
-        currentPlayIcon?.setImageResource(R.drawable.play_button)
-        currentPlayIcon = null
+        currentPlayingPosition = -1
     }
 
     private fun resetUI(holder: AudioViewHolder) {
@@ -173,14 +183,12 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
 
     override fun getItemCount(): Int = audioList.size
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        releaseMediaPlayer()
-    }
+
 
     fun releaseMediaPlayer() {
         stopAndResetMediaPlayer()
     }
+
     fun updateAudios(newAudiosList: List<ImageModel>) {
         this.audioList = newAudiosList
         notifyDataSetChanged()

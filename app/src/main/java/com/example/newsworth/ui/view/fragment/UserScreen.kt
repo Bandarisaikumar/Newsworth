@@ -23,6 +23,7 @@ import com.example.newsworth.data.model.ImageModel
 import com.example.newsworth.databinding.FragmentUserScreenBinding
 import com.example.newsworth.repository.NewsWorthCreatorRepository
 import com.example.newsworth.ui.adapter.AudioAdapter
+import com.example.newsworth.ui.adapter.AudiosItemAdapter
 import com.example.newsworth.ui.adapter.ImagesAdapter
 import com.example.newsworth.ui.adapter.VideosAdapter
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModel
@@ -82,9 +83,9 @@ class UserScreen : Fragment() {
                 viewModel.clearErrorMessage()
             }
         }
-//        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-//            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-//        }
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
         return binding.root
     }
@@ -134,10 +135,10 @@ class UserScreen : Fragment() {
             } catch (e: Exception) {
                 handleNetworkError(e)
             }
-            //            finally {
-//                // Ensure isLoading is set to false, hiding the progress bar
-//                viewModel._isLoading.value = false
-//            }
+                        finally {
+                // Ensure isLoading is set to false, hiding the progress bar
+                viewModel._isLoading.value = false
+            }
         }
     }
     private fun handleNetworkError(e: Exception) {
@@ -173,6 +174,8 @@ class UserScreen : Fragment() {
 
                 val audios = items.filter { !it.Audio_link.isNullOrBlank() }.take(10)
                 audiosRecyclerView.adapter = AudioAdapter(audios)
+                adapter = AudioAdapter(audios)
+                audiosRecyclerView.adapter = adapter
 
             } else {
                 // Handle the case where the list is empty (can show a message or placeholder)
@@ -239,6 +242,12 @@ class UserScreen : Fragment() {
 
         }
 
+        if (::adapter.isInitialized) {
+            adapter.releaseMediaPlayer()
+        }
+    }
+    override fun onPause() {
+        super.onPause()
         if (::adapter.isInitialized) {
             adapter.releaseMediaPlayer()
         }

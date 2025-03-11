@@ -134,6 +134,7 @@ class HomeScreen : Fragment() {
             "audios" -> AudiosSection()
             "details" -> ProfileDetailsScreen()
             "edit" -> EditProfileScreen()
+            "about" -> AboutAppScreen()
             "media_upload" -> {
                 val mediaUploadFragment = MediaUploadFragment()
                 if (mediaUploadBundle != null) { // Pass the bundle if it exists
@@ -165,6 +166,9 @@ class HomeScreen : Fragment() {
     fun navigateProfileDetailsFragment() {
         showFragment("details")
     }
+    fun navigateAboutAppFragment() {
+        showFragment("about")
+    }
 
     fun navigateProfileEditFragment() {
         showFragment("edit")
@@ -173,6 +177,16 @@ class HomeScreen : Fragment() {
     fun loadMediaUploadFragment(bundle: Bundle) {
         mediaUploadBundle = bundle // Store the bundle
         showFragment("media_upload")
+    }
+    // In HomeScreen.kt
+    fun showHomeContentTabAndSettingsDialog() {
+        showHomeContentTab() // Switch to the HomeContent tab
+
+        // Use a postDelayed to give HomeContent time to load
+        view?.postDelayed({
+            val homeContentFragment = childFragmentManager.fragments.find { it is HomeContent } as? HomeContent
+            homeContentFragment?.showPositionSelectionDialog()
+        }, 200) // Adjust the delay as needed (e.g., 200 milliseconds)
     }
 
     fun showAccountScreen() {
