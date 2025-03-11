@@ -356,32 +356,50 @@ class HomeContent : Fragment() {
         }
 
         if (filteredItems.isEmpty()) {
-            // Only show the toast if this is a new empty category
-            if (lastDisplayedEmptyCategory != category) {
-                Toast.makeText(requireContext(), "No content found for $category", Toast.LENGTH_SHORT).show()
-                lastDisplayedEmptyCategory = category // Update the last displayed category
-            }
-            imagesAdapter.updateImages(emptyList())
-            videosAdapter.updateVideos(emptyList())
-            audiosAdapter.updateAudios(emptyList())
+            // Show "No content found" for all types
+            binding.noImagesText.visibility = View.VISIBLE
+            binding.noVideosText.visibility = View.VISIBLE
+            binding.noAudiosText.visibility = View.VISIBLE
+            binding.imagesRecyclerView.visibility = View.GONE
+            binding.videosRecyclerView.visibility = View.GONE
+            binding.audiosRecyclerView.visibility = View.GONE
             return
-        } else {
-            lastDisplayedEmptyCategory = null; //reset the last displayed category when content is found.
         }
 
         val shuffledItems = filteredItems.shuffled()
 
+        // Handle images
         val images = shuffledItems.filter { !it.Image_link.isNullOrBlank() }.take(10)
-        Log.d("DISPLAY_CONTENT", "Images count: ${images.size}")
-        imagesAdapter.updateImages(images)
+        if (images.isEmpty()) {
+            binding.noImagesText.visibility = View.VISIBLE
+            binding.imagesRecyclerView.visibility = View.GONE
+        } else {
+            binding.noImagesText.visibility = View.GONE
+            binding.imagesRecyclerView.visibility = View.VISIBLE
+            imagesAdapter.updateImages(images)
+        }
 
+        // Handle videos
         val videos = shuffledItems.filter { !it.Video_link.isNullOrBlank() }.take(10)
-        Log.d("DISPLAY_CONTENT", "Videos count: ${videos.size}")
-        videosAdapter.updateVideos(videos)
+        if (videos.isEmpty()) {
+            binding.noVideosText.visibility = View.VISIBLE
+            binding.videosRecyclerView.visibility = View.GONE
+        } else {
+            binding.noVideosText.visibility = View.GONE
+            binding.videosRecyclerView.visibility = View.VISIBLE
+            videosAdapter.updateVideos(videos)
+        }
 
+        // Handle audios
         val audios = shuffledItems.filter { !it.Audio_link.isNullOrBlank() }.take(10)
-        Log.d("DISPLAY_CONTENT", "Audios count: ${audios.size}")
-        audiosAdapter.updateAudios(audios)
+        if (audios.isEmpty()) {
+            binding.noAudiosText.visibility = View.VISIBLE
+            binding.audiosRecyclerView.visibility = View.GONE
+        } else {
+            binding.noAudiosText.visibility = View.GONE
+            binding.audiosRecyclerView.visibility = View.VISIBLE
+            audiosAdapter.updateAudios(audios)
+        }
     }
     private fun getCircleData(): List<CircleItem> {
         return listOf(

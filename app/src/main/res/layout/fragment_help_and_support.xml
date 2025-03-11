@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".ui.view.fragment.AboutAppScreen">
+    tools:context=".ui.view.fragment.HelpAndSupport">
 
     <LinearLayout
         android:id="@+id/headerLayout"
@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/poppins_bold"
             android:gravity="center"
-            android:text="About App"
+            android:text="Help &amp; Support"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="[News Worth]"
+                android:text="Contact Us"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -61,18 +61,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Version: 1.0.1"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Build Number: 1"
+                android:text="If you need assistance or have any questions, please feel free to contact us via email."
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -81,16 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="News Worth helps you know the things happening around the society."
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Key Features:"
+                android:text="Email Support:"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -100,16 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="* Covers News Around Our Society"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="* Filtered News With More Than Ten Categories"
+                android:text="support@example.com"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -118,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Developed by: [GDRB TECHNOLOGIES]"
+                android:text="For technical issues or bug reports:"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -128,16 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Contact Us: support@example.com"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Website: www.example.com"
+                android:text="bugs@example.com"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -146,25 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Privacy Policy: www.example.com/privacy"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Terms of Service: www.example.com/terms"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Uses the Awesome Library under the MIT License."
+                android:text="We aim to respond to your inquiries within 24-48 hours."
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 

@@ -55,6 +55,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
+                android:id="@+id/noVideosText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No videos found"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:padding="16dp" />
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
@@ -69,6 +78,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
+                android:id="@+id/noImagesText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No images found"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:padding="16dp" />
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
@@ -82,6 +100,15 @@
                 android:id="@+id/audios_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/noAudiosText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No audios found"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:padding="16dp" />
         </LinearLayout>
     </ScrollView>
 

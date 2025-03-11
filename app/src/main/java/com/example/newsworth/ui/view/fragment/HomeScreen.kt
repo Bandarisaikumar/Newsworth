@@ -135,6 +135,7 @@ class HomeScreen : Fragment() {
             "details" -> ProfileDetailsScreen()
             "edit" -> EditProfileScreen()
             "about" -> AboutAppScreen()
+            "helpandsupport" -> HelpAndSupport()
             "media_upload" -> {
                 val mediaUploadFragment = MediaUploadFragment()
                 if (mediaUploadBundle != null) { // Pass the bundle if it exists
@@ -168,6 +169,9 @@ class HomeScreen : Fragment() {
     }
     fun navigateAboutAppFragment() {
         showFragment("about")
+    }
+    fun navigateHelpAndSupport(){
+        showFragment("helpandsupport")
     }
 
     fun navigateProfileEditFragment() {

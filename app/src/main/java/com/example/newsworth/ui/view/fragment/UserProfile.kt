@@ -122,6 +122,12 @@ class UserProfile : Fragment() {
                 homeScreen?.navigateAboutAppFragment()
             }
         }
+        binding.helpAndSupport.setOnClickListener {
+            handleButtonClick {
+                val homeScreen = parentFragment as? HomeScreen
+                homeScreen?.navigateHelpAndSupport()
+            }
+        }
 
         binding.cameraIcon.setOnClickListener {
             handleButtonClick {
