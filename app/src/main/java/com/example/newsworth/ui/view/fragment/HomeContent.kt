@@ -3,8 +3,10 @@ package com.example.newsworth.ui.view.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -29,6 +31,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -55,6 +58,7 @@ import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModelFactory
 import com.example.newsworth.utils.SharedPrefModule
 import java.io.File
 import java.io.FileInputStream
+
 
 class HomeContent : Fragment() {
 
@@ -97,6 +101,23 @@ class HomeContent : Fragment() {
         _binding =
             FragmentHomeContentBinding.inflate(inflater, container, false) // Initialize binding
         val view = binding.root // Use binding.root
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Exit App")
+                        .setMessage("Are you sure you want to exit?")
+                        .setPositiveButton(android.R.string.yes,
+                            DialogInterface.OnClickListener { dialog, which ->
+                                requireActivity().finishAffinity()
+                            })
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(R.drawable.newsworthlogo)
+                        .show()
+                }
+            })
 
         slideBar = view.findViewById(R.id.slideBar)
         iconLayout = view.findViewById(R.id.iconLayout)
