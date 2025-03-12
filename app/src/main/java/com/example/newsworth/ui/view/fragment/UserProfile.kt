@@ -147,7 +147,17 @@ class UserProfile : Fragment() {
             val homeScreenFragment = parentFragment as? HomeScreen
             homeScreenFragment?.showHomeContentTabAndSettingsDialog()
         }
-
+        binding.moreButton.setOnClickListener {
+            if (binding.moreLayout.visibility == View.GONE) {
+                // Show more
+                binding.moreLayout.visibility = View.VISIBLE
+                binding.moreButton.setText("Show Less")
+            } else {
+                // Show less
+                binding.moreLayout.visibility = View.GONE
+                binding.moreButton.setText("Show More")
+            }
+        }
         fetchProfileImage()
         observeViewModels()
         _profileViewModel!!.error.observe(viewLifecycleOwner) { errorMessage ->

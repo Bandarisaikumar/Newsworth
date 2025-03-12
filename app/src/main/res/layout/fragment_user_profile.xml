@@ -306,12 +306,20 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="More"
-            android:textColor="@color/blue"
-            android:layout_marginStart="6dp"/>
+                <TextView
+                    android:id="@+id/moreButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Show More"
+                    android:textSize="14dp"
+                    android:textColor="@color/blue" />
+                <LinearLayout
+                    android:id="@+id/moreLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
         <LinearLayout
             android:id="@+id/settingsButton"
             android:layout_width="match_parent"
@@ -360,7 +368,6 @@
                     app:tint="@color/black"
                     android:src="@drawable/right_arrow" />
             </LinearLayout>
-
         </LinearLayout>
 
         <LinearLayout
@@ -463,6 +470,7 @@
             </LinearLayout>
 
         </LinearLayout>
+            </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

@@ -5,37 +5,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.view.fragment.HelpAndSupport">
+    tools:context=".ui.view.fragment.HelpAndSupport"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
 
     <LinearLayout
-        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp">
 
-        <ImageView
-            android:id="@+id/backButton"
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
             android:src="@drawable/back_arrow"
-            app:tint="?attr/imageTint" />
+            app:tint="@color/black"
+            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
 
+        <!-- Title -->
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_bold"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="center"
-            android:text="Help &amp; Support"
+            android:text="Help And Support"
             android:textColor="@color/black"
-            android:textSize="16sp" />
-
+            android:layout_marginEnd="35dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -51,7 +57,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="Contact Us"
                 android:textColor="@color/black"
@@ -61,7 +66,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="If you need assistance or have any questions, please feel free to contact us via email."
                 android:textColor="@color/black"
@@ -70,7 +74,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="Email Support:"
                 android:textColor="@color/black"
@@ -80,7 +83,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="support@example.com"
                 android:textColor="@color/black"
@@ -89,7 +91,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="For technical issues or bug reports:"
                 android:textColor="@color/black"
@@ -99,7 +100,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="bugs@example.com"
                 android:textColor="@color/black"
@@ -108,7 +108,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
                 android:fontFamily="@font/poppins_regular"
                 android:text="We aim to respond to your inquiries within 24-48 hours."
                 android:textColor="@color/black"
