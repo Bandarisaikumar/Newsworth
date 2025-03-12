@@ -70,7 +70,7 @@ class UserProfile : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val homeScreen = parentFragment as? HomeScreen
-                homeScreen?.showMyFilesTab()
+                homeScreen?.showHomeContentTab()
             }
         })
         selectImageLauncher =
@@ -149,11 +149,9 @@ class UserProfile : Fragment() {
         }
         binding.moreButton.setOnClickListener {
             if (binding.moreLayout.visibility == View.GONE) {
-                // Show more
                 binding.moreLayout.visibility = View.VISIBLE
                 binding.moreButton.setText("Show Less")
             } else {
-                // Show less
                 binding.moreLayout.visibility = View.GONE
                 binding.moreButton.setText("Show More")
             }

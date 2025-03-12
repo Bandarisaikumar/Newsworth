@@ -268,6 +268,17 @@ class RegistrationScreen : Fragment() {
                         binding.passwordsLayout.visibility = View.GONE
                     }
                 }
+                when (response.response_message) {
+                    "OTP has expired, please click on resend." -> {
+                        Toast.makeText(
+                            requireContext(),
+                            response.response_message ?: "Failure!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        showSendOtpDialog(isEmailOtp = true, isMobileOtp = false)
+                        binding.passwordsLayout.visibility = View.GONE
+                    }
+                }
             }
 
             // Handle the main response

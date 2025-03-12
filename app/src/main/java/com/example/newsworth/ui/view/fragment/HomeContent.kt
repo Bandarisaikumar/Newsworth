@@ -34,6 +34,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -75,10 +76,10 @@ class HomeContent : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    private var _binding: FragmentHomeContentBinding? = null // Important: Make binding nullable
-    private val binding get() = _binding!! // Use the non-null assertion operator
+    private var _binding: FragmentHomeContentBinding? = null
+    private val binding get() = _binding!!
     private val uploadedContentLiveData =
-        MutableLiveData<UploadedContentResponse?>() // Use MutableLiveData
+        MutableLiveData<UploadedContentResponse?>()
 
 
     private var screenWidth: Int = 0
@@ -89,8 +90,7 @@ class HomeContent : Fragment() {
     private val REQUEST_VIDEO_CAPTURE = 2
     private var mediaRecorder: MediaRecorder? = null
     private var audioFileName: String? = null
-    private lateinit var circleAdapter: CircleAdapter // Declare circleAdapter at the class level
-
+    private lateinit var circleAdapter: CircleAdapter
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,8 +99,8 @@ class HomeContent : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding =
-            FragmentHomeContentBinding.inflate(inflater, container, false) // Initialize binding
-        val view = binding.root // Use binding.root
+            FragmentHomeContentBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -121,14 +121,12 @@ class HomeContent : Fragment() {
 
         slideBar = view.findViewById(R.id.slideBar)
         iconLayout = view.findViewById(R.id.iconLayout)
-        collapse = view.findViewById(R.id.collapse) // Reference to the collapse LinearLayout
+        collapse = view.findViewById(R.id.collapse)
         main = view.findViewById(R.id.main)
         recyclerView = view.findViewById(R.id.recyclerView)
         progressBar = view.findViewById(R.id.progressBar)
 
 
-
-        // Initialize Adapters *BEFORE* fetching data
         imagesAdapter = ImagesAdapter(emptyList())
         videosAdapter = VideosAdapter(emptyList())
         audiosAdapter = AudioAdapter(emptyList())
@@ -137,7 +135,6 @@ class HomeContent : Fragment() {
         binding.videosRecyclerView.adapter = videosAdapter
         binding.audiosRecyclerView.adapter = audiosAdapter
 
-        // *** Add these lines ***
         binding.imagesRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.videosRecyclerView.layoutManager =
@@ -151,7 +148,7 @@ class HomeContent : Fragment() {
         val circleList = mutableListOf(
             CircleItem("Breaking News", R.drawable.breakingnews),
             CircleItem("Politics", R.drawable.politics),
-            CircleItem( "Business & Economy", R.drawable.business),
+            CircleItem("Business & Economy", R.drawable.business),
             CircleItem("Technology", R.drawable.technology),
             CircleItem("Science", R.drawable.science),
             CircleItem("Health", R.drawable.health),
@@ -161,14 +158,12 @@ class HomeContent : Fragment() {
             CircleItem("Crime & Law", R.drawable.crime),
             CircleItem("World News", R.drawable.world),
             CircleItem("Environment", R.drawable.environment),
-            )
+        )
 
         circleAdapter = CircleAdapter(circleList) { position ->
             handleCircleItemClick(position, circleList[position].name ?: "Unknown")
         }
         recyclerView.adapter = circleAdapter
-
-
 
 
         // Set the initial position of the slideBar to the bottom-left corner
@@ -237,7 +232,6 @@ class HomeContent : Fragment() {
             }
         })
 
-        // Set click listeners for the icons inside iconLayout
         view.findViewById<ImageView>(R.id.imageIcon).setOnClickListener {
             handlePermission(
                 android.Manifest.permission.CAMERA,
@@ -248,7 +242,7 @@ class HomeContent : Fragment() {
             handlePermission(
                 android.Manifest.permission.CAMERA,
                 CAMERA_PERMISSION_REQUEST_CODE
-            ) { launchCameraForVideo() }
+            ) { launchVideoCapture() }
         }
         view.findViewById<ImageView>(R.id.audioIcon).setOnClickListener {
             handlePermission(
@@ -257,12 +251,10 @@ class HomeContent : Fragment() {
             ) { showAudioRecordingDialog() }
         }
 
-        // Set click listener for the collapse LinearLayout
         collapse.setOnClickListener {
-            // Hide the iconLayout when the collapse LinearLayout is clicked
             iconLayout.visibility = View.GONE
         }
-        settingsButton = view.findViewById(R.id.settingsButton) // Initialize settings button
+        settingsButton = view.findViewById(R.id.settingsButton)
         settingsButton.setOnClickListener {
             showPositionSelectionDialog()
         }
@@ -273,49 +265,55 @@ class HomeContent : Fragment() {
             this,
             NewsWorthCreatorViewModelFactory(repository)
         )[NewsWorthCreatorViewModel::class.java]
-        
+
         fetchAndDisplayContent()
         selectDefaultCircleItem()
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                viewModel.clearErrorMessage() // Clear the error after displaying it
+                viewModel.clearErrorMessage()
             }
         }
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             if (isLoading) {
-                progressBar.bringToFront() // Add this line to bring the progress bar to the front
+                progressBar.bringToFront()
             }
         }
 
 
         return view
     }
+
     private fun selectDefaultCircleItem() {
-        // Find the position of "General News" in the circleList
         val defaultPosition = getCircleData().indexOfFirst { it.name == "Breaking News" }
 
         if (defaultPosition != -1) {
             circleAdapter.setSelectedPosition(defaultPosition)
-            handleCircleItemClick(defaultPosition, getCircleData()[defaultPosition].name ?: "Unknown") // Trigger content fetch
+            handleCircleItemClick(
+                defaultPosition,
+                getCircleData()[defaultPosition].name ?: "Unknown"
+            )
         }
     }
+
     private fun handleCircleItemClick(position: Int, categoryName: String) {
         circleAdapter.setSelectedPosition(position)
         Log.d("CircleClick", "Circle item clicked at position: $position, Category: $categoryName")
 
-        binding.category.text = categoryName // Update the category TextView
-        fetchAndDisplayContent() // Fetch and display content with the new category
+        binding.category.text = categoryName
+        fetchAndDisplayContent()
     }
+
     private fun fetchAndDisplayContent() {
         if (!isInternetAvailable()) {
             showNoInternetDialog()
             return
         }
 
-        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
+        val userId =
+            SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
         uploadedContentLiveData.removeObservers(viewLifecycleOwner)
 
         progressBar.visibility = View.VISIBLE
@@ -341,32 +339,35 @@ class HomeContent : Fragment() {
                             content_categories = imageResponse.content_categories
                         )
                     }
-                    val selectedCategory = binding.category.text.toString() // Get the selected category
-                    displayContent(imagesList, selectedCategory) // Pass category to displayContent
+                    val selectedCategory =
+                        binding.category.text.toString()
+                    displayContent(imagesList, selectedCategory)
                 } else {
                     Log.e("API_ERROR", "Response is null or not success")
                     Toast.makeText(requireContext(), "No content found", Toast.LENGTH_SHORT).show()
-                    displayContent(emptyList(), "All") // Clear RecyclerViews
+                    displayContent(emptyList(), "All")
                 }
             } catch (e: Exception) {
                 Log.e("ObserverError", "Error in observer: ${e.message}")
-                Toast.makeText(requireContext(), "An error occurred: ${e.message}", Toast.LENGTH_SHORT).show()
-                displayContent(emptyList(), "All") // Clear RecyclerViews
+                Toast.makeText(
+                    requireContext(),
+                    "An error occurred: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                displayContent(emptyList(), "All")
             } finally {
                 progressBar.visibility = View.GONE
             }
         }
     }
-    private var lastDisplayedEmptyCategory: String? = null
+
 
     private fun displayContent(items: List<ImageModel>, category: String) {
         Log.d("DISPLAY_CONTENT", "Items count: ${items.size}, Category: $category")
 
-        // Release MediaPlayers if necessary (only for Video and Audio adapters)
         videosAdapter.releaseMediaPlayer()
         audiosAdapter.releaseMediaPlayer()
 
-        // Filter items based on the selected category
         val filteredItems = if (category == "All") {
             items
         } else {
@@ -377,7 +378,6 @@ class HomeContent : Fragment() {
         }
 
         if (filteredItems.isEmpty()) {
-            // Show "No content found" for all types
             binding.noImagesText.visibility = View.VISIBLE
             binding.noVideosText.visibility = View.VISIBLE
             binding.noAudiosText.visibility = View.VISIBLE
@@ -389,7 +389,6 @@ class HomeContent : Fragment() {
 
         val shuffledItems = filteredItems.shuffled()
 
-        // Handle images
         val images = shuffledItems.filter { !it.Image_link.isNullOrBlank() }.take(10)
         if (images.isEmpty()) {
             binding.noImagesText.visibility = View.VISIBLE
@@ -400,7 +399,6 @@ class HomeContent : Fragment() {
             imagesAdapter.updateImages(images)
         }
 
-        // Handle videos
         val videos = shuffledItems.filter { !it.Video_link.isNullOrBlank() }.take(10)
         if (videos.isEmpty()) {
             binding.noVideosText.visibility = View.VISIBLE
@@ -411,7 +409,6 @@ class HomeContent : Fragment() {
             videosAdapter.updateVideos(videos)
         }
 
-        // Handle audios
         val audios = shuffledItems.filter { !it.Audio_link.isNullOrBlank() }.take(10)
         if (audios.isEmpty()) {
             binding.noAudiosText.visibility = View.VISIBLE
@@ -422,11 +419,12 @@ class HomeContent : Fragment() {
             audiosAdapter.updateAudios(audios)
         }
     }
+
     private fun getCircleData(): List<CircleItem> {
         return listOf(
             CircleItem("Breaking News", R.drawable.breakingnews),
             CircleItem("Politics", R.drawable.politics),
-            CircleItem( "Business & Economy", R.drawable.business),
+            CircleItem("Business & Economy", R.drawable.business),
             CircleItem("Technology", R.drawable.technology),
             CircleItem("Science", R.drawable.science),
             CircleItem("Health", R.drawable.health),
@@ -451,7 +449,7 @@ class HomeContent : Fragment() {
         builder.setTitle("No Internet Connection")
             .setMessage("Please turn on your internet connection to continue.")
             .setCancelable(false)
-            .setPositiveButton("OK") { _, _ -> } // You might want to add an action here
+            .setPositiveButton("OK") { _, _ -> }
         val alert = builder.create()
         alert.show()
     }
@@ -459,21 +457,19 @@ class HomeContent : Fragment() {
     fun showPositionSelectionDialog() {
         positionSelectionDialog = Dialog(requireContext()).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
-            setContentView(R.layout.dialog_position_selection) // Create a new layout for the dialog
+            setContentView(R.layout.dialog_position_selection)
             window?.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
         }
 
-        // Initialize ImageViews for the four positions
         val topLeftImage = positionSelectionDialog.findViewById<ImageView>(R.id.topLeftImage)
         val topRightImage = positionSelectionDialog.findViewById<ImageView>(R.id.topRightImage)
         val bottomLeftImage = positionSelectionDialog.findViewById<ImageView>(R.id.bottomLeftImage)
         val bottomRightImage =
             positionSelectionDialog.findViewById<ImageView>(R.id.bottomRightImage)
 
-        // Set click listeners for each position
         topLeftImage.setOnClickListener { setSlideBarPosition(0f, 0f) }
         topRightImage.setOnClickListener {
             setSlideBarPosition(
@@ -500,9 +496,9 @@ class HomeContent : Fragment() {
     private fun setSlideBarPosition(x: Float, y: Float) {
         slideBar.x = x
         slideBar.y = y
-        snapSlideBarToNearestCorner() // Optional: Snap to the corner after manual placement
-        determineCornerAndShowIconLayout() // Crucial: Call this to update iconLayout position
-        positionSelectionDialog.dismiss() // Close the dialog
+        snapSlideBarToNearestCorner()
+        determineCornerAndShowIconLayout()
+        positionSelectionDialog.dismiss()
     }
 
 
@@ -520,34 +516,33 @@ class HomeContent : Fragment() {
                 // Top-left corner
                 slideBar.x = 0f
                 slideBar.y = 0f
-                slideBar.setImageResource(R.drawable.slidebarleft) // Set the correct image
+                slideBar.setImageResource(R.drawable.slidebarleft)
             }
 
             !isLeft && isTop -> {
                 // Top-right corner
                 slideBar.x = screenWidth - slideBar.width.toFloat()
                 slideBar.y = 0f
-                slideBar.setImageResource(R.drawable.rightsidee) // Set the correct image
+                slideBar.setImageResource(R.drawable.rightsidee)
             }
 
             isLeft && !isTop -> {
                 // Bottom-left corner
                 slideBar.x = 0f
                 slideBar.y = screenHeight - slideBar.height.toFloat()
-                slideBar.setImageResource(R.drawable.slidebarleft) // Set the correct image
+                slideBar.setImageResource(R.drawable.slidebarleft)
             }
 
             else -> {
                 // Bottom-right corner
                 slideBar.x = screenWidth - slideBar.width.toFloat()
                 slideBar.y = screenHeight - slideBar.height.toFloat()
-                slideBar.setImageResource(R.drawable.rightsidee) // Set the correct image
+                slideBar.setImageResource(R.drawable.rightsidee)
             }
         }
     }
 
     private fun determineCornerAndShowIconLayout() {
-        // Ensure the iconLayout's dimensions are calculated
         iconLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val iconLayoutWidth = iconLayout.measuredWidth
         val iconLayoutHeight = iconLayout.measuredHeight
@@ -558,7 +553,6 @@ class HomeContent : Fragment() {
                 RelativeLayout.LayoutParams.WRAP_CONTENT
             )
 
-        // Determine the position of the iconLayout based on the slideBar's corner
         when {
             slideBar.x == 0f && slideBar.y == 0f -> {
                 // Top-left corner: Place iconLayout to the right of the slideBar
@@ -602,8 +596,28 @@ class HomeContent : Fragment() {
     private fun launchCameraForImage() =
         startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAPTURE)
 
-    private fun launchCameraForVideo() =
-        startActivityForResult(Intent(MediaStore.ACTION_VIDEO_CAPTURE), REQUEST_VIDEO_CAPTURE)
+    private var tempVideoFile: File? = null
+
+    private fun launchVideoCapture() {
+        tempVideoFile = File(
+            requireContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES),
+            "video_${System.currentTimeMillis()}.mp4"
+        )
+        val videoUri: Uri = FileProvider.getUriForFile(
+            requireContext(),
+            "com.gdrbnarmtech.newsworth.fileprovider",
+            tempVideoFile!!
+        )
+
+        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
+
+        if (takeVideoIntent.resolveActivity(requireContext().packageManager) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+        } else {
+            Toast.makeText(requireContext(), "No camera app found", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     private fun showAudioRecordingDialog() {
         createDialog(R.layout.dialog_audio_recording) { dialog ->
@@ -692,7 +706,6 @@ class HomeContent : Fragment() {
             val result = FFmpeg.execute(command)
 
             if (result == 0 && mp3File.exists()) {
-                // Convert to Base64 and pass to next screen
                 val base64Audio = convertToBase64(mp3File)
                 passAudioToNextScreen(base64Audio)
             } else {
@@ -713,8 +726,8 @@ class HomeContent : Fragment() {
     }
 
     private fun convertToBase64(file: File): String {
-        val bytes = file.readBytes() // Read file bytes
-        return Base64.encodeToString(bytes, Base64.DEFAULT) // Convert to Base64 string
+        val bytes = file.readBytes()
+        return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
     private fun navigateToMediaUpload(mediaType: String, media: Any) {
@@ -730,9 +743,7 @@ class HomeContent : Fragment() {
 
                 "Video" -> {
                     val videoPath = media as String
-                    // Save the video path to SharedPreferences
                     sharedPrefs.edit().putString("videoPathKey", videoPath).apply()
-                    // Pass the key in the Bundle
                     putString("pathKey", "videoPathKey")
                 }
             }
@@ -759,25 +770,7 @@ class HomeContent : Fragment() {
         return file
     }
 
-    // Function to save video to a temporary file and get its absolute path
-    private fun saveVideoToFile(uri: Uri): String? {
-        return try {
-            val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val tempFile = File(
-                requireContext().cacheDir,
-                "video_${System.currentTimeMillis()}.mp4" // Unique file name with timestamp
-            )
-            inputStream?.use { input ->
-                tempFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            tempFile.absolutePath // Return the absolute path of the new file
-        } catch (e: Exception) {
-            Log.e("VideoSaveError", "Failed to save video: ${e.message}")
-            null
-        }
-    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (::audiosAdapter.isInitialized) {
@@ -807,24 +800,23 @@ class HomeContent : Fragment() {
                 }
 
                 REQUEST_VIDEO_CAPTURE -> {
-                    data?.data?.let { videoUri ->
-                        val videoFilePath = saveVideoToFile(videoUri) // Save new video
-                        if (videoFilePath != null) {
-                            Log.d(
-                                "VideoFilePath",
-                                "Saved video file path: $videoFilePath"
-                            ) // Log the file path
-                            navigateToMediaUpload("Video", videoFilePath) // Use the new file path
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Failed to save video file",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    if (tempVideoFile != null && tempVideoFile!!.exists()) {
+                        navigateToMediaUpload("Video", tempVideoFile!!.absolutePath)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to save video file",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
+        } else if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode != Activity.RESULT_OK) {
+            Toast.makeText(
+                requireContext(),
+                "Video capture cancelled or failed.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
