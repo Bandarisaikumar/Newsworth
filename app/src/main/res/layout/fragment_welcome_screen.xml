@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:text="Version 1.0.2"
+        android:text="Version 1.0.0"
         android:textColor="@color/black"
         android:textSize="12dp" />
 
