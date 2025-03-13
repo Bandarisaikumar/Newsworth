@@ -24,6 +24,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/search_border"
+                android:queryHint="Search..."
+                android:iconifiedByDefault="false"
+                android:layout_margin="8dp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"

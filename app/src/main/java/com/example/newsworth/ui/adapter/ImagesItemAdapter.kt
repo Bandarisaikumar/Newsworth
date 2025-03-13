@@ -41,7 +41,6 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
         holder.uploaded_by.text = item.uploaded_by
         holder.gps_location.text = item.gps_location
 
-        // Calculate discounted price
         val originalPrice = item.price.toDoubleOrNull() ?: 0.0
         val discountPercentage = item.discount.toDoubleOrNull() ?: 0.0
 
@@ -57,27 +56,22 @@ class ImagesItemAdapter(private val imageList: List<ImageModel>) :
 
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-// Format the discount percentage to remove the decimal
         val formattedDiscount = discountPercentage.toInt().toString() + "%"
 
-// Combine discounted price, original price (with strike-through), and discount percentage
         val finalText = TextUtils.concat(
             "Price ₹${discountedPrice.toInt()} ",
             originalPriceText,
-            " at Discount $formattedDiscount" // Use the formattedDiscount here
+            " at Discount $formattedDiscount"
         )
 
-        // Create the formatted text
         holder.price_section.text = finalText
 
 
-        // Load image using Glide or Picasso
         Glide.with(holder.itemView.context)
             .load(item.Image_link)
             .into(holder.Image_link)
 
         if (item.Image_link.isNullOrBlank()) {
-            // You can use a placeholder image or handle this case differently
             Glide.with(holder.itemView.context)
                 .load(R.drawable.no_image)
                 .into(holder.Image_link)

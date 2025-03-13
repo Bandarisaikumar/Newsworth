@@ -51,12 +51,12 @@ class CircleAdapter(
                     ContextCompat.getColor(
                         holder.itemView.context,
                         R.color.white
-                    ) // White in dark mode
+                    )
                 } else {
                     ContextCompat.getColor(
                         holder.itemView.context,
                         R.color.black
-                    ) // Black in light mode
+                    )
                 }
             }
 

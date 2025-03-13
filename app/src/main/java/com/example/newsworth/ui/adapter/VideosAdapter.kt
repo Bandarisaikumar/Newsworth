@@ -79,9 +79,7 @@ class VideosAdapter(private var videosList: List<ImageModel>) :
         if (!videoLink.isNullOrBlank()) {
             holder.videoView.setVideoPath(videoLink)
 
-            // Remove the automatic start here
             holder.videoView.setOnPreparedListener { mp ->
-                // Video is prepared, but don't start automatically
             }
 
             holder.videoView.setOnErrorListener { mp, what, extra ->
@@ -103,7 +101,6 @@ class VideosAdapter(private var videosList: List<ImageModel>) :
 
     private fun handleVideoPlay(videoView: VideoView, playIcon: ImageView) {
         if (currentlyPlaying == videoView) {
-            // Toggle play/pause for the same video
             if (videoView.isPlaying) {
                 videoView.pause()
                 playIcon.visibility = View.VISIBLE
@@ -112,15 +109,12 @@ class VideosAdapter(private var videosList: List<ImageModel>) :
                 playIcon.visibility = View.GONE
             }
         } else {
-            // Stop the previously playing video
             currentlyPlaying?.pause()
             currentPlayIcon?.visibility = View.VISIBLE
 
-            // Start the new video
             videoView.start()
             playIcon.visibility = View.GONE
 
-            // Update the currently playing video references
             currentlyPlaying = videoView
             currentPlayIcon = playIcon
         }

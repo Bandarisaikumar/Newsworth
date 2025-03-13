@@ -21,6 +21,13 @@
             android:layout_marginTop="5dp"
             android:textColor="@color/black"
             android:textSize="24dp" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -83,7 +90,7 @@
     android:layout_gravity="center"
     android:layout_marginStart="20dp"
     android:layout_marginEnd="20dp"
-    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     android:backgroundTint="@color/white">
     <ProgressBar
         android:id="@+id/progressBar"
@@ -305,21 +312,6 @@
                     android:src="@drawable/right_arrow" />
             </LinearLayout>
         </LinearLayout>
-
-                <TextView
-                    android:id="@+id/moreButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="Show More"
-                    android:textSize="14dp"
-                    android:textColor="@color/blue" />
-                <LinearLayout
-                    android:id="@+id/moreLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
         <LinearLayout
             android:id="@+id/settingsButton"
             android:layout_width="match_parent"
@@ -471,100 +463,17 @@
 
         </LinearLayout>
             </LinearLayout>
-            </LinearLayout>
         </ScrollView>
 
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
 
-
-</LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="-20dp"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="2dp">
-
-        <LinearLayout
-            android:id="@+id/bottom_nav"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/bottom_nav"
-            android:baselineAligned="false"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <LinearLayout
-                android:id="@+id/userHome"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="38dp"
-                    android:layout_marginTop="4dp"
-                    android:contentDescription="@string/home_icon"
-                    android:src="@drawable/home_icon" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_regular"
-                    android:text="@string/home3"
-                    android:textColor="@color/black" />
-
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/userProfile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:id="@+id/person_image"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="4dp"
-                    android:contentDescription="@string/person_icon"
-                    android:src="@drawable/person_icon" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_regular"
-                    android:text="@string/profile"
-                    android:textColor="@color/black" />
-
-            </LinearLayout>
-        </LinearLayout>
+        </ScrollView>
 
 
-        <ImageButton
-            android:id="@+id/add_button"
-            android:layout_width="60dp"
-            android:layout_height="80dp"
-            android:layout_above="@id/bottom_nav"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-20dp"
-            android:background="@drawable/circle_shape"
-            android:contentDescription="@string/add"
-            android:src="@drawable/fab"
-            app:tint="@color/white" />
+    </LinearLayout>
 
-    </RelativeLayout>
+
 </LinearLayout>

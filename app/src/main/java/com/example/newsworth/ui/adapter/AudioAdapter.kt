@@ -17,7 +17,7 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
 
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
-    private var currentPlayingPosition: Int = -1 // Track the currently playing position
+    private var currentPlayingPosition: Int = -1
     private var handler: Handler = Handler(Looper.getMainLooper())
 
     class AudioViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,7 +42,6 @@ class AudioAdapter(private var audioList: List<ImageModel>) :
         holder.uploadedBy.text = audio.uploaded_by
         holder.priceSection.text = audio.price.toString()
 
-        // Reset UI elements for recycled views
         holder.audioSeekBar.progress = 0
         holder.audioTimer.text = "00:00"
         holder.playAudioIcon.setImageResource(R.drawable.play_button)

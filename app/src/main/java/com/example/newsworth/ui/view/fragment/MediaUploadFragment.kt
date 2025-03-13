@@ -113,6 +113,9 @@ class MediaUploadFragment : Fragment() {
         categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList)
         autoCompleteTextView.setAdapter(categoryAdapter)
 
+        autoCompleteTextView.keyListener = null
+        autoCompleteTextView.setOnClickListener { autoCompleteTextView.showDropDown() }
+
         fetchCategories()
 
         // Set up item click listener for AutoCompleteTextView

@@ -73,7 +73,6 @@ class VideosItemAdapter(private val videoList: List<ImageModel>) :
             holder.Video_link.setVideoPath(videoLink)
 
             holder.Video_link.setOnPreparedListener { mp ->
-                // Video is prepared, but don't start automatically
             }
 
             holder.Video_link.setOnErrorListener { mp, what, extra ->

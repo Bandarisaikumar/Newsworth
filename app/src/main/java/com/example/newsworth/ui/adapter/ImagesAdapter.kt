@@ -65,14 +65,12 @@ class ImagesAdapter(private var imagesList: List<ImageModel>) :
 
         val discountedPrice = originalPrice - (originalPrice * discountPercentage / 100)
 
-// Format the discount percentage to remove the decimal
         val formattedDiscount = discountPercentage.toInt().toString() + "%"
 
-// Combine discounted price, original price (with strike-through), and discount percentage
         val finalText = TextUtils.concat(
             "Price ₹${discountedPrice.toInt()} ",
             originalPriceText,
-            " at Discount $formattedDiscount" // Use the formattedDiscount here
+            " at Discount $formattedDiscount"
         )
         holder.price_section.text = finalText
         val imageUrl = image.Image_link

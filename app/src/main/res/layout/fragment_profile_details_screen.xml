@@ -403,21 +403,20 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="5dp"
-                    android:layout_weight="2"
                     android:background="@drawable/rectangular_button2"
                     android:orientation="horizontal"
-                    android:padding="5dp"
-                    android:weightSum="2">
+                    android:padding="5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
+                        android:layout_gravity="center"
                         android:orientation="vertical">
                         <!-- Name Field -->
                         <TextView
@@ -434,7 +433,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/name_label_background"
-                            android:text="500055"
+                            android:text="Pincode"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -461,7 +460,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/name_label_background"
-                            android:text="Medchal"
+                            android:text="District "
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -494,7 +493,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/name_label_background"
-                        android:text="8-66 , Jaya Ram Nagar , Quthbullapur"
+                        android:text="Loaction"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textSize="16dp"
                         tools:ignore="TextSizeCheck" />
@@ -525,7 +524,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/name_label_background"
-                        android:text="TELANGANA"
+                        android:text="State"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textSize="16dp"
                         tools:ignore="TextSizeCheck" />
@@ -555,7 +554,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/name_label_background"
-                        android:text="India"
+                        android:text="Country"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textSize="16dp"
                         tools:ignore="TextSizeCheck" />

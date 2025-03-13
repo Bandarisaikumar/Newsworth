@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -16,6 +15,8 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
@@ -25,10 +26,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -57,6 +62,7 @@ import com.example.newsworth.ui.adapter.VideosAdapter
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModel
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModelFactory
 import com.example.newsworth.utils.SharedPrefModule
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import java.io.File
 import java.io.FileInputStream
 
@@ -75,6 +81,8 @@ class HomeContent : Fragment() {
     private lateinit var audiosAdapter: AudioAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var searchView: SearchView
+    private var originalItems: List<ImageModel> = emptyList()
 
     private var _binding: FragmentHomeContentBinding? = null
     private val binding get() = _binding!!
@@ -102,23 +110,69 @@ class HomeContent : Fragment() {
             FragmentHomeContentBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        searchView = view.findViewById(R.id.searchView)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                val searchText = searchView.query.toString()
+                if (searchText.isEmpty() || searchText.trim().isEmpty()) {
+                    forceHideKeyboard(searchView.context, searchView)
+                } else {
+                    filterContent(searchText.trim())
+                    forceHideKeyboard(searchView.context, searchView)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { searchQuery ->
+                    filterContent(searchQuery.trim())
+                }
+                return true
+            }
+        })
+
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("Exit App")
-                        .setMessage("Are you sure you want to exit?")
-                        .setPositiveButton(android.R.string.yes,
-                            DialogInterface.OnClickListener { dialog, which ->
-                                requireActivity().finishAffinity()
-                            })
-                        .setNegativeButton(android.R.string.no, null)
-                        .setIcon(R.drawable.newsworthlogo)
-                        .show()
-                }
-            })
+                    Log.d("BackPressed", "Back button pressed")
 
+                    // Ensure searchView is properly initialized
+                    if (::searchView.isInitialized) {
+                        Log.d("BackPressed", "searchView.isIconified: ${searchView.isIconified}")
+
+                        // Step 1: Collapse the searchView if it's expanded
+                        if (!searchView.isIconified) {
+                            Log.d("BackPressed", "Collapsing search view")
+                            searchView.setQuery("", false)
+                            searchView.isIconified = true
+                            searchView.clearFocus() // Clear focus to ensure the searchView is fully collapsed
+                        }
+
+                        // Step 2: Show the exit dialog
+                        Log.d("BackPressed", "Showing exit dialog")
+                        try {
+                            AlertDialog.Builder(requireContext()).apply {
+                                setTitle("Exit App")
+                                setMessage("Are you sure you want to exit?")
+                                setPositiveButton(android.R.string.yes) { dialog, which ->
+                                    Log.d("BackPressed", "Exiting app")
+                                    requireActivity().finishAffinity()
+                                }
+                                setNegativeButton(android.R.string.no, null)
+                                setIcon(R.drawable.newsworthlogo)
+                                create().show() // Ensure the dialog is created and shown
+                            }
+                        } catch (e: Exception) {
+                            Log.e("BackPressed", "Error showing dialog: ${e.message}")
+                        }
+                    } else {
+                        Log.e("BackPressed", "searchView is not initialized")
+                    }
+                }
+            }
+        )
         slideBar = view.findViewById(R.id.slideBar)
         iconLayout = view.findViewById(R.id.iconLayout)
         collapse = view.findViewById(R.id.collapse)
@@ -254,6 +308,7 @@ class HomeContent : Fragment() {
         collapse.setOnClickListener {
             iconLayout.visibility = View.GONE
         }
+
         settingsButton = view.findViewById(R.id.settingsButton)
         settingsButton.setOnClickListener {
             showPositionSelectionDialog()
@@ -285,6 +340,15 @@ class HomeContent : Fragment() {
 
         return view
     }
+    fun forceHideKeyboard(context: Context, view: android.view.View) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            if (imm.isAcceptingText) {
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            view.clearFocus()
+        }, 100)
+    }
 
     private fun selectDefaultCircleItem() {
         val defaultPosition = getCircleData().indexOfFirst { it.name == "Breaking News" }
@@ -303,17 +367,41 @@ class HomeContent : Fragment() {
         Log.d("CircleClick", "Circle item clicked at position: $position, Category: $categoryName")
 
         binding.category.text = categoryName
-        fetchAndDisplayContent()
+
+        searchView.setQuery("", false)
+        searchView.isIconified = true
+        searchView.clearFocus()
+
+        displayContent(originalItems, categoryName)
     }
 
+    private fun filterContent(query: String) {
+        val trimmedQuery = query.trim()
+
+        if (trimmedQuery.isEmpty()) {
+            displayContent(originalItems, binding.category.text.toString())
+            return
+        }
+
+        if (originalItems.isEmpty()) {
+            return
+        }
+
+        val selectedCategory = binding.category.text.toString()
+        val filteredList = originalItems.filter { item ->
+            (item.content_title?.contains(trimmedQuery, ignoreCase = true) == true ||
+                    item.content_description?.contains(trimmedQuery, ignoreCase = true) == true) &&
+                    (selectedCategory == "All" || item.content_categories?.contains(selectedCategory) == true)
+        }
+        displayContent(filteredList, selectedCategory)
+    }
     private fun fetchAndDisplayContent() {
         if (!isInternetAvailable()) {
             showNoInternetDialog()
             return
         }
 
-        val userId =
-            SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
+        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
         uploadedContentLiveData.removeObservers(viewLifecycleOwner)
 
         progressBar.visibility = View.VISIBLE
@@ -339,8 +427,8 @@ class HomeContent : Fragment() {
                             content_categories = imageResponse.content_categories
                         )
                     }
-                    val selectedCategory =
-                        binding.category.text.toString()
+                    originalItems = imagesList
+                    val selectedCategory = binding.category.text.toString()
                     displayContent(imagesList, selectedCategory)
                 } else {
                     Log.e("API_ERROR", "Response is null or not success")
@@ -360,7 +448,6 @@ class HomeContent : Fragment() {
             }
         }
     }
-
 
     private fun displayContent(items: List<ImageModel>, category: String) {
         Log.d("DISPLAY_CONTENT", "Items count: ${items.size}, Category: $category")
@@ -419,7 +506,6 @@ class HomeContent : Fragment() {
             audiosAdapter.updateAudios(audios)
         }
     }
-
     private fun getCircleData(): List<CircleItem> {
         return listOf(
             CircleItem("Breaking News", R.drawable.breakingnews),

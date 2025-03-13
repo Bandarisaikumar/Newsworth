@@ -101,8 +101,7 @@ class UserProfile : Fragment() {
 
         checkInternetAndSetup() // Initial internet check
 
-        binding.addButton.setOnClickListener { navigateToUserScreenForUpload() }
-        binding.userHome.setOnClickListener { findNavController().navigate(R.id.action_userProfileFragment_to_userScreen) }
+
         binding.logout.setOnClickListener {
             handleButtonClick {
                 val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
@@ -146,15 +145,6 @@ class UserProfile : Fragment() {
         binding.settingsButton.setOnClickListener {
             val homeScreenFragment = parentFragment as? HomeScreen
             homeScreenFragment?.showHomeContentTabAndSettingsDialog()
-        }
-        binding.moreButton.setOnClickListener {
-            if (binding.moreLayout.visibility == View.GONE) {
-                binding.moreLayout.visibility = View.VISIBLE
-                binding.moreButton.setText("Show Less")
-            } else {
-                binding.moreLayout.visibility = View.GONE
-                binding.moreButton.setText("Show More")
-            }
         }
         fetchProfileImage()
         observeViewModels()
@@ -311,8 +301,6 @@ class UserProfile : Fragment() {
 //        }
 //    }
     private fun enableUI() {
-        binding.addButton.isEnabled = true
-        binding.userHome.isEnabled = true
         binding.logout.isEnabled = true
         binding.profileInfo.isEnabled = true
         binding.cameraIcon.isEnabled = true
@@ -321,8 +309,6 @@ class UserProfile : Fragment() {
     }
 
     private fun disableUI() {
-        binding.addButton.isEnabled = false
-        binding.userHome.isEnabled = false
         binding.logout.isEnabled = false
         binding.profileInfo.isEnabled = false
         binding.cameraIcon.isEnabled = false

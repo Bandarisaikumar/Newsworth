@@ -46,9 +46,8 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
         holder.content_title.text = audio.content_title
         holder.content_description.text = audio.content_description
         holder.uploaded_by.text = audio.uploaded_by
-        holder.price_section.text = audio.price.toString()
+        holder.price_section.text = audio.price
 
-        // Reset UI elements for recycled views
         holder.audio_seekbar.progress = 0
         holder.audio_timer.text = "00:00"
         holder.play_audio_icon.setImageResource(R.drawable.play_button)
@@ -73,7 +72,6 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
 
     private fun handleAudioPlay(holder: AudioViewHolder, audioLink: String) {
         try {
-            // Handle play/pause logic
             if (mediaPlayer != null && currentPlayIcon == holder.play_audio_icon && isPlaying) {
                 mediaPlayer?.pause()
                 stopSeekBarUpdates()
@@ -92,7 +90,6 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
                 return
             }
 
-            // Stop and reset any previously playing audio
             mediaPlayer?.let {
                 if (it.isPlaying) {
                     it.stop()
@@ -101,14 +98,12 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
                 }
             }
 
-            // Initialize and play new audio
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(audioLink)
                 prepare()
                 start()
             }
 
-            // Update play state and icon
             isPlaying = true
             isPaused = false
             currentPlayIcon = holder.play_audio_icon
@@ -116,11 +111,9 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
             currentTimer = holder.audio_timer
             holder.play_audio_icon.setImageResource(R.drawable.pause_button)
 
-            // Initialize SeekBar
             holder.audio_seekbar.max = mediaPlayer?.duration ?: 0
             startSeekBarUpdates(holder)
 
-            // Handle SeekBar scrubbing
             holder.audio_seekbar.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -143,7 +136,6 @@ class AudiosItemAdapter(private var audiosList: List<ImageModel>) :
                 }
             })
 
-            // Handle playback completion
             mediaPlayer?.setOnCompletionListener {
                 Toast.makeText(
                     holder.itemView.context,
