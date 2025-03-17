@@ -35,30 +35,36 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class LoginScreen : Fragment() {
 
     private lateinit var loginViewModel: UserManagementViewModel
-    private lateinit var binding : FragmentLoginScreenBinding
-    private var selectedTab: Int = R.id.emailLoginButton // Keep track of the selected tab
+    private lateinit var binding: FragmentLoginScreenBinding
+    private var selectedTab: Int = R.id.emailLoginButton
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentLoginScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.action_loginScreen_to_signinSignupScreen)
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.action_loginScreen_to_signinSignupScreen)
+                }
+            })
     }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Check if user is already logged in
         if (isUserLoggedIn()) {
             findNavController().navigate(R.id.action_loginScreen_to_homeScreen)
-            return // Prevent further execution of onViewCreated
+            return
         }
         binding.root.setOnTouchListener { _, _ ->
             hideKeyboard()
@@ -66,7 +72,6 @@ class LoginScreen : Fragment() {
         }
 
 
-        // Initialize Repository and ViewModel
         val apiService = context?.let { RetrofitClient.getApiService(it) }
         val repository = apiService?.let { UserManagementRepository(it) }
         val factory = repository?.let { UserManagementViewModelFactory(it) }
@@ -76,12 +81,10 @@ class LoginScreen : Fragment() {
         }
         loginViewModel = ViewModelProvider(this, factory)[UserManagementViewModel::class.java]
 
-        // Default to Email Tab on Screen Load
         setupDefaultTab()
 
         loginViewModel.userId.observe(viewLifecycleOwner) { userId ->
             userId?.let {
-                // Save userId to SharedPreferences
                 SharedPrefModule.provideTokenManager(requireContext()).userId = it.toString()
                 println("User ID: $it")
 
@@ -91,60 +94,61 @@ class LoginScreen : Fragment() {
         val textInputLayout = binding.loginInputLayout2
         val editText = textInputLayout.editText
 
-// Initialize the state
-        var isPasswordVisible = false // Ensure initial state matches the setup
+        var isPasswordVisible = false
 
-// Ensure end icon mode is custom
         textInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
 
-// Save the current font family
         val currentFontFamily = editText?.typeface
 
-// Set the initial input type and icon
         editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon initially
-
-// Reverse the default toggle behavior
+        textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.visibility_off
+        )
         textInputLayout.setEndIconOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
-                // Password is visible, eye icon open
                 editText?.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_on) // Open-eye icon
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.visibility_on
+                )
             } else {
-                // Password is hidden, eye icon closed
-                editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon
+                editText?.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.visibility_off
+                )
             }
-            // Restore the font family
             editText?.typeface = currentFontFamily
 
-            // Preserve the cursor position
             editText?.setSelection(editText.text?.length ?: 0)
         }
 
-        // Back Button Logic
         binding.backButton.setOnClickListener {
             findNavController().navigate(R.id.action_loginScreen_to_signinSignupScreen)
         }
 
-        // Sign Up Button
         binding.signUpText.setOnClickListener {
             findNavController().navigate(R.id.action_loginScreen_to_registrationScreen)
         }
         binding.forgotPasswordBtn.setOnClickListener {
             val input = binding.loginInputEditText.text.toString().trim()
 
-            val loginOption = when (selectedTab) { // Use selectedTab
+            val loginOption = when (selectedTab) {
                 R.id.emailLoginButton -> "Email"
                 R.id.mobileLoginButton -> "Mobile"
                 R.id.useridLoginButton -> "User ID"
-                else -> "Email" // Default to Email if none is selected (shouldn't happen)
+                else -> "Email"
             }
 
-            // You can keep the input check if you want:
             if (input.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter your credentials", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter your credentials",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
@@ -157,18 +161,16 @@ class LoginScreen : Fragment() {
         }
 
 
-        // Login Button Logic
         binding.loginButton.setOnClickListener {
-//            findNavController().navigate(R.id.action_loginScreen_to_homeScreen)
 
-            if (!isInternetAvailable()) {  // Check internet *before* proceeding
-                showNoInternetToast() // Or a more specific message
-                return@setOnClickListener // Stop execution if no internet
+            if (!isInternetAvailable()) {
+                showNoInternetToast()
+                return@setOnClickListener
             }
 
             val input = binding.loginInputEditText.text.toString().trim()
             val password = binding.loginInputEditText2.text.toString().trim()
-            val isEmailLogin = selectedTab == R.id.emailLoginButton // Use selectedTab
+            val isEmailLogin = selectedTab == R.id.emailLoginButton
 
 
             if (validateInput(input, password, isEmailLogin)) {
@@ -177,31 +179,41 @@ class LoginScreen : Fragment() {
             }
         }
 
-        // Tabs Switching Logic
         binding.mobileLoginButton.setOnClickListener {
             switchToMobileTab()
-            binding.mobileTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+            binding.mobileTab.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
 
         }
 
         binding.emailLoginButton.setOnClickListener {
             switchToEmailTab()
-            binding.emailTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-
-
+            binding.emailTab.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
 
 
         }
         binding.useridLoginButton.setOnClickListener {
             switchToUserIdTab()
-            binding.useridTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+            binding.useridTab.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
 
         }
 
-        // Observe Token and Login Responses
         observeLoginResponses()
 
-        // Tabs Switching Logic (Improved - No Underlines)
         binding.mobileLoginButton.setOnClickListener {
             if (selectedTab != R.id.mobileLoginButton) {
                 switchToMobileTab()
@@ -227,10 +239,12 @@ class LoginScreen : Fragment() {
         }
 
     }
+
     private fun isUserLoggedIn(): Boolean {
         val accessToken = SharedPrefModule.provideTokenManager(requireContext()).accessToken
         return !accessToken.isNullOrEmpty()
     }
+
     private fun showNoInternetToast() {
         Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
     }
@@ -243,9 +257,9 @@ class LoginScreen : Fragment() {
     }
 
 
-
     private fun hideKeyboard() {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = requireActivity().currentFocus
         view?.let {
             imm.hideSoftInputFromWindow(it.windowToken, 0)
@@ -255,9 +269,9 @@ class LoginScreen : Fragment() {
 
 
     private fun setupDefaultTab() {
-        // Default Email Tab Settings
         switchToEmailTab()
     }
+
     private fun updateTabBackgrounds() {
         binding.emailTab.setBackgroundResource(if (selectedTab == R.id.emailLoginButton) R.drawable.rectangular_button2 else R.drawable.rectangular_button)
         binding.mobileTab.setBackgroundResource(if (selectedTab == R.id.mobileLoginButton) R.drawable.rectangular_button2 else R.drawable.rectangular_button)
@@ -270,7 +284,12 @@ class LoginScreen : Fragment() {
         binding.loginInputLayout.editText?.filters = arrayOf(InputFilter.LengthFilter(10))
         binding.text.text = "Enter your mobile number and password to login"
 
-        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon4, 0, 0, 0)
+        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(
+            R.drawable.icon4,
+            0,
+            0,
+            0
+        )
         clearInputFields()
         focusInputField(binding.loginInputEditText)
     }
@@ -280,7 +299,12 @@ class LoginScreen : Fragment() {
         binding.loginInputLayout.editText?.inputType = InputType.TYPE_CLASS_NUMBER
         binding.text.text = "Enter your user id and password to login"
 
-        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon5, 0, 0, 0)
+        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(
+            R.drawable.icon5,
+            0,
+            0,
+            0
+        )
         clearInputFields()
         focusInputField(binding.loginInputEditText)
     }
@@ -288,12 +312,27 @@ class LoginScreen : Fragment() {
     private fun switchToEmailTab() {
         binding.loginInputLayout.hint = "Email*"
         binding.loginInputLayout.editText?.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        binding.loginInputLayout.editText?.filters = arrayOf() // Clear filters
+        binding.loginInputLayout.editText?.filters = arrayOf()
         binding.text.text = "Enter your email and password to login"
-        binding.mobileTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blacks))
-        binding.useridTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blacks))
+        binding.mobileTab.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.blacks
+            )
+        )
+        binding.useridTab.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.blacks
+            )
+        )
 
-        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon1, 0, 0, 0)
+        binding.loginInputEditText.setCompoundDrawablesWithIntrinsicBounds(
+            R.drawable.icon1,
+            0,
+            0,
+            0
+        )
         clearInputFields()
         focusInputField(binding.loginInputEditText)
     }
@@ -310,7 +349,8 @@ class LoginScreen : Fragment() {
     }
 
     private fun showKeyboard(view: View) {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
@@ -323,6 +363,7 @@ class LoginScreen : Fragment() {
                 "scope=openid email profile read write"
         return requestBodyString.toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull())
     }
+
     private fun validateInput(input: String, password: String, isEmailLogin: Boolean): Boolean {
         if (input.isEmpty()) {
             showToast("Please enter your credentials")
@@ -334,7 +375,7 @@ class LoginScreen : Fragment() {
                 showToast("Please enter a valid email address")
                 return false
             }
-        } else { // Mobile or User ID
+        } else {
             if (selectedTab == R.id.mobileLoginButton) {
                 if (!input.matches("\\d{10}".toRegex())) {
                     showToast("Please enter a valid 10-digit mobile number")
@@ -359,25 +400,23 @@ class LoginScreen : Fragment() {
     private fun observeLoginResponses() {
         loginViewModel.tokenResponse.observe(viewLifecycleOwner) { tokenResponse ->
             if (tokenResponse != null) {
-                // Token response is not null, save the access token and proceed with login
                 if (tokenResponse.access_token != null) {
-                    SharedPrefModule.provideTokenManager(requireContext()).accessToken = tokenResponse.access_token
+                    SharedPrefModule.provideTokenManager(requireContext()).accessToken =
+                        tokenResponse.access_token
                     performLogin()
                 } else {
-                    // If the access token is null, show the message from the `detail` field
                     val errorMessage = tokenResponse.detail ?: "Login failed. Please try again."
                     showToast(errorMessage)
                     hideProgressBarAndEnableButtons()
                 }
             } else {
-                // Show a generic error message if the token response is null
                 showToast("Login failed. Please try again.")
                 hideProgressBarAndEnableButtons()
             }
         }
 
         loginViewModel.loginResponse.observe(viewLifecycleOwner) { loginResponse ->
-            hideProgressBarAndEnableButtons() // Call the helper function
+            hideProgressBarAndEnableButtons()
             if (loginResponse?.response == "success") {
                 showToast(loginResponse.response_message)
                 findNavController().navigate(R.id.action_loginScreen_to_homeScreen)
@@ -388,6 +427,7 @@ class LoginScreen : Fragment() {
             }
         }
     }
+
     private fun hideProgressBarAndEnableButtons() {
         binding.progressBar.visibility = View.GONE
         binding.loginButton.isEnabled = true
@@ -397,9 +437,9 @@ class LoginScreen : Fragment() {
 
     private fun performLogin() {
         binding.progressBar.visibility = View.VISIBLE
-        binding.loginButton.isEnabled = false // Disable the login button
-        binding.forgotPasswordBtn.isEnabled = false // Disable forgot password button
-        binding.signUpText.isEnabled = false // Disable sign up text
+        binding.loginButton.isEnabled = false
+        binding.forgotPasswordBtn.isEnabled = false
+        binding.signUpText.isEnabled = false
         val input = binding.loginInputEditText.text.toString().trim()
         val password = binding.loginInputEditText2.text.toString().trim()
         val loginOption = when {

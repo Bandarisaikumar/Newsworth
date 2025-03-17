@@ -49,8 +49,6 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
     private val _forgotPasswordResponse = MutableLiveData<ForgotPasswordResponse?>()
     val forgotPasswordResponse: MutableLiveData<ForgotPasswordResponse?> = _forgotPasswordResponse
 
-    private val _userId = MutableLiveData<Int?>()
-    val userID: LiveData<Int?> = _userId
 
     private val _resetPasswordResponse = MutableLiveData<Response<ResetPasswordResponse>>()
     val resetPasswordResponse: LiveData<Response<ResetPasswordResponse>> = _resetPasswordResponse
@@ -64,6 +62,9 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
 
     private val _tokenError = MutableLiveData<ErrorResponse>()
     val tokenError: LiveData<ErrorResponse> = _tokenError
+
+    private val _userId = MutableLiveData<Int?>()
+    val userID: LiveData<Int?> = _userId
 
     fun registerUser(request: RegistrationModels.RegistrationRequest) {
         viewModelScope.launch {
@@ -107,20 +108,16 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
         }
     }
 
-
-    // Method to call login API
     fun login(loginRequest: LoginRequest) {
         viewModelScope.launch {
             val response = repository.login(loginRequest)
             loginResponse.postValue(response)
             val userIdValue = response?.data?.firstOrNull()?.user_id
-            userId.postValue(userIdValue) // Post the extracted user_id
+            userId.postValue(userIdValue)
         }
-
 
     }
 
-    // Method to call token API
     fun getAccessToken(tokenRequest: RequestBody) {
         viewModelScope.launch {
             val response = repository.getAccessToken(tokenRequest)
@@ -149,9 +146,8 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
             _forgotPasswordResponse.postValue(response)
             val userIdValue = response?.data?.firstOrNull()?.userId
             Log.d("ForgotPassword", "Extracted user_id: $userIdValue")
-            // Save user_id to SharedPreferences
             SharedPrefModule.provideTokenManager(context).userId2 = userIdValue.toString()
-            userId.postValue(userIdValue) // Post the extracted user_id
+            userId.postValue(userIdValue)
         }
     }
 
@@ -164,6 +160,6 @@ class UserManagementViewModel(private val repository: UserManagementRepository) 
     }
 
     fun clearErrorMessage() {
-        _errorMessage.value = null // Set to null to clear the error
+        _errorMessage.value = null
     }
 }

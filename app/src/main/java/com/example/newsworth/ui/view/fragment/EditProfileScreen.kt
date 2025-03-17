@@ -7,10 +7,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -22,7 +19,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.newsworth.R
 import com.example.newsworth.data.api.RetrofitClient
 import com.example.newsworth.data.model.EditProfileRequest
 import com.example.newsworth.data.model.LocationDetail
@@ -65,7 +61,7 @@ class EditProfileScreen : Fragment() {
         val profileFactory = ProfileManagementViewmodelFactory(profileRepository)
         viewModel = ViewModelProvider(this, profileFactory)[ProfileManagementViewmodel::class.java]
 
-        checkInternetAndSetup() // Initial internet check
+        checkInternetAndSetup()
 
         binding.searchIcon.setOnClickListener {
             val pincode = binding.pincodeValue.text.toString()
@@ -283,11 +279,11 @@ class EditProfileScreen : Fragment() {
         }
 
         binding.saveButton.setOnClickListener {
-            if (!isInternetAvailable()) {  // Check internet *before* proceeding
-                showNoInternetToast() // Or a more specific message
-                return@setOnClickListener // Stop execution if no internet
+            if (!isInternetAvailable()) {
+                showNoInternetToast()
+                return@setOnClickListener
             }
-            if (!validateFields()) { // New validation function
+            if (!validateFields()) {
                 return@setOnClickListener
             }
             val userEmail = binding.emailValue.text.toString()
@@ -434,15 +430,6 @@ class EditProfileScreen : Fragment() {
 
         binding.locationNameValue.setAdapter(null)
         binding.locationNameValue.text.clear()
-    }
-
-    private fun enableLocationFields(locationList: List<LocationDetail>) {
-        binding.districtNameValue.isEnabled = true
-        binding.stateNameValue.isEnabled = true
-        binding.countryValue.isEnabled = true
-        binding.locationNameValue.isEnabled = true
-
-        populateDropdowns(locationList)
     }
 
     private fun hideKeyboard() {

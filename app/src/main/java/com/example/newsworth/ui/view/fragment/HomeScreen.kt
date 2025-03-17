@@ -1,10 +1,14 @@
 package com.example.newsworth.ui.view.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -21,7 +25,7 @@ class HomeScreen : Fragment() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private var currentFragmentTag: String? = null
-    private var mediaUploadBundle: Bundle? = null // Store the bundle
+    private var mediaUploadBundle: Bundle? = null
 
     private var _binding: FragmentHomeScreenBinding? = null
     private val binding get() = _binding!!
@@ -32,7 +36,7 @@ class HomeScreen : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            mediaUploadBundle = savedInstanceState.getBundle("mediaUploadBundle") // Restore the bundle
+            mediaUploadBundle = savedInstanceState.getBundle("mediaUploadBundle")
         }
     }
 
@@ -56,7 +60,7 @@ class HomeScreen : Fragment() {
         bottomNavigationView = view.findViewById(R.id.bottom_nav_view)
 
         if (savedInstanceState == null) {
-            showFragment("home") // Show initial fragment
+            showFragment("home")
         } else {
             currentFragmentTag = savedInstanceState.getString("currentFragmentTag")
             if (currentFragmentTag != null) {
@@ -78,6 +82,17 @@ class HomeScreen : Fragment() {
             showFragment(newTag)
             return@setOnItemSelectedListener true
         }
+        view.setOnApplyWindowInsetsListener { v, insets ->
+            v.setPadding(
+                v.paddingLeft,
+                v.paddingTop,
+                v.paddingRight,
+                insets.systemWindowInsetBottom
+            )
+            insets
+        }
+
+        view.requestApplyInsets()
 
         return view
     }
@@ -85,7 +100,7 @@ class HomeScreen : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("currentFragmentTag", currentFragmentTag)
-        outState.putBundle("mediaUploadBundle", mediaUploadBundle) // Save the bundle
+        outState.putBundle("mediaUploadBundle", mediaUploadBundle)
     }
     private fun performLogout() {
         val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
@@ -138,20 +153,19 @@ class HomeScreen : Fragment() {
             "helpandsupport" -> HelpAndSupport()
             "media_upload" -> {
                 val mediaUploadFragment = MediaUploadFragment()
-                if (mediaUploadBundle != null) { // Pass the bundle if it exists
+                if (mediaUploadBundle != null) {
                     mediaUploadFragment.arguments = mediaUploadBundle
-                    mediaUploadBundle = null // Clear the bundle after use
+                    mediaUploadBundle = null
                 }
                 mediaUploadFragment
             }
-            else -> return // Handle unknown tags
+            else -> return
         }
 
         transaction.replace(R.id.fragment_container, fragment, tag)
         transaction.commit()
     }
 
-    // --- Navigation Functions (Use showFragment with tag) ---
     fun navigateToImagesFragment() {
         showFragment("images")
     }
@@ -179,18 +193,17 @@ class HomeScreen : Fragment() {
     }
 
     fun loadMediaUploadFragment(bundle: Bundle) {
-        mediaUploadBundle = bundle // Store the bundle
+        mediaUploadBundle = bundle
         showFragment("media_upload")
     }
     // In HomeScreen.kt
     fun showHomeContentTabAndSettingsDialog() {
-        showHomeContentTab() // Switch to the HomeContent tab
+        showHomeContentTab()
 
-        // Use a postDelayed to give HomeContent time to load
         view?.postDelayed({
             val homeContentFragment = childFragmentManager.fragments.find { it is HomeContent } as? HomeContent
             homeContentFragment?.showPositionSelectionDialog()
-        }, 200) // Adjust the delay as needed (e.g., 200 milliseconds)
+        }, 200)
     }
 
     fun showAccountScreen() {
@@ -217,7 +230,4 @@ class HomeScreen : Fragment() {
         bottomNavigationView.selectedItemId = R.id.navigation_home
     }
 
-    fun showAccountsTab() {
-        bottomNavigationView.selectedItemId = R.id.navigation_account
-    }
 }

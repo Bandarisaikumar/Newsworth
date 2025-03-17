@@ -1,7 +1,6 @@
 package com.example.newsworth.ui.view.fragment
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -13,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,10 +19,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -43,13 +39,9 @@ import com.example.newsworth.ui.viewmodel.SharedViewModel
 import com.example.newsworth.utils.SharedPrefModule
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -64,22 +56,23 @@ class MediaUploadFragment : Fragment() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1003
     private var contentId: Int = 0
     private var mediaPlayer: MediaPlayer? = null
-    private lateinit var sharedViewModel: SharedViewModel // SharedViewModel
-    // Add these variables for categories
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var autoCompleteTextView: MultiAutoCompleteTextView
     private lateinit var categoryAdapter: ArrayAdapter<String>
     private val categoryList = mutableListOf<String>()
-    private val selectedCategoryIds = mutableListOf<Int>() // Store selected category IDs
+    private val selectedCategoryIds = mutableListOf<Int>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val homeScreen = parentFragment as? HomeScreen
-                homeScreen?.showHomeContentTab()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val homeScreen = parentFragment as? HomeScreen
+                    homeScreen?.showHomeContentTab()
+                }
+            })
     }
 
 
@@ -96,7 +89,6 @@ class MediaUploadFragment : Fragment() {
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        // Initialize ViewModel with ApiService from RetrofitClient
         val apiService = RetrofitClient.getApiService(requireContext())
         val repository = NewsWorthCreatorRepository(apiService)
         viewModel = ViewModelProvider(
@@ -104,13 +96,16 @@ class MediaUploadFragment : Fragment() {
             NewsWorthCreatorViewModelFactory(repository)
         )[NewsWorthCreatorViewModel::class.java]
 
-        // Initialize SharedViewModel to share data between fragments
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         autoCompleteTextView = binding.autoCompleteCategories
         autoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
 
-        categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryList)
+        categoryAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            categoryList
+        )
         autoCompleteTextView.setAdapter(categoryAdapter)
 
         autoCompleteTextView.keyListener = null
@@ -118,7 +113,6 @@ class MediaUploadFragment : Fragment() {
 
         fetchCategories()
 
-        // Set up item click listener for AutoCompleteTextView
         autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
             val selectedCategory = categoryAdapter.getItem(position)
             selectedCategory?.let {
@@ -142,18 +136,16 @@ class MediaUploadFragment : Fragment() {
 
 
             "Video" -> {
-                // Retrieve the video path key from the arguments
                 val pathKey = arguments?.getString("pathKey")
                 if (pathKey == "videoPathKey") {
-                    // Get the video path from SharedPreferences
                     val sharedPrefs =
                         requireContext().getSharedPreferences("MediaPrefs", Context.MODE_PRIVATE)
                     val videoPath = sharedPrefs.getString(pathKey, null)
 
                     videoPath?.let {
-                        val videoFile = File(it) // Get the video file from the absolute path
+                        val videoFile = File(it)
                         if (videoFile.exists()) {
-                            playVideo(Uri.fromFile(videoFile)) // Play the video using the file URI
+                            playVideo(Uri.fromFile(videoFile))
                         } else {
                             Toast.makeText(
                                 requireContext(),
@@ -175,7 +167,6 @@ class MediaUploadFragment : Fragment() {
                 val base64Audio = arguments?.getString("audioBase64")
 
                 base64Audio?.let {
-                    // Decode the Base64 string to an audio file
                     val audioFile = decodeBase64ToFile(it, "audio_recording.mp3")
                     if (audioFile.exists()) {
                         playAudio(Uri.fromFile(audioFile))
@@ -200,7 +191,6 @@ class MediaUploadFragment : Fragment() {
 
 
         binding.btnUpload.setOnClickListener {
-            // Stop audio playback if it's playing
             mediaPlayer?.let {
                 if (it.isPlaying) {
                     it.stop()
@@ -210,52 +200,51 @@ class MediaUploadFragment : Fragment() {
                         .show()
                 }
             }
-            if (!isInternetAvailable()) {  // Check internet *before* proceeding
-                showNoInternetToast() // Or a more specific message
-                return@setOnClickListener // Stop execution if no internet
+            if (!isInternetAvailable()) {
+                showNoInternetToast()
+                return@setOnClickListener
             }
 
-            // Validate that all fields are filled
             val title = binding.etTitle.text.toString()
             val description = binding.etDescription.text.toString()
             val priceText = binding.etPrice.text.toString()
             val discountText = binding.etDiscount.text.toString()
             val tags = binding.etTags.text.toString()
 
-            val selectedCategories = autoCompleteTextView.text.toString().split(",").map { it.trim() }
+            val selectedCategories =
+                autoCompleteTextView.text.toString().split(",").map { it.trim() }
             val selectedCategoryIds = selectedCategories.mapNotNull { categoryName ->
                 viewModel.categories.value?.find { it.category_name == categoryName }?.category_id
             }
 
 
             if (title.isEmpty() || tags.isEmpty() || selectedCategoryIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill all the required fields", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    requireContext(),
+                    "Please fill all the required fields",
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 return@setOnClickListener
             }
 
-            // Get reference to the ProgressBar
             val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
             progressBar?.visibility = View.VISIBLE
 
-            // Validate price as a valid float
             val price = priceText.toFloatOrNull()
             if (price == null) {
                 Toast.makeText(requireContext(), "Invalid price", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validate discount as a valid integer
             val discount = if (discountText.isNotEmpty()) discountText.toIntOrNull() ?: 0 else 0
 
             val categoriesString = selectedCategoryIds.joinToString(",")
 
 
-            // Trigger metadata and location calls
-            observeMetadataResponse() // Triggers the metadata call and updates contentId
-            getLocationDetails() // Triggers the metadata insertion
+            observeMetadataResponse()
+            getLocationDetails()
 
-            // Observe contentId updates
             viewModel.metadataResult.observe(viewLifecycleOwner) { response ->
                 response?.let {
                     contentId = it.content_id
@@ -264,7 +253,6 @@ class MediaUploadFragment : Fragment() {
                         SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
                     val contentType = mediaType
 
-                    // Ensure the file path is not null and use the Base64 encoded string or file path
                     val filePathOrBase64 = getFilePath() ?: run {
                         Toast.makeText(requireContext(), "No file selected", Toast.LENGTH_SHORT)
                             .show()
@@ -274,20 +262,14 @@ class MediaUploadFragment : Fragment() {
                     val filebase64_file = filePathOrBase64
                     Log.d("File", filebase64_file.toString())
 
-                    // Replace with your actual Base64 string
-                    val base64String = filebase64_file // Example: Your Base64 string
-                    val fileName = "audio_file.txt" // Example: File name to save the string
+                    val base64String = filebase64_file
+                    val fileName = "audio_file.txt"
 
-                    // Call the function to save the Base64 string
                     context?.let { it1 -> saveBase64ToFile(it1, base64String.toString(), fileName) }
 
-//                    val contentRequest = ContentUploadRequestBody(file = filePathOrBase64.toString(), tags = tags)
 
-                    // Show confirmation dialog before uploading (optional)
-//                    showContentRequestDialog(contentRequest)
                     progressBar?.visibility = View.VISIBLE
 
-                    // Trigger content upload using ViewModel
                     viewModel.uploadContent(
                         userId, contentId, title,
                         contentType.toString(), description, price, discount,
@@ -302,7 +284,6 @@ class MediaUploadFragment : Fragment() {
             }
 
 
-            // Observe the API response
             viewModel.contentUploadResponse.observe(viewLifecycleOwner) { response ->
                 progressBar?.visibility = View.GONE
 
@@ -328,9 +309,11 @@ class MediaUploadFragment : Fragment() {
 
         return binding.root
     }
+
     private fun showNoInternetToast() {
         Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
     }
+
     private fun isInternetAvailable(): Boolean {
         val connectivityManager = requireContext().getSystemService<ConnectivityManager>()
         val network = connectivityManager?.activeNetwork ?: return false
@@ -342,7 +325,6 @@ class MediaUploadFragment : Fragment() {
         val audioBytes = Base64.decode(base64String, Base64.DEFAULT)
         val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName)
 
-        // Write the decoded bytes to the file
         file.outputStream().use { it.write(audioBytes) }
 
         return file
@@ -361,11 +343,9 @@ class MediaUploadFragment : Fragment() {
 
     private fun displayImage(base64Data: String) {
         try {
-            // Decode the Base64 string back to a Bitmap
             val decodedBytes = Base64.decode(base64Data, Base64.DEFAULT)
             val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
-            // Display the image in the ImageView
             binding.imageView.visibility = View.VISIBLE
             binding.videoView.visibility = View.GONE
             binding.btnPlayAudio.visibility = View.GONE
@@ -390,7 +370,6 @@ class MediaUploadFragment : Fragment() {
             binding.videoView.start()
 
             binding.videoView.setOnPreparedListener {
-                // The video is prepared, you can show any loading indicators if necessary
                 Toast.makeText(requireContext(), "Video is ready to play", Toast.LENGTH_SHORT)
                     .show()
             }
@@ -477,7 +456,7 @@ class MediaUploadFragment : Fragment() {
                         uploadedTime,
                         incidentTime
                     )
-                    viewModel.insertMetadata(metadata)  // Trigger ViewModel to upload metadata
+                    viewModel.insertMetadata(metadata)
                 } ?: Toast.makeText(requireContext(), "Location not available", Toast.LENGTH_SHORT)
                     .show()
             }
@@ -519,45 +498,6 @@ class MediaUploadFragment : Fragment() {
         )
     }
 
-    private fun showDetailsDialog(
-        userId: Int,
-        contentId: Int,
-        title: String,
-        contentType: String?,
-        description: String,
-        price: Float,
-        discount: Int,
-        filebase64_file: String,
-        tags: String
-    ) {
-        val dialog = Dialog(requireContext())
-        dialog.apply {
-            setContentView(R.layout.dialog_device_details)
-            window?.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-
-            // Format the details into a readable string
-            val details = """
-            userId : $userId
-            contentId :$contentId    
-            Title: $title
-            contentType : $contentType
-            Description: $description
-            Price: $price
-            Discount: $discount
-            Filepath: $filebase64_file
-            Tags: $tags
-        """.trimIndent()
-
-            findViewById<TextView>(R.id.detailsTextView).text = details
-            findViewById<TextView>(R.id.okButton).setOnClickListener { dismiss() }
-        }
-        dialog.show()
-    }
-
-
     private fun getAddressFromCoordinates(latitude: Double, longitude: Double): String? {
         return try {
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -568,7 +508,6 @@ class MediaUploadFragment : Fragment() {
                     .map { address.getAddressLine(it) }
                     .joinToString(", ")
 
-                // Remove Plus Codes (e.g., "CFPX+WXH")
                 val regex = "^[A-Z0-9]{4}\\+\\w{2,3}".toRegex()
                 if (regex.containsMatchIn(addressLines)) {
                     return addressLines.replaceFirst(regex, "").trimStart().replace(",", "", true)
@@ -581,12 +520,14 @@ class MediaUploadFragment : Fragment() {
     }
 
     private fun getMobileType(): String {
-        val model = Build.MODEL // Device model
-        val manufacturer = Build.MANUFACTURER // Device manufacturer
-        return "$manufacturer $model" // Concatenate manufacturer and model
+        val model = Build.MODEL
+        val manufacturer = Build.MANUFACTURER
+        return "$manufacturer $model"
     }
+
     private fun hideKeyboard() {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = requireActivity().currentFocus
         view?.let {
             imm.hideSoftInputFromWindow(it.windowToken, 0)
@@ -598,9 +539,7 @@ class MediaUploadFragment : Fragment() {
         viewModel.metadataResult.observe(viewLifecycleOwner) { response ->
             response?.let {
                 contentId = it.content_id
-//
-//                Toast.makeText(requireContext(), "Metadata insertion success", Toast.LENGTH_SHORT)
-//                    .show()
+
             } ?: run {
                 Toast.makeText(requireContext(), "Metadata insertion failed", Toast.LENGTH_SHORT)
                     .show()
@@ -616,57 +555,13 @@ class MediaUploadFragment : Fragment() {
         }
     }
 
-    private fun showResponseDialog(message: String, contentId: String) {
-        val dialog = Dialog(requireContext())
-        dialog.apply {
-            setContentView(R.layout.dialog_response)
-            window?.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            findViewById<TextView>(R.id.responseTextView).text = message
-            findViewById<TextView>(R.id.contentIdTextView).text = contentId
-            findViewById<TextView>(R.id.okButton).setOnClickListener { dismiss() }
-        }
-        dialog.show()
-    }
-
-    // Helper function to get real file path from URI
-    private fun getRealPathFromURI(uri: Uri): String? {
-        val cursor = requireContext().contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            val columnIndex = it.getColumnIndex(MediaStore.Video.Media.DATA)
-            if (columnIndex != -1) {
-                it.moveToFirst()
-                return it.getString(columnIndex)
-            }
-        }
-
-        // If the URI is a content URI, use ContentResolver to get input stream and write to a temp file
-        if ("content" == uri.scheme) {
-            try {
-                val inputStream = requireContext().contentResolver.openInputStream(uri)
-                val tempFile = File.createTempFile("video_", ".mp4", requireContext().cacheDir)
-                val outputStream = FileOutputStream(tempFile)
-                inputStream?.copyTo(outputStream)
-                inputStream?.close()
-                outputStream.close()
-                return tempFile.absolutePath
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return null
-    }
-
     private fun getFilePath(): String? {
         val mediaType = arguments?.getString("mediaType")
         val base64Data = arguments?.getString("base64Data")
 
         return when (mediaType) {
             "Image" -> {
-                base64Data // Directly return the Base64 string for Image
+                base64Data
             }
 
             "Video" -> {
@@ -675,13 +570,9 @@ class MediaUploadFragment : Fragment() {
                     requireContext().getSharedPreferences("MediaPrefs", Context.MODE_PRIVATE)
 
                 if (pathKey == "videoPathKey") {
-                    // Retrieve the video path from SharedPreferences
                     val videoPath = sharedPrefs.getString("videoPathKey", null)
                     videoPath?.let {
-                        // Convert the file path string into a File object
                         val videoFile = File(it)
-
-                        // Call compress and encode video
                         compressVideoAndEncode(videoFile)
                     }
                 } else {
@@ -692,17 +583,17 @@ class MediaUploadFragment : Fragment() {
 
             "Audio" -> {
                 val base64Audio = arguments?.getString("audioBase64")
-                base64Audio ?: "" // Return the Base64 string for audio
+                base64Audio ?: ""
             }
 
-            else -> null // Return null for unsupported media types
+            else -> null
         }
     }
 
 
     fun encodeFileToBase64(file: File): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
-        val buffer = ByteArray(1024 * 8)  // 8KB buffer for chunking
+        val buffer = ByteArray(1024 * 8)
         var inputStream: InputStream? = null
 
         try {
@@ -721,17 +612,15 @@ class MediaUploadFragment : Fragment() {
             }
         }
 
-        // Convert to Base64 after reading all the chunks
         return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
     }
 
 
     fun compressVideoAndEncode(file: File): String {
-        // Define the output file path for the compressed video
         val outputFile = File(
             requireContext().cacheDir,
             "compressed_video_${System.currentTimeMillis()}.mp4"
-        ) // Unique file name
+        )
 
         // FFmpeg command for video compression
         val command = arrayOf(
@@ -744,21 +633,20 @@ class MediaUploadFragment : Fragment() {
             outputFile.absolutePath        // Output file
         )
 
-        // Execute FFmpeg command and check if it was successful
         val result = FFmpeg.execute(command)
         if (result != 0) {
             Log.e("VideoCompression", "Video compression failed with result code: $result")
-            return "" // Return empty string if compression failed
+            return ""
         }
 
-        // Check if the compressed video file exists
         return if (outputFile.exists()) {
-            encodeFileToBase64(outputFile)  // Convert the compressed video to Base64
+            encodeFileToBase64(outputFile)
         } else {
             Log.e("VideoCompression", "Compressed video file does not exist.")
             ""
         }
     }
+
     private fun fetchCategories() {
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
             categories?.let {
@@ -766,7 +654,8 @@ class MediaUploadFragment : Fragment() {
                 categoryList.addAll(it.map { category -> category.category_name })
                 categoryAdapter.notifyDataSetChanged()
             } ?: run {
-                Toast.makeText(requireContext(), "Failed to fetch categories", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to fetch categories", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

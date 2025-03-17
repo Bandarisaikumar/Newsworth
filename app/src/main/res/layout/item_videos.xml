@@ -17,12 +17,10 @@
         android:padding="6dp"
         tools:ignore="TextSizeCheck">
 
-        <!-- Image -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="150dp">
 
-            <!-- Main VideoView -->
             <VideoView
                 android:id="@+id/video"
                 android:layout_width="match_parent"
@@ -30,7 +28,6 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/video_description" />
 
-            <!-- Overlay Icon -->
             <ImageView
                 android:id="@+id/playIcon"
                 android:layout_width="32dp"
@@ -38,150 +35,103 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/play_icon"
                 android:src="@drawable/videoimage" />
-<!--            &lt;!&ndash; Overlay Icon &ndash;&gt;-->
-<!--            <ImageView-->
-<!--                android:id="@+id/playIcon2"-->
-<!--                android:layout_width="22dp"-->
-<!--                android:layout_height="20dp"-->
-<!--                android:layout_gravity="bottom|end"-->
-<!--                android:layout_margin="8dp"-->
-<!--                android:contentDescription="@string/play_icon"-->
-<!--                android:src="@drawable/videoicon" />-->
+
         </FrameLayout>
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:weightSum="2"-->
-<!--            android:padding="2dp"-->
-<!--            android:layout_margin="5dp">-->
-<!--        &lt;!&ndash; SeekBar &ndash;&gt;-->
-<!--        <SeekBar-->
-<!--            android:id="@+id/video_seekbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginEnd="10dp"-->
-<!--            android:layout_weight="2"-->
-<!--            android:progress="0" />-->
-
-<!--        &lt;!&ndash; Timer &ndash;&gt;-->
-<!--        <TextView-->
-<!--            android:id="@+id/video_timer"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="01:51"-->
-<!--            android:textColor="@color/gray"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginEnd="10dp"-->
-<!--            android:textSize="14sp"-->
-<!--            android:layout_marginStart="8dp" />-->
-<!--        </LinearLayout>-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:layout_gravity="center">
+            android:gravity="center">
+
             <TextView
                 android:id="@+id/price_section"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="10dp"
-                android:textColor="@color/black"
-                android:textStyle="bold"
                 android:maxLines="1"
-                android:layout_gravity="center"/>
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center"
+            android:orientation="horizontal"
             android:weightSum="2">
-            <!-- Title -->
+
             <TextView
                 android:id="@+id/video_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="@string/title_placeholder2"
-                android:textSize="14sp"
                 android:layout_weight="1"
-                android:textColor="#0000EE"
+                android:fontFamily="@font/poppins_regular"
                 android:maxLines="1"
+                android:text="@string/title_placeholder2"
+                android:textColor="#0000EE"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/age_in_days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="age_in_days"
-                    android:textSize="12dp"
                     android:gravity="center"
-                    android:textColor="#DC553D"
                     android:maxLines="1"
+                    android:text="age_in_days"
+                    android:textColor="#DC553D"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
                 <TextView
                     android:id="@+id/gps_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="gps_location"
                     android:gravity="center"
-                    android:textSize="12dp"
-                    android:textColor="@color/black"
                     android:maxLines="1"
+                    android:text="gps_location"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
                 <TextView
                     android:id="@+id/uploaded_by"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="uploaded_by"
-                    android:textSize="12dp"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:text="uploaded_by"
                     android:textColor="#0000EE"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Description -->
         <TextView
             android:id="@+id/content_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
+            android:maxLines="1"
             android:text="@string/description_placeholder_text2"
             android:textColor="@color/gray"
             android:textSize="14sp"
-            android:maxLines="1"
             tools:ignore="TextContrastCheck" />
 
-<!--        &lt;!&ndash; Cart Icon &ndash;&gt;-->
-<!--        <ImageView-->
-<!--            android:id="@+id/cart_icon"-->
-<!--            android:layout_width="25dp"-->
-<!--            android:layout_height="25dp"-->
-<!--            android:layout_gravity="start"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:contentDescription="@string/cart_icon_description"-->
-<!--            android:src="@drawable/icon11" />-->
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

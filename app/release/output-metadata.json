@@ -4,14 +4,14 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.narmtech.newsworth",
+  "applicationId": "com.gdrbnarmtech.newsworth",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 10,
+      "versionCode": 2,
       "versionName": "1.0.1",
       "outputFile": "app-release.apk"
     }

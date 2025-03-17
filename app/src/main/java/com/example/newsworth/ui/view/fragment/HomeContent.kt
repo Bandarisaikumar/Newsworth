@@ -26,9 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -62,7 +60,6 @@ import com.example.newsworth.ui.adapter.VideosAdapter
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModel
 import com.example.newsworth.ui.viewmodel.NewsWorthCreatorViewModelFactory
 import com.example.newsworth.utils.SharedPrefModule
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import java.io.File
 import java.io.FileInputStream
 
@@ -138,19 +135,16 @@ class HomeContent : Fragment() {
                 override fun handleOnBackPressed() {
                     Log.d("BackPressed", "Back button pressed")
 
-                    // Ensure searchView is properly initialized
                     if (::searchView.isInitialized) {
                         Log.d("BackPressed", "searchView.isIconified: ${searchView.isIconified}")
 
-                        // Step 1: Collapse the searchView if it's expanded
                         if (!searchView.isIconified) {
                             Log.d("BackPressed", "Collapsing search view")
                             searchView.setQuery("", false)
                             searchView.isIconified = true
-                            searchView.clearFocus() // Clear focus to ensure the searchView is fully collapsed
+                            searchView.clearFocus()
                         }
 
-                        // Step 2: Show the exit dialog
                         Log.d("BackPressed", "Showing exit dialog")
                         try {
                             AlertDialog.Builder(requireContext()).apply {
@@ -162,7 +156,7 @@ class HomeContent : Fragment() {
                                 }
                                 setNegativeButton(android.R.string.no, null)
                                 setIcon(R.drawable.newsworthlogo)
-                                create().show() // Ensure the dialog is created and shown
+                                create().show()
                             }
                         } catch (e: Exception) {
                             Log.e("BackPressed", "Error showing dialog: ${e.message}")
@@ -452,7 +446,7 @@ class HomeContent : Fragment() {
     private fun displayContent(items: List<ImageModel>, category: String) {
         Log.d("DISPLAY_CONTENT", "Items count: ${items.size}, Category: $category")
 
-        videosAdapter.releaseMediaPlayer()
+//        videosAdapter.releaseMediaPlayer()
         audiosAdapter.releaseMediaPlayer()
 
         val filteredItems = if (category == "All") {

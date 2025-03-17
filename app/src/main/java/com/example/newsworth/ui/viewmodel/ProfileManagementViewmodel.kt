@@ -57,7 +57,7 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
 
     fun uploadProfileImage(userId: Int, file: MultipartBody.Part) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val response = profileRepository.uploadProfileImage(userId, file)
                 if (response.isSuccessful) {
@@ -68,14 +68,14 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
             } catch (e: Exception) {
                 _errorMessage.postValue(e.localizedMessage ?: "An unexpected error occurred")
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun fetchProfileDetails(userId: Int) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val response = profileRepository.getProfileDetails(userId)
                 if (response.isSuccessful) {
@@ -106,14 +106,14 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
                 _error.postValue(errorMessage)
                 _profileDetails.postValue(null)
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun fetchImageLink(userId: String) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val response = profileRepository.getImageLink(userId)
                 if (response.isSuccessful) {
@@ -144,14 +144,14 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
                 _error.postValue(errorMessage)
                 _imageUrl.postValue(null)
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun updateProfileDetails(userId: String, profileRequest: EditProfileRequest) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val response = profileRepository.editProfileDetails(userId, profileRequest)
                 if (response.isSuccessful) {
@@ -160,7 +160,7 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
                     }
                 }
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }
@@ -171,7 +171,7 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
 
     fun changePassword(request: ChangePasswordRequest) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val response = profileRepository.changeUserPassword(request)
                 if (response.isSuccessful) {
@@ -182,14 +182,14 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
             } catch (e: Exception) {
                 errorMessages.postValue("Error: ${e.message}")
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun fetchLocationDetails(pincode: Int) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Added loading start
+            _isLoading.postValue(true)
             try {
                 val result = profileRepository.getLocationDetails(pincode)
                 if (result != null && result.response == "success") {
@@ -198,7 +198,7 @@ class ProfileManagementViewmodel(private val profileRepository: ProfileManagemen
                     _errorMessage.postValue(result?.response_message ?: "Error fetching data")
                 }
             } finally {
-                _isLoading.postValue(false) // Added loading end
+                _isLoading.postValue(false)
             }
         }
     }

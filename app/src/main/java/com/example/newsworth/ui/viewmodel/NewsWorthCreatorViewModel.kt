@@ -11,7 +11,7 @@ import com.example.newsworth.data.model.MetadataRequest
 import com.example.newsworth.data.model.MetadataResponse
 import com.example.newsworth.data.model.UploadedContentResponse
 import com.example.newsworth.repository.NewsWorthCreatorRepository
-import com.example.newsworth.utils.NetworkUtils.retryIO // Assuming this handles CancellationException
+import com.example.newsworth.utils.NetworkUtils.retryIO
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -21,7 +21,7 @@ import java.net.SocketException
 import javax.inject.Inject
 
 class NewsWorthCreatorViewModel @Inject constructor(private val repository: NewsWorthCreatorRepository) :
-    ViewModel() { // Add @Inject if using DI
+    ViewModel() {
 
     private val _metadataResult = MutableLiveData<MetadataResponse?>()
     val metadataResult: LiveData<MetadataResponse?> = _metadataResult
@@ -56,12 +56,12 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                         else -> "Metadata upload failed: ${response.message()}"
                     }
                     Log.e("MetadataUpload", errorMessage)
-                    _error.postValue(errorMessage) // Set error message
+                    _error.postValue(errorMessage)
                     _metadataResult.postValue(null)
                 }
             } catch (e: Exception) {
                 Log.e("MetadataUpload", "An error occurred: ${e.message}")
-                _error.postValue("An error occurred: ${e.message}") // Set error message
+                _error.postValue("An error occurred: ${e.message}")
                 _metadataResult.postValue(null)
             }
         }
@@ -98,7 +98,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
     ) {
         viewModelScope.launch {
             try {
-                retryIO { // Assuming retryIO handles CancellationException
+                retryIO {
 
                     Log.d("UploadContent", "Starting uploadContent with title: $title")
 
@@ -113,7 +113,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                             userId,
                             contentId,
                             title,
-                            it, // mediaType
+                            it,
                             description,
                             price,
                             discount,
@@ -146,7 +146,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                 val errorMessage = when (e) {
                     is IOException -> {
                         if (e is SSLHandshakeException) {
-                            "There was a problem establishing a secure connection. Please try again later." // User-friendly message
+                            "There was a problem establishing a secure connection. Please try again later."
                         } else if (e is SocketException) {
                             "Unable to connect to the server. Please check your internet connection."
                         } else {
@@ -154,18 +154,18 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                         }
                     }
 
-                    else -> "An unexpected error occurred. Please try again later." // More general message
+                    else -> "An unexpected error occurred. Please try again later."
                 }
                 _error.postValue(errorMessage)
             } finally {
-                _isLoading.postValue(false) // Clear loading state
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun fetchUploadedContent(userId: Int) {
         viewModelScope.launch {
-            _isLoading.postValue(true) // Start loading
+            _isLoading.postValue(true)
             try {
                 val response = repository.fetchUploadedContent(userId)
                 if (response.isSuccessful) {
@@ -197,7 +197,7 @@ class NewsWorthCreatorViewModel @Inject constructor(private val repository: News
                 }
                 _error.postValue(errorMessage)
             } finally {
-                _isLoading.postValue(false) // Stop loading, regardless of outcome
+                _isLoading.postValue(false)
             }
         }
     }

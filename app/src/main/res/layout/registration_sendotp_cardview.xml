@@ -1,166 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:id="@+id/sendOtpButtonLayout"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:gravity="center"-->
-<!--    android:layout_marginBottom="25dp"-->
-<!--    android:orientation="vertical">-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sendOtpButtonLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="20dp"
+    android:gravity="center"
+    app:cardBackgroundColor="@color/blacks"
+    app:cardCornerRadius="20dp">
 
-        <com.google.android.material.card.MaterialCardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/sendOtpButtonLayout"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tvOtpHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Please Verify OTP/OTP'S To Proceed"
+            android:textColor="#4D811F"
+            android:textSize="12dp"
+            tools:ignore="TextSizeCheck" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="2"
             android:gravity="center"
-            android:layout_margin="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/blacks">
+            android:orientation="horizontal">
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/rectangular_button"
+                android:text="Edit Details"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="#1D61E7" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResendOtp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/rectangular_button"
+                android:text="Resend OTP"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="#1D61E7" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="10dp"
+                android:hint="Enter Mobile OTP"
+                app:hintTextColor="@color/black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etMobileOtp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button"
+                    android:backgroundTint="@color/white"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="Enter Email OTP"
+                app:hintTextColor="@color/black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmailOtp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button"
+                    android:backgroundTint="@color/white"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancelButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_weight="1"
+                android:background="@drawable/rectangular_button"
+                android:text="Cancel"
+                android:textColor="@color/white"
+                app:backgroundTint="#1D61E7" />
 
-                <!-- TextView -->
-                <TextView
-                    android:id="@+id/tvOtpHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="6dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Please Verify OTP/OTP'S To Proceed"
-                    android:textColor="#4D811F"
-                    android:textSize="12dp"
-                    tools:ignore="TextSizeCheck" />
-
-                <!-- Header Section with Buttons -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="horizontal">
-
-                    <!-- Edit Details Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnEditDetails"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/rectangular_button"
-                        android:text="Edit Details"
-                        android:layout_marginEnd="3dp"
-                        app:backgroundTint="#1D61E7"
-                        android:textColor="@color/white"
-                        android:layout_weight="1"
-                        android:textSize="12sp" />
-
-                    <!-- Resend OTP Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnResendOtp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="3dp"
-                        android:textColor="@color/white"
-                        app:backgroundTint="#1D61E7"
-                        android:background="@drawable/rectangular_button"
-                        android:text="Resend OTP"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <!-- OTP Input Fields -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="vertical">
-
-                    <!-- Mobile OTP EditText -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Material3.TextInputLayout.FilledBox"
-                        android:layout_width="match_parent"
-                        app:hintTextColor="@color/black"
-                        android:layout_height="wrap_content"
-                        android:hint="Enter Mobile OTP">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etMobileOtp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxLength="6"
-                            android:background="@drawable/rectangular_button"
-                            android:backgroundTint="@color/white"
-                            android:textColor="@color/black"
-                            android:inputType="number" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- Email OTP EditText -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Material3.TextInputLayout.FilledBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:hintTextColor="@color/black"
-                        android:layout_marginTop="8dp"
-                        android:hint="Enter Email OTP">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEmailOtp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxLength="6"
-                            android:background="@drawable/rectangular_button"
-                            android:backgroundTint="@color/white"
-                            android:textColor="@color/black"
-                            android:inputType="number" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:weightSum="2"
-                    android:layout_margin="10dp"
-                    android:orientation="horizontal">
-
-                <!-- Verify Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/cancelButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/rectangular_button"
-                    app:backgroundTint="#1D61E7"
-                    android:text="Cancel" />
-
-                <!-- Verify Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnVerify"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/rectangular_button"
-                    app:backgroundTint="#1D61E7"
-                    android:text="Verify" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-<!--    </LinearLayout>-->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/rectangular_button"
+                android:text="Verify"
+                android:textColor="@color/white"
+                app:backgroundTint="#1D61E7" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
 

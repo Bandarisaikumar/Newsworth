@@ -18,18 +18,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
-            app:tint="?attr/imageTint"
-            android:src="@drawable/back_arrow"/>
+            android:src="@drawable/back_arrow"
+            app:tint="?attr/imageTint" />
 
     </LinearLayout>
 
-    <!-- Logo ImageView -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_margin="20dp"
-        app:cardCornerRadius="20dp"
         app:cardBackgroundColor="@color/blacks"
+        app:cardCornerRadius="20dp"
         tools:ignore="TextSizeCheck">
 
 
@@ -39,70 +38,62 @@
             android:layout_marginTop="20dp"
             android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:textColor="@color/black"
-            android:layout_gravity="center"
-            android:textSize="24dp"
-          android:fontFamily="@font/poppins_bold"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Login"
+                android:textColor="@color/black"
+                android:textSize="24dp" />
         </LinearLayout>
 
 
-        <!-- Login Type Toggle -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
+            android:background="@color/blacks"
             android:baselineAligned="false"
             android:gravity="center"
-            android:padding="2dp"
-            android:background="@color/blacks"
             android:orientation="horizontal"
+            android:padding="2dp"
             android:weightSum="3">
 
             <LinearLayout
                 android:id="@+id/emailTab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:background="@drawable/rectangular_button2"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/rectangular_button2"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/emailLoginButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:clickable="true"
                     android:focusable="true"
-                    android:gravity="center"
-                    android:layout_gravity="center"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/email"
                     android:textColor="@color/black"
                     android:textSize="17sp"
                     tools:ignore="TouchTargetSizeCheck" />
 
-<!--                <View-->
-<!--                    android:id="@+id/emailUnderline"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="2dp"-->
-<!--                    android:layout_margin="2dp"-->
-<!--                    android:background="#EF4444"-->
-<!--                    android:visibility="invisible" />-->
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/mobileTab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
+                android:layout_weight="1"
                 android:background="@drawable/rectangular_button2"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -119,24 +110,17 @@
                     android:textSize="17sp"
                     tools:ignore="TouchTargetSizeCheck" />
 
-<!--                <View-->
-<!--                    android:id="@+id/mobileUnderline"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="2dp"-->
-<!--                    android:layout_margin="2dp"-->
-<!--                    android:background="#EF4444"-->
-<!--                    android:visibility="invisible" />-->
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/useridTab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
+                android:layout_weight="1"
                 android:background="@drawable/rectangular_button2"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
@@ -151,13 +135,6 @@
                     android:textSize="17sp"
                     tools:ignore="TouchTargetSizeCheck" />
 
-<!--                <View-->
-<!--                    android:id="@+id/useridUnderline"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="2dp"-->
-<!--                    android:layout_margin="2dp"-->
-<!--                    android:background="#EF4444"-->
-<!--                    android:visibility="invisible" />-->
             </LinearLayout>
 
 
@@ -169,17 +146,17 @@
             android:layout_marginTop="130dp"
             android:gravity="center"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="12dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Enter your email and password to login"/>
+                android:text="Enter your email and password to login"
+                android:textColor="@color/black"
+                android:textSize="12dp" />
         </LinearLayout>
 
-        <!-- Input Fields Layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -188,23 +165,22 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-            <!-- Email/Mobile input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/loginInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintTextColor="@color/black"
-                android:fontFamily="@font/poppins_regular">
+                android:fontFamily="@font/poppins_regular"
+                app:hintTextColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/loginInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button"
+                    android:backgroundTint="@color/white"
                     android:drawableStart="@drawable/icon1"
                     android:drawablePadding="4dp"
                     android:fontFamily="@font/poppins_regular"
-                    android:background="@drawable/rectangular_button"
-                    android:backgroundTint="@color/white"
                     android:gravity="start"
                     android:hint="Email*"
                     android:inputType="textEmailAddress"
@@ -220,20 +196,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:hintTextColor="@color/black"
                 android:fontFamily="@font/poppins_regular"
-                app:endIconMode="custom">
+                app:endIconMode="custom"
+                app:hintTextColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/loginInputEditText2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button"
+                    android:backgroundTint="@color/white"
                     android:drawableStart="@drawable/icon2"
                     android:drawablePadding="4dp"
                     android:fontFamily="@font/poppins_regular"
                     android:gravity="start"
-                    android:background="@drawable/rectangular_button"
-                    android:backgroundTint="@color/white"
                     android:hint="Password*"
                     android:inputType="textPassword"
                     android:maxLines="1"
@@ -253,20 +229,23 @@
                 android:textColor="#0000EE"
                 android:textSize="12dp"
                 tools:ignore="TextSizeCheck" />
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"  > <com.google.android.material.button.MaterialButton
-                android:id="@+id/loginButton"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rectangular_button"
-                android:fontFamily="@font/poppins_regular"
-                app:backgroundTint="#1D61E7"
-                android:text="@string/login2"
-                android:gravity="center"
-                android:textColor="@color/white"
-                tools:ignore="DuplicateSpeakableTextCheck,VisualLintButtonSize" />
+                android:layout_gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/loginButton"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangular_button"
+                    android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
+                    android:text="@string/login2"
+                    android:textColor="@color/white"
+                    app:backgroundTint="#1D61E7"
+                    tools:ignore="DuplicateSpeakableTextCheck,VisualLintButtonSize" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
@@ -278,7 +257,6 @@
 
             </FrameLayout>
 
-            <!-- Signup Text -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -318,10 +296,10 @@
         android:id="@+id/logoImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="10dp"
-        android:contentDescription="Login Logo"
-        android:src="@drawable/image11"
         android:alpha="0.2"
+        android:contentDescription="Login Logo"
+        android:gravity="center"
+        android:src="@drawable/image11"
         tools:ignore="HardcodedText" />
 </LinearLayout>

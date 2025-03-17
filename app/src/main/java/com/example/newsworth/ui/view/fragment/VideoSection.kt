@@ -64,7 +64,7 @@ class VideoSection : Fragment(R.layout.fragment_video_section) {
                 recyclerView.adapter = VideosItemAdapter(videos)
             } else {
                 Toast.makeText(requireContext(), "No videos found", Toast.LENGTH_SHORT).show()
-                recyclerView.adapter = VideosItemAdapter(emptyList()) // Set empty adapter
+                recyclerView.adapter = VideosItemAdapter(emptyList())
             }
             swipeRefreshLayout.isRefreshing = false
         }

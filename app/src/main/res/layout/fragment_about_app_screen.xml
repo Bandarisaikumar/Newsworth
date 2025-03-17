@@ -16,7 +16,6 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp">
 
-        <!-- Back Button -->
         <ImageButton
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
@@ -28,7 +27,6 @@
             app:tint="@color/black"
             tools:ignore="HardcodedText,TouchTargetSizeCheck" />
 
-        <!-- Title -->
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -68,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Version: 1.0.0 "
+                android:text="Version: 1.0.1 "
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 

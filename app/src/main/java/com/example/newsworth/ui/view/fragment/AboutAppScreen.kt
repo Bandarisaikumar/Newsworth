@@ -24,7 +24,6 @@ class AboutAppScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up back button listener
         binding.backButton.setOnClickListener {
             val homeScreen = parentFragment as? HomeScreen
             homeScreen?.showAccountScreen()

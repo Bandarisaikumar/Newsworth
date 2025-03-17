@@ -70,7 +70,7 @@ class AudiosSection : Fragment(R.layout.fragment_audios_section) {
                 }
             } else {
                 Toast.makeText(requireContext(), "No audios found", Toast.LENGTH_SHORT).show()
-                recyclerView.adapter = AudiosItemAdapter(emptyList()) // Set empty adapter
+                recyclerView.adapter = AudiosItemAdapter(emptyList())
             }
             swipeRefreshLayout.isRefreshing = false
         }

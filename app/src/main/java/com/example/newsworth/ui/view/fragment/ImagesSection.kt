@@ -32,21 +32,23 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var isInternetAvailable: Boolean = true
-    private var isViewCreated: Boolean = false  // Track if onViewCreated has been called
+    private var isViewCreated: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val homeScreen = parentFragment as? HomeScreen
-                homeScreen?.showUserScreen()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val homeScreen = parentFragment as? HomeScreen
+                    homeScreen?.showUserScreen()
+                }
+            })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isViewCreated = true // Set the flag when onViewCreated is called
+        isViewCreated = true
 
 
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
@@ -87,27 +89,25 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
         isInternetAvailable = isInternetAvailable()
         if (isInternetAvailable) {
             fetchData()
-            enableSwipeRefresh() // Call this helper function
+            enableSwipeRefresh()
         } else {
             showNoInternetDialog()
-            disableSwipeRefresh() // Call this helper function
+            disableSwipeRefresh()
         }
     }
 
     private fun enableSwipeRefresh() {
-        if (isViewCreated) { // Only enable if view is created
+        if (isViewCreated) {
             swipeRefreshLayout.isEnabled = true
         } else {
-            // If view is not created yet, post a Runnable to enable it later
             view?.post { swipeRefreshLayout.isEnabled = true }
         }
     }
 
     private fun disableSwipeRefresh() {
-        if (isViewCreated) { // Only disable if view is created
+        if (isViewCreated) {
             swipeRefreshLayout.isEnabled = false
         } else {
-            // If view is not created yet, post a Runnable to disable it later
             view?.post { swipeRefreshLayout.isEnabled = false }
         }
     }
@@ -119,7 +119,10 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
         if (!::viewModel.isInitialized) {
             val apiService = RetrofitClient.getApiService(requireContext())
             val repository = NewsWorthCreatorRepository(apiService)
-            viewModel = ViewModelProvider(this, NewsWorthCreatorViewModelFactory(repository))[NewsWorthCreatorViewModel::class.java]
+            viewModel = ViewModelProvider(
+                this,
+                NewsWorthCreatorViewModelFactory(repository)
+            )[NewsWorthCreatorViewModel::class.java]
         }
 
         viewModel.fetchUploadedContent(userId)
@@ -140,7 +143,8 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
                     }
                     sharedViewModel.setImagesList(imagesList)
                 } else {
-                    Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Content upload failed", Toast.LENGTH_SHORT)
+                        .show()
                     Log.e("UploadError", "API response: $response")
                 }
                 swipeRefreshLayout.isRefreshing = false
@@ -160,7 +164,7 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
         builder.setTitle("No Internet Connection")
             .setMessage("Please turn on your internet connection to continue.")
             .setCancelable(false)
-            .setPositiveButton("OK") { _, _ -> } // You can add an action here if needed
+            .setPositiveButton("OK") { _, _ -> }
         val alert = builder.create()
         alert.show()
     }
@@ -172,6 +176,6 @@ class ImagesSection : Fragment(R.layout.fragment_images_section) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        isViewCreated = false // Reset the flag when the view is destroyed
+        isViewCreated = false
     }
 }

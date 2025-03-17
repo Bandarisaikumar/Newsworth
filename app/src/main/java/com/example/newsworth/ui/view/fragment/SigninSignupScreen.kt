@@ -16,7 +16,7 @@ class SigninSignupScreen : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSigninSignupScreenBinding.inflate(inflater, container, false)
-        return binding.root // Return binding.root, not the raw inflated view
+        return binding.root
 
     }
 
@@ -30,7 +30,7 @@ class SigninSignupScreen : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState) // Call super.onViewCreated
+        super.onViewCreated(view, savedInstanceState)
 
         binding.signup.setOnClickListener {
             findNavController().navigate(R.id.action_signinSignupScreen_to_registrationScreen)

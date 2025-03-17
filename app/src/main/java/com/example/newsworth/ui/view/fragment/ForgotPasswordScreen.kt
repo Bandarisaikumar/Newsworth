@@ -5,15 +5,12 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -55,20 +52,16 @@ class ForgotPasswordScreen : Fragment() {
             false
         }
 
-        // Initialize Repository and ViewModel
         val apiService = context?.let { RetrofitClient.getApiService(it) }
         val repository = apiService?.let { UserManagementRepository(it) }
         val factory = repository?.let { UserManagementViewModelFactory(it) }
         viewModel = factory?.let { ViewModelProvider(this, it).get(UserManagementViewModel::class.java) }!!
 
-        // Retrieve the passed arguments (input and login option)
         val input = arguments?.getString("input") ?: ""
         val loginOption = arguments?.getString("loginOption") ?: "Email"
 
-        // Preload the input based on the selected tab
         binding.emailOrMobileEditText.setText(input)
 
-        // Set the text for the TextView based on the login option
         binding.resetUsingTextView.text = when (loginOption) {
             "Email" -> "Don’t worry! It happens.Please enter the email associated with your account."
             "Mobile" -> "Don’t worry! It happens.Please enter the mobile number associated with your account."
@@ -80,20 +73,17 @@ class ForgotPasswordScreen : Fragment() {
         }
 
         binding.forgotPasswordButton.setOnClickListener {
-            if (!isInternetAvailable()) {  // Check internet *before* proceeding
-                showNoInternetToast() // Or a more specific message
-                return@setOnClickListener // Stop execution if no internet
+            if (!isInternetAvailable()) {
+                showNoInternetToast()
+                return@setOnClickListener
             }
-            // Get the input from the EditText
             val inputText = binding.emailOrMobileEditText.text.toString()
 
-            // Ensure the input is not empty
             if (inputText.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter email or mobile", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validate the input based on the login option
             if (loginOption == "Email" && !isValidEmail(inputText)) {
                 Toast.makeText(requireContext(), "Please enter a valid email address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -102,10 +92,9 @@ class ForgotPasswordScreen : Fragment() {
                 return@setOnClickListener
             }
 
-            // Create the request and call the view model to trigger the forgot password functionality
             val request = ForgotPasswordRequest(Forogot_option = loginOption, email_or_mobile = inputText)
             binding.progressBar.visibility = View.VISIBLE
-            binding.forgotPasswordButton.isEnabled = false // Disable the button to prevent multiple clicks
+            binding.forgotPasswordButton.isEnabled = false
             viewModel.forgotPassword(request, requireContext())
         }
 
@@ -115,7 +104,7 @@ class ForgotPasswordScreen : Fragment() {
 
         viewModel.forgotPasswordResponse.observe(viewLifecycleOwner) { response ->
             binding.progressBar.visibility = View.GONE
-            binding.forgotPasswordButton.isEnabled = true // Enable the button to prevent multiple clicks
+            binding.forgotPasswordButton.isEnabled = true
 
 
             if (response != null && response.response == "success") {
@@ -138,15 +127,13 @@ class ForgotPasswordScreen : Fragment() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    // Function to validate email format using a simple regex
     private fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         return email.matches(Regex(emailRegex))
     }
 
-    // Function to validate mobile number format using a simple regex
     private fun isValidMobileNumber(mobile: String): Boolean {
-        val mobileRegex = "^[0-9]{10}$" // Assuming a 10-digit mobile number (adjust for your region)
+        val mobileRegex = "^[0-9]{10}$"
         return mobile.matches(Regex(mobileRegex))
     }
     private fun hideKeyboard() {

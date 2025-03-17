@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.example.newsworth.databinding.FragmentHelpAndSupportBinding // Assuming you have this binding
+import com.example.newsworth.databinding.FragmentHelpAndSupportBinding
 
 class HelpAndSupport : Fragment() {
 
@@ -24,7 +24,6 @@ class HelpAndSupport : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up back button listener
         binding.backButton.setOnClickListener {
             val homeScreen = parentFragment as? HomeScreen
             homeScreen?.showAccountScreen()

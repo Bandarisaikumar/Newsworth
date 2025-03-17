@@ -14,7 +14,6 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
-        <!-- Back Button -->
         <ImageView
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
@@ -158,7 +157,6 @@
         android:orientation="horizontal"
         android:weightSum="2">
 
-        <!-- Date of Birth Field -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -189,7 +187,6 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <!-- Gender Field -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -367,9 +364,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-
-        <!-- Location and District Fields -->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -399,7 +393,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-        <!-- State and Country Fields -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -20,11 +20,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="Description About The Video/Image/Audio"
         android:textColor="@color/black"
-        android:textSize="14dp"
-        android:layout_gravity="center"
-        android:gravity="center"/>
+        android:textSize="14dp" />
 
 
     <ScrollView
@@ -35,8 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:paddingBottom="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -45,7 +45,6 @@
                 android:layout_marginEnd="5dp"
                 android:orientation="vertical">
 
-                <!-- Title Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -67,7 +66,6 @@
                         tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Description Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,6 +88,7 @@
                         android:textSize="16sp"
                         tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/category_dropdown"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -102,11 +101,11 @@
                         android:id="@+id/auto_complete_categories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:focusable="false"
-                        android:clickable="true"
                         android:background="@drawable/rectangular_button2"
+                        android:clickable="true"
+                        android:focusable="false"
                         android:fontFamily="@font/poppins_regular"
+                        android:inputType="text"
                         android:textSize="16sp"
                         tools:ignore="LabelFor,VisualLintTextFieldSize" />
 
@@ -121,8 +120,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:layout_weight="1"
                         android:layout_marginEnd="2dp"
+                        android:layout_weight="1"
                         android:background="@drawable/rectangular_button2"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
@@ -170,11 +169,11 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/rectangular_button2"
                         android:gravity="center_vertical"
-                        android:layout_marginStart="2dp"
                         android:orientation="horizontal"
                         android:paddingVertical="8dp">
 
@@ -218,7 +217,7 @@
                     </LinearLayout>
 
                 </LinearLayout>
-                <!-- Tags Input -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -241,14 +240,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-
-            <!--    <LinearLayout-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:layout_gravity="center"-->
-            <!--        android:orientation="vertical"-->
-            <!--        android:padding="16dp">-->
-            <!-- ImageView for displaying image -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
@@ -258,7 +249,6 @@
                 android:scaleType="centerCrop"
                 android:visibility="gone" />
 
-            <!-- VideoView for playing videos -->
             <VideoView
                 android:id="@+id/videoView"
                 android:layout_width="match_parent"

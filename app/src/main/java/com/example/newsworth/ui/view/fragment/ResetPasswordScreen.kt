@@ -32,7 +32,6 @@ class ResetPasswordScreen : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         binding = FragmentResetPasswordScreenBinding.inflate(inflater, container, false)
         return binding.root    }
 
@@ -53,7 +52,6 @@ class ResetPasswordScreen : Fragment() {
             false
         }
 
-        // Initialize Repository and ViewModel
         val apiService = context?.let { RetrofitClient.getApiService(it) }
         val repository = apiService?.let { UserManagementRepository(it) }
         val factory = repository?.let { UserManagementViewModelFactory(it) }
@@ -146,45 +144,35 @@ class ResetPasswordScreen : Fragment() {
         if (!password.any { it.isDigit() }) {
             return "Password must contain at least one number"
         }
-        // Uncomment below if you want to enforce special characters
          if (!password.any { "!@#$%^&*(),.?\":{}|<>".contains(it) }) {
              return "Password must contain at least one special character"
          }
-        return null // Valid password
+        return null
     }
 
     private fun setupPasswordVisibilityToggle(textInputLayout: TextInputLayout) {
         val editText = textInputLayout.editText
 
-        // Initialize the state
         var isPasswordVisible = false
 
-        // Ensure end icon mode is custom
         textInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
 
-        // Save the current font family
         val currentFontFamily = editText?.typeface
 
-        // Set the initial input type and icon
         editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon initially
 
-        // Reverse the default toggle behavior
         textInputLayout.setEndIconOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
-                // Password is visible, eye icon open
                 editText?.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_on) // Open-eye icon
             } else {
-                // Password is hidden, eye icon closed
                 editText?.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                 textInputLayout.endIconDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off) // Closed-eye icon
             }
-            // Restore the font family
             editText?.typeface = currentFontFamily
 
-            // Preserve the cursor position
             editText?.setSelection(editText.text?.length ?: 0)
         }
     }

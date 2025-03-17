@@ -56,15 +56,10 @@
         android:name="com.example.newsworth.ui.view.fragment.RegistrationScreen"
         android:label="RegistrationScreen"
         tools:layout="@layout/fragment_registration_screen">
-<!--        <action-->
-<!--            android:id="@+id/action_registrationScreen_to_loginScreen"-->
-<!--            app:destination="@id/loginScreen" />-->
+
         <action
             android:id="@+id/action_registrationScreen_to_loginScreen"
             app:destination="@id/loginScreen" />
-        <action
-            android:id="@+id/action_registrationScreen_to_pdfViewerFragment"
-            app:destination="@id/pdfViewerFragment" />
         <action
             android:id="@+id/action_registrationScreenSelf"
             app:destination="@id/registrationScreen" />
@@ -192,11 +187,6 @@
             android:id="@+id/action_editProfileScreen_to_profileDetailsScreen"
             app:destination="@id/profileDetailsScreen" />
     </fragment>
-    <fragment
-        android:id="@+id/pdfViewerFragment"
-        android:name="com.example.newsworth.ui.view.fragment.PdfViewerFragment"
-        android:label="fragment_pdf_viewer"
-        tools:layout="@layout/fragment_pdf_viewer" />
     <fragment
         android:id="@+id/signinSignupScreen"
         android:name="com.example.newsworth.ui.view.fragment.SigninSignupScreen"

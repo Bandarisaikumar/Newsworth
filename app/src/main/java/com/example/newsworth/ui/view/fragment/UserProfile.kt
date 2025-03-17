@@ -37,12 +37,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable.isActive
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -99,7 +95,7 @@ class UserProfile : Fragment() {
         userViewModel =
             ViewModelProvider(this, userFactory)[UserManagementViewModel::class.java]
 
-        checkInternetAndSetup() // Initial internet check
+        checkInternetAndSetup()
 
 
         binding.logout.setOnClickListener {
@@ -135,7 +131,7 @@ class UserProfile : Fragment() {
         }
         binding.changePasswordBtn.setOnClickListener {
             handleButtonClick {
-                showChangePasswordDialog() // Call the function here
+                showChangePasswordDialog()
             }
         }
         binding.myJournals.setOnClickListener {
@@ -150,8 +146,8 @@ class UserProfile : Fragment() {
         observeViewModels()
         _profileViewModel!!.error.observe(viewLifecycleOwner) { errorMessage ->
             if (errorMessage != null) {
-                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show() // Longer Toast
-                _profileViewModel!!.clearErrorMessage() // Clear the error after displaying it
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                _profileViewModel!!.clearErrorMessage()
             }
         }
         _profileViewModel!!.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -168,33 +164,15 @@ class UserProfile : Fragment() {
             enableUI()
         } else {
             showNoInternetDialog()
-//            disableUI() // Disable UI when offline
         }
     }
-    //    private fun fetchProfileData() {
-//        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
-//        if (userId != -1) {
-//            _profileViewModel?.viewModelScope?.launch {
-//                try {
-//                    retryFailedRequests()
-//                } catch (e: Exception) {
-//                    withContext(Dispatchers.Main) { // Handle errors on the main thread
-//                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-//                    }
-//                    Log.e("UserProfile", "Error fetching profile data", e) // Log the error
-//                }
-//            }
-//        } else {
-//            Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
-//        }
-//    }
     private fun fetchProfileData() {
         val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toIntOrNull() ?: -1
         if (userId != -1) {
             _profileViewModel?.viewModelScope?.launch {
                 try {
                     showProgressBar()
-                    profileViewModel.fetchProfileDetails(userId) // Or retryFailedRequests() if needed
+                    profileViewModel.fetchProfileDetails(userId)
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         val errorMessage = when (e) {
@@ -209,11 +187,11 @@ class UserProfile : Fragment() {
                             else -> "An unexpected error occurred: ${e.message}"
                         }
                         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                        disableUI() // Disable UI on error
+                        disableUI()
                     }
                     Log.e("UserProfile", "Error fetching profile data: ${e.message}", e)
                 }finally {
-                    hideProgressBar() // Hide progress bar after network call (success or failure)
+                    hideProgressBar()
                 }
             }
         } else {
@@ -237,69 +215,6 @@ class UserProfile : Fragment() {
     private fun hideProgressBar() {
         binding.progressBar.visibility = View.GONE
     }
-
-    private suspend fun retryFailedRequests() {
-        val maxRetries = 3
-        var retryCount = 0
-        var delayMillis = 1000L
-
-        while (retryCount < maxRetries) {
-            try {
-                if (isActive) {
-                    withTimeout(5000) { // Timeout for each retry
-                        val userId =
-                            SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt()
-                                ?: -1
-                        profileViewModel.fetchProfileDetails(userId)
-                    }
-                } else {
-                    Log.d("Network", "Coroutine cancelled, exiting retry loop.")
-                    break // Exit the retry loop
-                }
-                return
-                // Success! Exit the loop
-            }
-            catch (exception: Exception) {
-                if (exception is IOException || exception is TimeoutCancellationException || exception is SSLHandshakeException || exception is EOFException) { // Include SSL and EOF
-                    retryCount++
-                    Log.e("Network", "Retry $retryCount: ${exception.message}")
-                    delay(delayMillis)
-                    delayMillis *= 2
-
-                    withContext(Dispatchers.Main) { // Toast on the main thread
-                        Toast.makeText(requireContext(), "Retrying...", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    throw exception // Re-throw other exceptions (like authentication errors)
-                }
-            }
-        }
-
-        withContext(Dispatchers.Main) {
-            Toast.makeText(requireContext(), "Network request failed after multiple retries.", Toast.LENGTH_SHORT).show()
-            disableUI()
-        }
-    }
-
-    //
-//    private fun fetchProfileData() {
-//        val userId = SharedPrefModule.provideTokenManager(requireContext()).userId?.toInt() ?: -1
-//        if (userId != -1) {
-//            _profileViewModel?.viewModelScope?.launch {
-//                try {
-//                    retryFailedRequests() // Use the improved retry function
-//                } catch (e: Exception) {
-//                    withContext(Dispatchers.Main) {
-//                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-//                        disableUI() // Disable UI on final failure
-//                    }
-//                    Log.e("UserProfile", "Error fetching profile data", e)
-//                }
-//            }
-//        } else {
-//            Toast.makeText(context, "User ID not available", Toast.LENGTH_SHORT).show()
-//        }
-//    }
     private fun enableUI() {
         binding.logout.isEnabled = true
         binding.profileInfo.isEnabled = true
@@ -332,13 +247,6 @@ class UserProfile : Fragment() {
             .setPositiveButton("OK") { _, _ -> }
         val alert = builder.create()
         alert.show()
-    }
-
-    private fun navigateToUserScreenForUpload() {
-        val bundle = Bundle().apply {
-            putBoolean("continueUpload", true)
-        }
-        findNavController().navigate(R.id.action_userProfileFragment_to_userScreen, bundle)
     }
 
     private fun performLogout(userId: Int) {
@@ -433,7 +341,6 @@ class UserProfile : Fragment() {
             }
         }
 
-        // *** COMBINED ERROR OBSERVER FOR PROFILE VIEW MODEL ***
         profileViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
             error?.let {
                 Log.d("ProfileViewModelError", "Error: $it") // Log the error
@@ -443,20 +350,18 @@ class UserProfile : Fragment() {
         }
 
         userViewModel.logoutResponse.observe(viewLifecycleOwner) { response ->
-            if (response != null && response.response == "success") { // Check for successful logout
+            if (response != null && response.response == "success") {
                 Toast.makeText(context, response.response_message, Toast.LENGTH_LONG).show()
-                SharedPrefModule.provideTokenManager(requireContext()).clearTokens() // Clear tokens AFTER successful logout
+                SharedPrefModule.provideTokenManager(requireContext()).clearTokens()
                 findNavController().navigate(R.id.action_homeScreen_to_welcomeScreen)
             } else {
-                // Handle logout failure (optional)
                 Toast.makeText(context, "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // *** ERROR OBSERVER FOR USER VIEW MODEL ***
         userViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
             error?.let {
-                Log.d("UserViewModelError", "Error: $it") // Log the error
+                Log.d("UserViewModelError", "Error: $it")
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 userViewModel.clearErrorMessage()
             }
@@ -504,10 +409,9 @@ class UserProfile : Fragment() {
             }
         }
 
-        // *** ERROR OBSERVER FOR PROFILE IMAGE UPLOAD ***
-        profileViewModel.errorMessage.observe(viewLifecycleOwner) { error -> // Same observer as above
+        profileViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
             error?.let {
-                Log.d("ProfileImageUploadError", "Error: $it") // Log the error
+                Log.d("ProfileImageUploadError", "Error: $it")
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 profileViewModel.clearErrorMessage()
             }
@@ -526,7 +430,6 @@ class UserProfile : Fragment() {
             dialogView.findViewById<TextInputEditText>(R.id.confirmPasswordEditText)
         val changePasswordButton =
             dialogView.findViewById<MaterialButton>(R.id.changePasswordButton)
-        var isValid = true // Flag to track overall validation
 
 
         setupPasswordVisibilityToggle(dialogView.findViewById(R.id.oldPasswordEditTextLayout))
@@ -546,7 +449,6 @@ class UserProfile : Fragment() {
             val newPassword = newPasswordEditText.text.toString()
             val confirmPassword = confirmPasswordEditText.text.toString()
 
-            // Validation for empty fields
             if (oldPassword.isEmpty()) {
                 Toast.makeText(
                     requireContext(),
@@ -569,7 +471,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for password length
             if (newPassword.length < 8) {
                 Toast.makeText(
                     requireContext(),
@@ -578,7 +479,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for at least one uppercase letter
             if (!newPassword.any { it.isUpperCase() }) {
                 Toast.makeText(
                     requireContext(),
@@ -587,7 +487,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for at least one lowercase letter
             if (!newPassword.any { it.isLowerCase() }) {
                 Toast.makeText(
                     requireContext(),
@@ -596,7 +495,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for at least one number
             if (!newPassword.any { it.isDigit() }) {
                 Toast.makeText(
                     requireContext(),
@@ -605,7 +503,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for at least one special character
             if (!newPassword.any { it in "!@#$%^&*()-_=+[]{}|;:'\",.<>?/\\`~" }) {
                 Toast.makeText(
                     requireContext(),
@@ -614,7 +511,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Validation for matching passwords
             if (newPassword != confirmPassword) {
                 Toast.makeText(
                     requireContext(),
@@ -623,7 +519,6 @@ class UserProfile : Fragment() {
                 ).show()
                 return@setOnClickListener                        }
 
-            // Proceed with the change password request
             val request = ChangePasswordRequest(
                 user_id = userId,
                 old_password = oldPassword,

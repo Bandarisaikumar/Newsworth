@@ -4,7 +4,6 @@ import kotlinx.coroutines.delay
 
 object NetworkUtils {
 
-    // Retry IO function
     suspend fun <T> retryIO(
         times: Int = 3,
         initialDelay: Long = 1000,
@@ -15,13 +14,13 @@ object NetworkUtils {
         var currentDelay = initialDelay
         repeat(times - 1) {
             try {
-                return block()  // Attempt the operation
+                return block()
             } catch (e: Exception) {
-                e.printStackTrace()  // Log the exception if needed
+                e.printStackTrace()
             }
-            delay(currentDelay)  // Wait before retrying
+            delay(currentDelay)
             currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
         }
-        return block() // Last attempt if all retries fail
+        return block()
     }
 }

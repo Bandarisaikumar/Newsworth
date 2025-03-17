@@ -61,21 +61,19 @@ class WelcomeScreen : Fragment() {
     private val runnable = object : Runnable {
         override fun run() {
             val currentItem = bannerViewPager.currentItem
-            // Move to the next item, but jump directly to the first item after the last one without scrolling back
             val nextItem = if (currentItem == bannerImages.size - 1) {
-                0  // Jump to the first image after the last one without animation
+                0
             } else {
-                currentItem + 1  // Otherwise, go to the next item
+                currentItem + 1
             }
-            // To avoid backtracking, disable smooth scroll when jumping to the first item
             bannerViewPager.setCurrentItem(nextItem, currentItem != bannerImages.size - 1)
-            handler.postDelayed(this, 3000) // Auto-scroll every 3 seconds
+            handler.postDelayed(this, 3000)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val currentBannerData = bannerDataList[0] // Get data for the initial page
+        val currentBannerData = bannerDataList[0]
         binding.heading.text = currentBannerData.heading
         binding.matter.text = currentBannerData.matter
     }
@@ -92,14 +90,12 @@ class WelcomeScreen : Fragment() {
         bannerViewPager.adapter = bannerAdapter
 
         TabLayoutMediator(bannerIndicator, bannerViewPager) { tab, position ->
-            tab.view.setBackgroundResource(0) // Remove default background
+            tab.view.setBackgroundResource(0)
             val tabView =
                 LayoutInflater.from(requireContext()).inflate(R.layout.indicator_tab_layout, null)
-            tab.customView = tabView // Set the custom view
+            tab.customView = tabView
             val indicatorDot = tabView.findViewById<View>(R.id.indicator_dot)
-            // No need to set margins here; padding in the layout handles spacing
         }.attach()
-        // Start auto-scrolling
         handler.postDelayed(runnable, 3000)
         bannerViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -109,13 +105,11 @@ class WelcomeScreen : Fragment() {
                 binding.matter.text = currentBannerData.matter
             }
         })
-        // Handle the back gesture
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // If this is the first screen (welcome screen), close the app
             if (findNavController().currentDestination?.id == R.id.welcomeScreen) {
-                requireActivity().finish() // Close the app
+                requireActivity().finish()
             } else {
-                findNavController().navigateUp() // Navigate up if not on the welcome screen
+                findNavController().navigateUp()
             }
         }
         binding.getStarted.setOnClickListener {
@@ -126,6 +120,6 @@ class WelcomeScreen : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(runnable) // Stop scrolling when fragment is destroyed
+        handler.removeCallbacks(runnable)
     }
 }

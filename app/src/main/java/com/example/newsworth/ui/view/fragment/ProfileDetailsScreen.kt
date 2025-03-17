@@ -12,7 +12,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.newsworth.R
 import com.example.newsworth.data.api.RetrofitClient
 import com.example.newsworth.databinding.FragmentProfileDetailsScreenBinding
 import com.example.newsworth.repository.ProfileManagementRepository
@@ -45,7 +44,7 @@ class ProfileDetailsScreen : Fragment() {
         val profileFactory = ProfileManagementViewmodelFactory(profileRepository)
         viewModel = ViewModelProvider(this, profileFactory)[ProfileManagementViewmodel::class.java]
 
-        checkInternetAndSetup() // Initial internet check
+        checkInternetAndSetup()
 
         binding!!.backButton.setOnClickListener {
             val homeScreen = parentFragment as? HomeScreen
@@ -78,13 +77,11 @@ class ProfileDetailsScreen : Fragment() {
     private fun enableUI() {
         binding?.backButton?.isEnabled = true
         binding?.editButton?.isEnabled = true
-        // ... enable other interactive elements if you have any
     }
 
     private fun disableUI() {
         binding?.backButton?.isEnabled = false
         binding?.editButton?.isEnabled = false
-        // ... disable other interactive elements if you have any
     }
 
     private fun isInternetAvailable(): Boolean {
@@ -144,32 +141,6 @@ class ProfileDetailsScreen : Fragment() {
                     }
                     if (response != null) {
                         dobValue.text = response.response_message.date_of_birth
-                    }
-
-                    val address = buildString {
-                        if (response != null) {
-                            append(response.response_message.location_name ?: "")
-                        }
-                        if (response != null) {
-                            if (!response.response_message.district_name.isNullOrEmpty()) {
-                                append(" ${response.response_message.district_name}")
-                            }
-                        }
-                        if (response != null) {
-                            if (!response.response_message.state_name.isNullOrEmpty()) {
-                                append(" ${response.response_message.state_name}")
-                            }
-                        }
-                        if (response != null) {
-                            if (response.response_message.pin_code != null) {
-                                append(" ${response.response_message.pin_code}")
-                            }
-                        }
-                        if (response != null) {
-                            if (!response.response_message.country_name.isNullOrEmpty()) {
-                                append(" ${response.response_message.country_name}")
-                            }
-                        }
                     }
                     if (response != null) {
                         address1Value.text = response.response_message.user_address_line_1

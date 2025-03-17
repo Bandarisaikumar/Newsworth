@@ -17,12 +17,10 @@
         android:padding="6dp"
         tools:ignore="TextSizeCheck">
 
-        <!-- Image -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="150dp">
 
-            <!-- Main ImageView -->
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="match_parent"
@@ -30,7 +28,6 @@
                 android:contentDescription="@string/image_description"
                 android:scaleType="centerCrop" />
 
-            <!-- Overlay Icon -->
             <ImageView
                 android:id="@+id/icon"
                 android:layout_width="24dp"
@@ -45,104 +42,95 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:gravity="center">
+
             <TextView
                 android:id="@+id/price_section"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="10dp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
                 android:maxLines="1"
-                android:layout_gravity="center"/>
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center"
+            android:orientation="horizontal"
             android:weightSum="2">
-        <!-- Title -->
-        <TextView
-            android:id="@+id/image_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="@string/title_placeholder2"
-            android:textSize="14sp"
-            android:textColor="#0000EE"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/image_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_regular"
+                android:maxLines="1"
+                android:text="@string/title_placeholder2"
+                android:textColor="#0000EE"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/age_in_days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="age_in_days"
-                    android:textSize="12dp"
-                    android:textColor="#DC553D"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:text="age_in_days"
+                    android:textColor="#DC553D"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
                 <TextView
                     android:id="@+id/gps_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="gps_location"
                     android:gravity="center"
-                    android:textSize="12dp"
-                    android:textColor="@color/black"
                     android:maxLines="1"
+                    android:text="gps_location"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
                 <TextView
                     android:id="@+id/uploaded_by"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="uploaded_by"
-                    android:textSize="12dp"
                     android:gravity="center"
-                    android:textColor="#0000EE"
                     android:maxLines="1"
+                    android:text="uploaded_by"
+                    android:textColor="#0000EE"
+                    android:textSize="12dp"
                     tools:ignore="TextSizeCheck" />
 
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Description -->
         <TextView
             android:id="@+id/content_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
+            android:maxLines="1"
             android:text="@string/description_placeholder_text2"
             android:textColor="@color/gray"
             android:textSize="14sp"
-            android:maxLines="1"
             tools:ignore="TextContrastCheck" />
-
-<!--        &lt;!&ndash; Cart Icon &ndash;&gt;-->
-<!--        <ImageView-->
-<!--            android:id="@+id/cart_icon"-->
-<!--            android:layout_width="25dp"-->
-<!--            android:layout_height="25dp"-->
-<!--            android:layout_gravity="start"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:contentDescription="@string/cart_icon_description2"-->
-<!--            android:src="@drawable/icon11" />-->
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

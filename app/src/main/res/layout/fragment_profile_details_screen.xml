@@ -14,7 +14,7 @@
         android:layout_marginStart="10dp"
         android:gravity="center"
         android:orientation="horizontal">
-        <!-- Back Button -->
+
         <ImageView
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
@@ -62,7 +62,6 @@
                     android:orientation="vertical"
                     android:padding="5dp">
 
-                    <!-- Name Field -->
                     <TextView
                         android:id="@+id/nameLabel"
                         android:layout_width="wrap_content"
@@ -90,9 +89,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Name"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -101,14 +100,13 @@
 
 
                 </LinearLayout>
-                <!-- Email Field -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
                     android:background="@drawable/rectangular_button2"
                     android:orientation="vertical"
                     android:padding="5dp">
@@ -142,16 +140,15 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Email"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
 
                     </LinearLayout>
                 </LinearLayout>
-                <!-- Phone Number Field -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -192,9 +189,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Mobile Number"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -202,7 +199,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Gender -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -243,16 +239,15 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Gender"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
 
                     </LinearLayout>
                 </LinearLayout>
-                <!-- Date Of Birth -->
 
 
                 <LinearLayout
@@ -293,9 +288,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Date Of Birth"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -303,7 +298,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Address Lane 1 -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -342,16 +336,15 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Address Line 1"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
 
                     </LinearLayout>
                 </LinearLayout>
-                <!-- Address Lane 2 -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -390,9 +383,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:text="Address Line 1"
-                            android:layout_marginStart="5dp"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textSize="16dp"
                             tools:ignore="TextSizeCheck" />
@@ -414,11 +407,11 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
-                        android:layout_gravity="center"
                         android:orientation="vertical">
-                        <!-- Name Field -->
+
                         <TextView
                             android:id="@+id/pincodeLabel"
                             android:layout_width="wrap_content"
@@ -445,7 +438,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-                        <!-- Name Field -->
+
                         <TextView
                             android:id="@+id/districtLabel"
                             android:layout_width="wrap_content"
@@ -478,7 +471,7 @@
                     android:background="@drawable/rectangular_button2"
                     android:orientation="vertical"
                     android:padding="5dp">
-                    <!-- Name Field -->
+
                     <TextView
                         android:id="@+id/locationLabel"
                         android:layout_width="wrap_content"
@@ -529,15 +522,16 @@
                         android:textSize="16dp"
                         tools:ignore="TextSizeCheck" />
                 </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:background="@drawable/rectangular_button2"
-                        android:orientation="vertical"
-                        android:padding="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rectangular_button2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
 
                     <TextView
                         android:id="@+id/countryLabel"
